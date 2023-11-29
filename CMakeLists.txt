@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.10)
 project(Rtype)
 
 add_subdirectory(client)
