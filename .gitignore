@@ -31,5 +31,13 @@
 *.out
 *.app
 
-# Build folder
+# CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+_deps/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+Makefile
+cmake_install.cmake
 build/

@@ -1,0 +1,8 @@
+docker
+cmake
+cros platform
+zip server client jeux
+ecs
+github
+notion  
+
