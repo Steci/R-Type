@@ -2,7 +2,8 @@
 ** EPITECH PROJECT, 2023
 ** R-Type
 ** File description:
-** ecs.cpp
+** System.hpp
 */
 
-// Todo : make it work
+#pragma once
+
