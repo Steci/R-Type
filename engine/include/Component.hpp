@@ -9,6 +9,9 @@
 
 #include <memory>
 #include <vector>
+#include <string>
+#include <iostream>
+
 #include "Utils.hpp"
 
 class IComponent {
@@ -19,17 +22,17 @@ class IComponent {
 
 class AComponent : public IComponent {
     public:
-        const std:string getName() override {
+        std::string getName() override {
             return _name;
         }
     private:
         std::string _name;
-}
+};
 
 class Transform : public AComponent {
     public:
         Transform() = default;
-        Transform(float pos_x, float pos_y, float rot_x, float rot_y) : _position(pos_x, pos_y),  _rotation_x(rot_x, rot_y) {};
+        Transform(float pos_x, float pos_y, float rot_x, float rot_y) : _position(pos_x, pos_y),  _rotation(rot_x, rot_y) {};
         ~Transform() = default;
 
         const Vec2 getPosition() {
@@ -49,7 +52,7 @@ class Transform : public AComponent {
     private:
         Vec2 _position;
         Vec2 _rotation;
-}
+};
 
 class Health : public AComponent {
     public:
@@ -65,7 +68,7 @@ class Health : public AComponent {
         }
     private:
         int _health;
-}
+};
 
 class Weapon : public AComponent {
     public:
@@ -73,7 +76,7 @@ class Weapon : public AComponent {
         Weapon(std::string name, int damage) : _name(name), _damage(damage) {};
         ~Weapon() = default;
 
-        const std::string getName() {
+        std::string getName() override {
             return _name;
         }
         const int getDamage() {
@@ -88,4 +91,4 @@ class Weapon : public AComponent {
     private:
         std::string _name;
         int _damage;
-}
+};
