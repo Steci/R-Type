@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <bitset>
+#include <fstream>
 
 namespace server {
     class Client {
@@ -23,6 +24,7 @@ namespace server {
             int getFd() const {return _fd;};
             int getId() const {return _id;};
             std::string getName() const {return _name;};
+            int readClient();
 
         private:
             int _fd;
