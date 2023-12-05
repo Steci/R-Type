@@ -64,20 +64,18 @@ void server::Network::run()
 
     FD_ZERO(&_readFds);
     FD_SET(_fd, &_readFds);
-    std::cout << "Server is running on port " << _port << std::endl;
     while(_isRunning) {
-        if (FD_ISSET(_fd, &_readFds))
-            handleNewConnection();
         setMaxFd();
-        // std::cout << "Active before" << std::endl;
-        // std::cout << "MaxFd + 1 = " << _maxFd + 1 << std::endl;
-        active = select(_maxFd + 1, &_readFds, NULL, NULL, NULL); // il bloque pas alors qu'il devrait fhblifzebhfzbifizblfizb
-        // std::cout << "Active after" << std::endl;
-        if (active == -1) {
+        std::cout << "MaxFd + 1 = " << _maxFd + 1 << std::endl;
+        active = select(_maxFd + 1, &_readFds, NULL, NULL, NULL); // il bloque mais il read pas les msg ;-;
+        if (active == -1 && errno != EINTR) {
             std::cerr << "Error: select failed" << std::endl;
             return;
         }
-        handleClient();
+        if (FD_ISSET(_fd, &_readFds))
+            handleNewConnection();
+        else
+            handleClient();
     }
 }
 
@@ -101,11 +99,11 @@ int server::Network::handleNewConnection()
     socklen_t newAddrLen = sizeof(newAddr);
     std::string message = "";
 
-    std::cout << "New client trying to connect" << std::endl;
-    if (select(_fd + 1, &_readFds, NULL, NULL, NULL) == -1) {
-        std::cerr << "Error: select failed" << std::endl;
-        return(84);
-    }
+    // std::cout << "New client trying to connect" << std::endl;
+    // if (select(_fd + 1, &_readFds, NULL, NULL, NULL) == -1) {
+    //     std::cerr << "Error: select failed" << std::endl;
+    //     return(84);
+    // }
     newFd = accept(_fd, (struct sockaddr *)&newAddr, &newAddrLen);
     if (newFd == -1) {
         std::cerr << "Error: socket accepting failed" << std::endl;
@@ -120,7 +118,6 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(newFd, _clients.size(), "Player " + std::to_string(_clients.size())));
     std::cout << "New client connected: " << _clients.back().getName() << std::endl;
-    std::cout << "fd = " << _clients.back().getFd() << std::endl;
     dprintf(newFd, "Welcome aboard Captain");
     return 0;
 }
@@ -134,7 +131,8 @@ int server::Network::handleClient() {
             //     _clients.erase(client);
             //     return 0;
             // }
-            // std::cout << "Protocol 3: Protect the pilot" << std::endl;
+            std::cout << "Protocol 3: Protect the pilot " << client->getName() << std::endl;
+            client->readClient();
         }
     }
     return 0;
