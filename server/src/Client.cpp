@@ -16,6 +16,18 @@ int server::Client::readClient()
         std::cout << "Client disconnected" << std::endl;
         return -1;
     }
-    std::cout << buffer << std::endl;
+    std::cout << "Player " << _id << " sent: " << buffer << std::endl;
     return 0;
+}
+
+bool server::Client::operator==(const Client& other) const
+{
+    return (_fd == other.getFd() && _id == other.getId() && _name == other.getName());
+}
+
+server::Client& server::Client::operator=(const Client& other)
+{
+    _fd = other.getFd();
+    _id = other.getId();
+    return *this;
 }
