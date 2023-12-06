@@ -118,11 +118,13 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(newFd, _clients.size(), "Player " + std::to_string(_clients.size())));
     std::cout << "New client connected: " << _clients.back().getName() << std::endl;
-    dprintf(newFd, "Welcome aboard Captain");
+    dprintf(newFd, "Welcome aboard Captain\n");
     return 0;
 }
 
 int server::Network::handleClient() {
+    std::vector<Client> disconnectedClients;
+
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (FD_ISSET(client->getFd(), &_readFds)) {
             // if (client->checkClientCOnnected == -1) {
@@ -131,9 +133,27 @@ int server::Network::handleClient() {
             //     _clients.erase(client);
             //     return 0;
             // }
-            std::cout << "Protocol 3: Protect the pilot " << client->getName() << std::endl;
-            client->readClient();
+            if (client->readClient() == -1) {
+                disconnectedClients.push_back(*client);
+                FD_CLR(client->getFd(), &_readFds);
+            }
         }
+    }
+    for (auto client = disconnectedClients.begin(); client != disconnectedClients.end(); client++) {
+        _clients.erase(std::find(_clients.begin(), _clients.end(), *client));
     }
     return 0;
 }
+
+// server::Network &server::Network::operator=(const server::Network &other)
+// {
+//     _port = other._port;
+//     _maxClients = other._maxClients;
+//     _isRunning = other._isRunning;
+//     _fd = other._fd;
+//     _maxFd = other._maxFd;
+//     _readFds = other._readFds;
+//     _addr = other._addr;
+//     _clients = other._clients;
+//     return *this;
+// }

@@ -15,6 +15,7 @@
 #include <netinet/in.h>
 #include <bitset>
 #include <fstream>
+#include <algorithm>
 
 namespace server {
     class Client {
@@ -25,6 +26,8 @@ namespace server {
             int getId() const {return _id;};
             std::string getName() const {return _name;};
             int readClient();
+            bool operator==(const Client& other) const;
+            Client& operator=(const Client& other);
 
         private:
             int _fd;
