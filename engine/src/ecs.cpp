@@ -5,4 +5,10 @@
 ** ecs.cpp
 */
 
+#include "../include/Engine.hpp"
 // Todo : make it work
+
+int test()
+{
+    return (0);
+}

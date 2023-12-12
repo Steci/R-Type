@@ -3,3 +3,13 @@
     "fmt"
   ]
 }
+
+
+{
+  "name": "mon_projet",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "raylib",
+    "fmt"
+  ]
+}
