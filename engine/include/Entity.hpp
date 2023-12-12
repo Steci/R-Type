@@ -43,3 +43,20 @@ class AbstractEntity : public IEntity {
     private:
         std::vector<std::unique_ptr<IComponent>> components;
 };
+
+class E_Enemy : public AbstractEntity {
+    public:
+        E_Enemy() {
+            addComponent(std::make_unique<C_Transform>(0, 0, 0, 0));
+            addComponent(std::make_unique<C_Health>(100));
+        }
+        void update() override {
+            auto& transform = getComponents()[0];
+            auto& health = getComponents()[1];
+            std::cout << "Enemy position: " << dynamic_cast<C_Transform*>(transform.get())->getPosition().x << std::endl;
+            std::cout << "Enemy health: " << dynamic_cast<C_Health*>(health.get())->getHealth() << std::endl;
+        }
+        void render() override {
+            std::cout << "Enemy render" << std::endl;
+        }
+};

@@ -29,11 +29,11 @@ class AComponent : public IComponent {
         std::string _name;
 };
 
-class Transform : public AComponent {
+class C_Transform : public AComponent {
     public:
-        Transform() = default;
-        Transform(float pos_x, float pos_y, float rot_x, float rot_y) : _position(pos_x, pos_y),  _rotation(rot_x, rot_y) {};
-        ~Transform() = default;
+        C_Transform() = default;
+        C_Transform(float pos_x, float pos_y, float rot_x, float rot_y) : _position(pos_x, pos_y),  _rotation(rot_x, rot_y) {};
+        ~C_Transform() = default;
 
         const Vec2 getPosition() {
             return _position;
@@ -54,11 +54,11 @@ class Transform : public AComponent {
         Vec2 _rotation;
 };
 
-class Health : public AComponent {
+class C_Health : public AComponent {
     public:
-        Health() = default;
-        Health(int health) : _health(health) {};
-        ~Health() = default;
+        C_Health() = default;
+        C_Health(int health) : _health(health) {};
+        ~C_Health() = default;
 
         const int getHealth() {
             return _health;
@@ -70,11 +70,11 @@ class Health : public AComponent {
         int _health;
 };
 
-class Weapon : public AComponent {
+class C_Weapon : public AComponent {
     public:
-        Weapon() = default;
-        Weapon(std::string name, int damage) : _name(name), _damage(damage) {};
-        ~Weapon() = default;
+        C_Weapon() = default;
+        C_Weapon(std::string name, int damage) : _name(name), _damage(damage) {};
+        ~C_Weapon() = default;
 
         std::string getName() override {
             return _name;
