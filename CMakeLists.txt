@@ -19,5 +19,12 @@ target_link_libraries(HelloWorld PRIVATE fmt::fmt)
 
 # Copier l'exécutable dans le répertoire source après la construction
 add_custom_command(TARGET HelloWorld POST_BUILD
+<<<<<<< HEAD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:HelloWorld> ${CMAKE_SOURCE_DIR}
 )
+=======
+COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:HelloWorld> ${CMAKE_SOURCE_DIR}
+)
+
+add_subdirectory(server)
+>>>>>>> beb66ab07187e215d7ba6a307930fd87c5a5b13c
