@@ -40,6 +40,8 @@ class SystemManager {
         void addSystem(std::unique_ptr<T> system) {
             _systems.push_back(std::move(system));
         }
+
+        // TODO : FIX THIS, SEND BACK REFERENCE INSTEAD OF POINTER
         template<typename T>
         T* getSystem() {
             for (auto& system : _systems) {

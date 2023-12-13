@@ -29,6 +29,7 @@ class AComponent : public IComponent {
         std::string _name;
 };
 
+// TODO : REFACTO THIS, REPLACE CLASSES WITH STRUCTS
 class C_Transform : public AComponent {
     public:
         C_Transform() = default;
@@ -70,6 +71,7 @@ class C_Health : public AComponent {
         int _health;
 };
 
+// TODO : Fix this, replace with a DAMAGE COMPONENT
 class C_Weapon : public AComponent {
     public:
         C_Weapon() = default;
