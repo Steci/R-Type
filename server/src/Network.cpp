@@ -67,7 +67,7 @@ void server::Network::run()
     while(_isRunning) {
         setMaxFd();
         std::cout << "MaxFd + 1 = " << _maxFd + 1 << std::endl;
-        active = select(_maxFd + 1, &_readFds, NULL, NULL, NULL); // il bloque mais il read pas les msg ;-;
+        active = select(_maxFd + 1, &_readFds, NULL, NULL, NULL);
         if (active == -1 && errno != EINTR) {
             std::cerr << "Error: select failed" << std::endl;
             return;
@@ -99,11 +99,6 @@ int server::Network::handleNewConnection()
     socklen_t newAddrLen = sizeof(newAddr);
     std::string message = "";
 
-    // std::cout << "New client trying to connect" << std::endl;
-    // if (select(_fd + 1, &_readFds, NULL, NULL, NULL) == -1) {
-    //     std::cerr << "Error: select failed" << std::endl;
-    //     return(84);
-    // }
     newFd = accept(_fd, (struct sockaddr *)&newAddr, &newAddrLen);
     if (newFd == -1) {
         std::cerr << "Error: socket accepting failed" << std::endl;
@@ -127,12 +122,6 @@ int server::Network::handleClient() {
 
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (FD_ISSET(client->getFd(), &_readFds)) {
-            // if (client->checkClientCOnnected == -1) {
-            //     std::cout << "Client disconnected: " << client->getName() << std::endl;
-            //     FD_CLR(client->getFd(), &_readFds);
-            //     _clients.erase(client);
-            //     return 0;
-            // }
             if (client->readClient() == -1) {
                 disconnectedClients.push_back(*client);
                 FD_CLR(client->getFd(), &_readFds);
@@ -144,16 +133,3 @@ int server::Network::handleClient() {
     }
     return 0;
 }
-
-// server::Network &server::Network::operator=(const server::Network &other)
-// {
-//     _port = other._port;
-//     _maxClients = other._maxClients;
-//     _isRunning = other._isRunning;
-//     _fd = other._fd;
-//     _maxFd = other._maxFd;
-//     _readFds = other._readFds;
-//     _addr = other._addr;
-//     _clients = other._clients;
-//     return *this;
-// }

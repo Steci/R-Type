@@ -8,6 +8,9 @@
 #pragma once
 
 #include "Network.hpp"
+#include "Game.hpp"
+#include <iostream>
+#include <thread>
 
 namespace server {
     class Server {
@@ -15,8 +18,12 @@ namespace server {
             Server(int port, int maxClients): _network(port, maxClients) {};
             ~Server() {};
             int run();
+
         private:
             Network _network;
-            // Game _game;
+            Game _game;
+
+            std::thread _gameThread;
+            std::thread _checkClientsThread;
     };
 }

@@ -32,6 +32,7 @@ namespace server {
         private:
             int _fd;
             int _id;
+            bool _isConnected = true;
             const std::string _name;
     };
 
