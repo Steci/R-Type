@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.22)
 project(server)
-=======
-cmake_minimum_required(VERSION 3.10)
-project(server_build)
->>>>>>> beb66ab07187e215d7ba6a307930fd87c5a5b13c
-
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wall -Wextra -g3)

@@ -6,11 +6,13 @@
 */
 
 #pragma once
+#include <iostream>
 
 class Engine {
     public:
         Engine()
         {
+            std::cout << "Hello Engine" << std::endl;
         }
         ~Engine()
         {

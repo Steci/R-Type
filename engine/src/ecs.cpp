@@ -6,9 +6,11 @@
 */
 
 #include "../include/Engine.hpp"
+#include <iostream>
 // Todo : make it work
 
-int test()
+int malek()
 {
+    std::cout << "test" << std::endl;
     return (0);
 }
