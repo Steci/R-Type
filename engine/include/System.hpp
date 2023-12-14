@@ -58,3 +58,5 @@ class SystemManager {
     private:
         std::vector<std::unique_ptr<ISystem>> _systems;
 };
+
+// TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
