@@ -14,83 +14,18 @@
 
 #include "Utils.hpp"
 
-class IComponent {
-    public:
-        virtual ~IComponent() = default;
-        virtual std::string getName();
+// TODO : Voir avec Axel ce qu'il a mis en Component
+
+struct C_Transform {
+    Vec2 _position;
+    Vec2 _rotation;
 };
 
-class AComponent : public IComponent {
-    public:
-        std::string getName() override {
-            return _name;
-        }
-    private:
-        std::string _name;
+struct C_Damage {
+    std::string _name;
+    int _damage;
 };
 
-// TODO : REFACTO THIS, REPLACE CLASSES WITH STRUCTS
-class C_Transform : public AComponent {
-    public:
-        C_Transform() = default;
-        C_Transform(float pos_x, float pos_y, float rot_x, float rot_y) : _position(pos_x, pos_y),  _rotation(rot_x, rot_y) {};
-        ~C_Transform() = default;
-
-        const Vec2 getPosition() {
-            return _position;
-        }
-        const Vec2 getRotation() {
-            return _rotation;
-        }
-        void setPosition(float pos_x, float pos_y) {
-            _position.x = pos_x;
-            _position.y = pos_y;
-        }
-        void setRotation(float rot_x, float rot_y) {
-            _rotation.x = rot_x;
-            _rotation.y = rot_y;
-        }
-    private:
-        Vec2 _position;
-        Vec2 _rotation;
-};
-
-class C_Health : public AComponent {
-    public:
-        C_Health() = default;
-        C_Health(int health) : _health(health) {};
-        ~C_Health() = default;
-
-        const int getHealth() {
-            return _health;
-        }
-        void setHealth(int health) {
-            _health = health;
-        }
-    private:
-        int _health;
-};
-
-// TODO : Fix this, replace with a DAMAGE COMPONENT
-class C_Weapon : public AComponent {
-    public:
-        C_Weapon() = default;
-        C_Weapon(std::string name, int damage) : _name(name), _damage(damage) {};
-        ~C_Weapon() = default;
-
-        std::string getName() override {
-            return _name;
-        }
-        const int getDamage() {
-            return _damage;
-        }
-        void setName(std::string name) {
-            _name = name;
-        }
-        void setDamage(int damage) {
-            _damage = damage;
-        }
-    private:
-        std::string _name;
-        int _damage;
+struct C_Health {
+    int _health;
 };
