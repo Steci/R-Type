@@ -41,12 +41,11 @@ class SystemManager {
             _systems.push_back(std::move(system));
         }
 
-        // TODO : FIX THIS, SEND BACK REFERENCE INSTEAD OF POINTER
         template<typename T>
-        T* getSystem() {
+        ISystem &getSystem() {
             for (auto& system : _systems) {
                 if (dynamic_cast<T*>(system.get()))
-                    return dynamic_cast<T*>(system.get());
+                    system.get();
             }
             return nullptr;
         }
