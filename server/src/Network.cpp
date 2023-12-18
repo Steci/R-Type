@@ -7,8 +7,6 @@
 
 #include "Network.hpp"
 
-
-
 server::Network::Network(int port, int maxClients): _port(port), _maxClients(maxClients)
 {
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
@@ -23,8 +21,9 @@ server::Network::~Network()
 int server::Network::fillSocket()
 {
     int opt = 1;
+
     _fd = _maxClients;
-    _fd = socket(AF_INET, SOCK_STREAM, 0);
+    _fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     if (_fd == -1) {
         std::cerr << "Error: socket creation failed" << std::endl;
@@ -34,6 +33,16 @@ int server::Network::fillSocket()
         std::cerr << "Error: socket options failed" << std::endl;
         return(84);
     }
+    #ifdef _WIN64
+        WSADATA wsaData;
+        int iResult;
+
+        iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (iResult != 0) {
+            std::cerr << "Error: WSAStartup failed" << std::endl;
+            return(84);
+        }
+    #endif
     return 0;
 }
 
