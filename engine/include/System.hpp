@@ -62,12 +62,12 @@ class SystemManager {
 
 class S_Renderer : public ASystem {
     public:
-        S_Renderer(int w, int h, int fps, const char* wName) {
+        S_Renderer(int w, int h, int fps, std::string wName) {
             _screenWidth = w;
             _screenHeight = h;
             _targetFps = fps;
             _windowName = wName;
-            InitWindow(_screenWidth, _screenHeight, _windowName);
+            InitWindow(_screenWidth, _screenHeight, _windowName.c_str());
             SetTargetFPS(_targetFps);
             // not sure if this is usefull
             // _camera = { 0 };
@@ -81,7 +81,7 @@ class S_Renderer : public ASystem {
         int _screenWidth;
         int _screenHeight;
         int _targetFps;
-        const char* _windowName;
+        std::string _windowName;
 
         Camera2D _camera;
 };
