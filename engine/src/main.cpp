@@ -13,8 +13,7 @@ int main(void)
 
     SystemManager manager;
 
-    std::unique_ptr<S_Renderer> renderer = std::make_unique<S_Renderer>(800, 600, 60, "Window Name");
-    manager.addSystem(std::move(renderer));
+    manager.addSystem<S_Renderer>(800, 600, 60, "Window Name");
 
     while (1) {
         manager.update();
