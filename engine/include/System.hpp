@@ -103,6 +103,17 @@ class S_Renderer : public ASystem {
             CloseWindow();
         }
 
+        void setWindow(int w, int h, int fps, std::string wName)
+        {
+            _screenWidth = w;
+            _screenHeight = h;
+            _targetFps = fps;
+            _windowName = wName;
+            SetWindowSize(_screenWidth, _screenHeight);
+            SetWindowTitle(_windowName.c_str());
+            SetTargetFPS(_targetFps);
+        }
+
     private:
         int _screenWidth;
         int _screenHeight;

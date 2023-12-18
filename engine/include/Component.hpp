@@ -13,7 +13,7 @@
 #include <iostream>
 #include <raylib.h>
 
-#include "Utils.hpp"
+#include "Utils/Vector2.hpp"
 
 // TODO : Voir avec Axel ce qu'il a mis en Component
 
@@ -22,8 +22,8 @@ struct Component {
 };
 
 struct C_Transform : public Component {
-    Vec2 _position = {0, 0};
-    Vec2 _rotation = {0, 0};
+    Engine::Vector2<float> _position = {0, 0};
+    Engine::Vector2<float> _rotation = {0, 0};
 };
 
 struct C_Damage : public Component {
@@ -37,5 +37,5 @@ struct C_Health : public Component {
 
 struct C_Sprite : public Component {
     std::string _name;
-    Texture2D _sprite = LoadTexture("assets/placeholder.png");
+    Texture2D _sprite = LoadTexture("assets/placeholder.png"); //TODO: use resources manager
 };

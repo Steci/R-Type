@@ -1,6 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-# set(raylib_DIR "~/gc/raylib-master/cmake/raylib-config.cmake")
-# find_package(raylib REQUIRED)
 project(engine)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -19,14 +17,20 @@ set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
 set(OpenGL_GL_PREFERENCE GLVND)
 
-include(../cmake/Findraylib.cmake)
-include_directories(./include)
+# Ajouter le chemin vers le fichier CMake de raylib
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# Utiliser vcpkg pour trouver raylib
+find_package(raylib CONFIG REQUIRED)
+
+include_directories(./include ./include/Utils)
 
 set(SOURCE_FILES
     ./src/Component.cpp
     ./src/Entity.cpp
     ./src/main.cpp
     ./src/System.cpp
+    ./src/ResourcesManager.cpp
 )
 
 add_library(${LIBRARY_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES})
@@ -47,4 +51,4 @@ if (WIN32)
   )
 endif(WIN32)
 
-target_link_libraries(${LIBRARY_NAME} raylib)
+target_link_libraries(${LIBRARY_NAME} PRIVATE raylib)

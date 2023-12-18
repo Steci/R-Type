@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <cassert>
-
+#include <memory>
 #include "Entity.hpp"
 #include "Component.hpp"
 #include "System.hpp"
@@ -32,12 +32,15 @@ namespace Engine
      * @param args ???
      * @return true if the enemy is created
     */
-    bool CreateEnemy(/*args*/)
+    bool CreateEnemy(const std::string &filepath)
     {
-        if (_systemManager.getSystem<S_Player>() == nullptr)
-            _systemManager.getSystem<S_Renderer>()->addEntity(std::make_unique<E_Enemy>(/*args*/));
+        _systemManager.getSystem<S_Renderer>()->addEntity(std::make_unique<E_Enemy>(filepath));
         return true;
     }
+
+    // TODO: Delete enemy ???
+
+    // TODO: use enemy methodss ???
 
     /**
      * @brief Create a Player object
@@ -47,8 +50,7 @@ namespace Engine
     */
     bool CreatePlayer(/*args*/)
     {
-        if (_systemManager.getSystem<S_Player>() == nullptr)
-            _systemManager.getSystem<S_Renderer>()->addEntity(std::make_unique<E_Player>(/*args*/));
+        _systemManager.getSystem<S_Renderer>()->addEntity(std::make_unique<E_Player>(/*args*/));
         return true;
     }
 
@@ -72,10 +74,10 @@ namespace Engine
     */
     bool CreateWindow(int width, int height, int fps, const char *title)
     {
-        if (_systemManager.getSystem<S_Window>() == nullptr)
-            _systemManager.addSystem<S_Window>(width, height, fps, title);
+        if (_systemManager.getSystem<S_Renderer>() == nullptr)
+            _systemManager.addSystem<S_Renderer>(width, height, fps, title);
         else
-            _systemManager.getSystem<S_Window>()->setWindow(width, height, fps, title);
+            _systemManager.getSystem<S_Renderer>()->setWindow(width, height, fps, title);
 
         return true;
     }

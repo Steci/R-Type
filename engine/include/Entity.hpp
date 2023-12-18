@@ -57,7 +57,7 @@ class E_Player : public AbstractEntity {
         void update() override {
             auto& transform = getComponents()[0];
             auto& health = getComponents()[1];
-            std::cout << "Player position: " << dynamic_cast<C_Transform*>(transform.get())->_position.x << std::endl;
+            std::cout << "Player position: " << dynamic_cast<C_Transform*>(transform.get())->_position.GetX() << std::endl;
             std::cout << "Player health: " << dynamic_cast<C_Health*>(health.get())->_health << std::endl;
         }
         void render() override {
@@ -84,8 +84,8 @@ class E_Enemy : public AbstractEntity {
         }
         void render() override {
             // std::cout << "Enemy render" << std::endl;
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.GetX();
+            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.GetY();
             DrawTexture(dynamic_cast<C_Sprite*>(getComponents()[2].get())->_sprite, xPos, yPos, WHITE);
         }
 };
