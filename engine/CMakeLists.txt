@@ -13,7 +13,12 @@ if (WIN32)
     #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
 endif(WIN32)
 
-set(LIBRARY_NAME engine_lib)
+if(CMAKE_COMPILER_IS_GNUCXX)
+  set(LIBRARY_NAME engine_lib.so)
+endif(CMAKE_COMPILER_IS_GNUCXX)
+if (WIN32)
+  set(LIBRARY_NAME engine_lib.dll)
+endif(WIN32)
 
 set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
@@ -22,29 +27,26 @@ set(OpenGL_GL_PREFERENCE GLVND)
 include(../cmake/Findraylib.cmake)
 include_directories(./include)
 
+set(SOURCE_PATH ./src)
+
 set(SOURCE_FILES
-    ./src/Component.cpp
-    ./src/Entity.cpp
-    ./src/main.cpp
-    ./src/System.cpp
+    Component.cpp
+    Entity.cpp
+    main.cpp
+    System.cpp
 )
 
-add_library(${LIBRARY_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES})
+set(SOURCE_FILES_PATH "")
+foreach(SOURCE_FILE ${SOURCE_FILES})
+    list(APPEND SOURCE_FILES_PATH ${SOURCE_PATH}/${SOURCE_FILE})
+endforeach(SOURCE_FILE)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_BINARY_DIR}/lib${LIBRARY_NAME}.so
-      ${CMAKE_CURRENT_SOURCE_DIR}/../${LIBRARY_NAME}.so
-  )
-endif(CMAKE_COMPILER_IS_GNUCXX)
+add_library(${LIBRARY_NAME} SHARED ${SOURCE_FILES_PATH} ${HEADER_FILES})
 
-if (WIN32)
-  add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.dll
-      ${CMAKE_CURRENT_SOURCE_DIR}/../${LIBRARY_NAME}.dll
-  )
-endif(WIN32)
+add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    $<TARGET_FILE:${LIBRARY_NAME}>
+    ${CMAKE_SOURCE_DIR}
+)
 
 target_link_libraries(${LIBRARY_NAME} raylib)
