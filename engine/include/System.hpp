@@ -59,3 +59,15 @@ class SystemManager {
 };
 
 // TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
+
+class S_Renderer : public ASystem {
+    public:
+        void render();
+        
+};
+
+class S_AudioManager : public ASystem {
+};
+
+class S_EnemyAI : public ASystem {
+};
