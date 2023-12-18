@@ -20,7 +20,7 @@ void server::Game::run()
 {
     std::cout << "Game started" << std::endl;
     while (true) {
-        std::cout << "Tick: " << _tick << std::endl;
+        // std::cout << "Tick: " << _tick << std::endl;
         _tick++;
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
