@@ -93,17 +93,18 @@ class S_Renderer : public ASystem {
 
         void update() override
         {
-            while (!WindowShouldClose()) {
-                if (IsKeyPressed(KEY_ESCAPE))
-                    closeWindow();
+            if (IsKeyPressed(KEY_ESCAPE))
+                closeWindow();
+            if (!WindowShouldClose())
                 render();
-            }
         }
 
         void closeWindow()
         {
             CloseWindow();
         }
+
+        bool shouldRun = false;
 
     private:
         int _screenWidth;
@@ -118,4 +119,10 @@ class S_AudioManager : public ASystem {
 };
 
 class S_EnemyAI : public ASystem {
+};
+
+class S_Collision : public ASystem {
+};
+
+class S_Animation : public ASystem {
 };
