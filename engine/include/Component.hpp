@@ -37,5 +37,5 @@ struct C_Health : public Component {
 
 struct C_Sprite : public Component {
     std::string _name;
-    Texture2D _sprite;
+    Texture2D _sprite = LoadTexture("assets/placeholder.png");
 };

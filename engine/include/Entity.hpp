@@ -67,10 +67,11 @@ class E_Player : public AbstractEntity {
 
 class E_Enemy : public AbstractEntity {
     public:
-        E_Enemy() {
+        E_Enemy(std::string path) {
             C_Transform transform;
             C_Health health;
             C_Sprite sprite;
+            sprite._sprite = LoadTexture(path.c_str());
             addComponent(std::make_unique<C_Transform>(transform));
             addComponent(std::make_unique<C_Health>(health));
             addComponent(std::make_unique<C_Sprite>(sprite));
@@ -78,11 +79,11 @@ class E_Enemy : public AbstractEntity {
         void update() override {
             auto& transform = getComponents()[0];
             auto& health = getComponents()[1];
-            std::cout << "Enemy position: " << dynamic_cast<C_Transform*>(transform.get())->_position.x << std::endl;
-            std::cout << "Enemy health: " << dynamic_cast<C_Health*>(health.get())->_health << std::endl;
+            // std::cout << "Enemy position: " << dynamic_cast<C_Transform*>(transform.get())->_position.x << std::endl;
+            // std::cout << "Enemy health: " << dynamic_cast<C_Health*>(health.get())->_health << std::endl;
         }
         void render() override {
-            std::cout << "Enemy render" << std::endl;
+            // std::cout << "Enemy render" << std::endl;
             int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
             int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
             DrawTexture(dynamic_cast<C_Sprite*>(getComponents()[2].get())->_sprite, xPos, yPos, WHITE);

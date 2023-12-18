@@ -36,26 +36,32 @@ class ASystem : public ISystem {
 
 class SystemManager {
     public:
-        template<typename T>
-        void addSystem(std::unique_ptr<T> system) {
-            _systems.push_back(std::move(system));
+        template<typename T, typename... Args>
+        void addSystem(Args&&... args) {
+            _systems.push_back(new T(std::forward<Args>(args)...));
         }
 
         template<typename T>
-        ISystem &getSystem() {
+        T* getSystem() {
             for (auto& system : _systems) {
-                if (dynamic_cast<T*>(system.get()))
-                    system.get();
+                if (typeid(*system) == typeid(T)) {
+                    return dynamic_cast<T*>(system);
+                }
             }
-            return *_systems[0];
+            return nullptr;
         }
+
         void update() {
             for (auto& system : _systems) {
                 system->update();
             }
         }
+
+        ~SystemManager() {
+        }
+
     private:
-        std::vector<std::unique_ptr<ISystem>> _systems;
+        std::vector<ISystem*> _systems;
 };
 
 // TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
@@ -69,13 +75,32 @@ class S_Renderer : public ASystem {
             _windowName = wName;
             InitWindow(_screenWidth, _screenHeight, _windowName.c_str());
             SetTargetFPS(_targetFps);
-            // not sure if this is usefull
-            // _camera = { 0 };
         };
 
-        void update() override;
+        void render()
+        {
+            BeginDrawing();
+                ClearBackground(RAYWHITE);
+                BeginMode2D(_camera);
+                    for (auto& entity : _entities) {
+                        entity->render();
+                    }
+                EndMode2D();
+            EndDrawing();
+        }
 
-        void render();
+        void update() override
+        {
+            if (IsKeyPressed(KEY_ESCAPE))
+                closeWindow();
+            if (!WindowShouldClose())
+                render();
+        }
+
+        void closeWindow()
+        {
+            CloseWindow();
+        }
 
     private:
         int _screenWidth;
@@ -86,8 +111,17 @@ class S_Renderer : public ASystem {
         Camera2D _camera;
 };
 
+class S_Network : public ASystem {
+};
+
 class S_AudioManager : public ASystem {
 };
 
 class S_EnemyAI : public ASystem {
+};
+
+class S_Collision : public ASystem {
+};
+
+class S_Animation : public ASystem {
 };
