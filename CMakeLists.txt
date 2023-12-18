@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 
-# Utiliser une variable pour spécifier le chemin du fichier toolchain de Vcpkg
-set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-
 # Utiliser une variable pour spécifier le générateur CMake
 set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
 

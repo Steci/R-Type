@@ -10,15 +10,6 @@ set(OpenGL_GL_PREFERENCE GLVND)
 # Liste des fichiers source de la bibliothèque
 set(SOURCES src/ecs.cpp)
 
-# Intégration avec Vcpkg (ajustez le chemin vers vcpkg selon votre installation)
-# if (WIN32)
-#     set(VCPKG_TARGET_TRIPLET "x64-windows" CACHE STRING "")
-# elseif (APPLE)
-#     set(VCPKG_TARGET_TRIPLET "x64-osx" CACHE STRING "")
-# else()  # Linux
-#     set(VCPKG_TARGET_TRIPLET "x64-linux" CACHE STRING "")
-# endif()
-
 
 include(../cmake/Findraylib.cmake)
 
