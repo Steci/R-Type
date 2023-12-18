@@ -45,3 +45,4 @@ build/
 # garbage
 .vscode/
 HelloWorld
+server_build

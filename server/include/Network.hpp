@@ -7,12 +7,22 @@
 
 #pragma once
 
+#ifdef linux
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #define OS "linux"
+#endif
+
+#ifdef _WIN64
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #define OS "windows"
+#endif
+
 #include <string>
 #include <iostream>
 #include <vector>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <bitset>
 #include <fstream>
 #include <algorithm>
@@ -48,7 +58,12 @@ namespace server {
             int _fd;
             int _maxFd;
             fd_set _readFds;
-            struct sockaddr_in _addr;
+            #ifdef linux
+                struct sockaddr_in _addr;
+            #endif
+            #ifdef _WIN64
+                SOCKADDR_IN _addr;
+            #endif
             std::vector<Client> _clients;
 
             int fillSocket();
