@@ -64,6 +64,7 @@ class SystemManager {
         std::vector<ISystem*> _systems;
 };
 
+
 // TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
 
 class S_Renderer : public ASystem {
@@ -124,4 +125,5 @@ class S_Collision : public ASystem {
 };
 
 class S_Animation : public ASystem {
+
 };
