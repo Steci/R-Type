@@ -75,8 +75,6 @@ class S_Renderer : public ASystem {
             _windowName = wName;
             InitWindow(_screenWidth, _screenHeight, _windowName.c_str());
             SetTargetFPS(_targetFps);
-            // not sure if this is usefull
-            // _camera = { 0 };
         };
 
         void render()
@@ -104,8 +102,6 @@ class S_Renderer : public ASystem {
             CloseWindow();
         }
 
-        bool shouldRun = false;
-
     private:
         int _screenWidth;
         int _screenHeight;
@@ -113,6 +109,9 @@ class S_Renderer : public ASystem {
         std::string _windowName;
 
         Camera2D _camera;
+};
+
+class S_Network : public ASystem {
 };
 
 class S_AudioManager : public ASystem {
