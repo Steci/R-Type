@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
-set(raylib_DIR "~/chasfory/raylib/cmake/raylib-config.cmake")
-find_package(raylib REQUIRED)
+# set(raylib_DIR "~/gc/raylib-master/cmake/raylib-config.cmake")
+# find_package(raylib REQUIRED)
 project(engine)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  add_compile_options(-Wall -Wextra -g3)
+    add_compile_options(-Wall -Wextra -g3 -fPIC)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 if (WIN32)
-    add_compile_options(-Wall)
+    add_compile_options(-Wall -fPIC)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "./build/")
     #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
 endif(WIN32)
@@ -19,6 +19,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
 set(OpenGL_GL_PREFERENCE GLVND)
 
+include(../cmake/Findraylib.cmake)
 include_directories(./include)
 
 set(SOURCE_FILES
