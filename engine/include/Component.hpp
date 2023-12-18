@@ -22,8 +22,8 @@ struct Component {
 };
 
 struct C_Transform : public Component {
-    Vec2 _position;
-    Vec2 _rotation;
+    Vec2 _position = {0, 0};
+    Vec2 _rotation = {0, 0};
 };
 
 struct C_Damage : public Component {
@@ -32,7 +32,7 @@ struct C_Damage : public Component {
 };
 
 struct C_Health : public Component {
-    int _health;
+    int _health = 100;
 };
 
 struct C_Sprite : public Component {

@@ -44,12 +44,36 @@ class AbstractEntity : public IEntity {
         std::vector<std::unique_ptr<Component>> components;
 };
 
+class E_Player : public AbstractEntity {
+    public:
+        E_Player() {
+            C_Transform transform;
+            C_Health health;
+            C_Sprite sprite;
+            addComponent(std::make_unique<C_Transform>(transform));
+            addComponent(std::make_unique<C_Health>(health));
+            addComponent(std::make_unique<C_Sprite>(sprite));
+        }
+        void update() override {
+            auto& transform = getComponents()[0];
+            auto& health = getComponents()[1];
+            std::cout << "Player position: " << dynamic_cast<C_Transform*>(transform.get())->_position.x << std::endl;
+            std::cout << "Player health: " << dynamic_cast<C_Health*>(health.get())->_health << std::endl;
+        }
+        void render() override {
+            std::cout << "Player render" << std::endl;
+        }
+};
+
 class E_Enemy : public AbstractEntity {
     public:
         E_Enemy() {
-            addComponent(std::make_unique<C_Transform>(0, 0, 0, 0));
-            addComponent(std::make_unique<C_Health>(100));
-            addComponent(std::make_unique<C_Sprite>("enemy", LoadTexture("assets/enemy.png")));
+            C_Transform transform;
+            C_Health health;
+            C_Sprite sprite;
+            addComponent(std::make_unique<C_Transform>(transform));
+            addComponent(std::make_unique<C_Health>(health));
+            addComponent(std::make_unique<C_Sprite>(sprite));
         }
         void update() override {
             auto& transform = getComponents()[0];
@@ -59,5 +83,8 @@ class E_Enemy : public AbstractEntity {
         }
         void render() override {
             std::cout << "Enemy render" << std::endl;
+            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+            DrawTexture(dynamic_cast<C_Sprite*>(getComponents()[2].get())->_sprite, xPos, yPos, WHITE);
         }
 };

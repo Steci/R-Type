@@ -6,12 +6,14 @@ set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
 
 project(HelloWorld)
 
-find_package(fmt CONFIG REQUIRED)
+add_subdirectory(engine)
 
-add_executable(HelloWorld ../helloworld.cpp)
+# find_package(fmt CONFIG REQUIRED)
 
-target_link_libraries(HelloWorld PRIVATE fmt::fmt)
+# add_executable(HelloWorld ../helloworld.cpp)
 
-add_custom_command(TARGET HelloWorld POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:HelloWorld> ${CMAKE_SOURCE_DIR}
-)
+# target_link_libraries(HelloWorld PRIVATE fmt::fmt)
+
+# add_custom_command(TARGET HelloWorld POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:HelloWorld> ${CMAKE_SOURCE_DIR}
+# )

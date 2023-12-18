@@ -47,7 +47,7 @@ class SystemManager {
                 if (dynamic_cast<T*>(system.get()))
                     system.get();
             }
-            return nullptr;
+            return *_systems[0];
         }
         void update() {
             for (auto& system : _systems) {
@@ -62,8 +62,28 @@ class SystemManager {
 
 class S_Renderer : public ASystem {
     public:
+        S_Renderer(int w, int h, int fps, const char* wName) {
+            _screenWidth = w;
+            _screenHeight = h;
+            _targetFps = fps;
+            _windowName = wName;
+            InitWindow(_screenWidth, _screenHeight, _windowName);
+            SetTargetFPS(_targetFps);
+            // not sure if this is usefull
+            // _camera = { 0 };
+        };
+
+        void update() override;
+
         void render();
-        
+
+    private:
+        int _screenWidth;
+        int _screenHeight;
+        int _targetFps;
+        const char* _windowName;
+
+        Camera2D _camera;
 };
 
 class S_AudioManager : public ASystem {
