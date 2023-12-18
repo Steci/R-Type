@@ -7,11 +7,11 @@
 
 #include "Network.hpp"
 
-server::Network::Network(int port, int maxClients): _port(port), _maxClients(maxClients)
+server::Network::Network(int port, int maxClients): _port(port != 0 ? port : 9001), _maxClients(maxClients != 0 ? maxClients : 4)
 {
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
         throw std::invalid_argument("Error: Network creation failed");
-    setMaxFd();
+    std::cout << "Network created on port " << _port << " with " << _maxClients << " max clients" << std::endl;
 }
 
 server::Network::~Network()
@@ -23,21 +23,33 @@ int server::Network::fillSocket()
     int opt = 1;
 
     _fd = _maxClients;
-    _fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    if (_fd == -1) {
-        std::cerr << "Error: socket creation failed" << std::endl;
-        return(84);
-    }
-    if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
-        std::cerr << "Error: socket options failed" << std::endl;
-        return(84);
-    }
+    #ifdef linux
+        _fd = socket(AF_INET, SOCK_DGRAM, 0);
+        if (_fd == -1) {
+            std::cerr << "Error: socket creation failed" << std::endl;
+            return(84);
+        }
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+            std::cerr << "Error: socket options failed" << std::endl;
+            return(84);
+        }
+    #endif
+
     #ifdef _WIN64
         WSADATA wsaData;
         int iResult;
 
+        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (_fd == -1) {
+            std::cerr << "Error: socket creation failed" << std::endl;
+            return(84);
+        }
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+            std::cerr << "Error: socket options failed" << std::endl;
+            return(84);
+        }
         if (iResult != 0) {
             std::cerr << "Error: WSAStartup failed" << std::endl;
             return(84);
@@ -48,43 +60,29 @@ int server::Network::fillSocket()
 
 int server::Network::fillAddr()
 {
+    std::memset(&_addr, 0, sizeof(_addr));
+    std::memset(&_clientAddr, 0, sizeof(_clientAddr));
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
     _addr.sin_addr.s_addr = INADDR_ANY;
     return 0;
 }
 
-int server::Network::setMaxFd()
-{
-    FD_ZERO(&_readFds);
-    FD_SET(_fd, &_readFds);
-    _maxFd = _fd;
-    for (auto client = _clients.begin(); client != _clients.end(); client++) {
-        FD_SET(client->getFd(), &_readFds);
-        if (client->getFd() > _maxFd)
-            _maxFd = client->getFd();
-    }
-    return 0;
-}
-
 void server::Network::run()
 {
-    int active;
+    int client;
+    char buffer[1024];
 
-    FD_ZERO(&_readFds);
-    FD_SET(_fd, &_readFds);
     while(_isRunning) {
-        setMaxFd();
-        std::cout << "MaxFd + 1 = " << _maxFd + 1 << std::endl;
-        active = select(_maxFd + 1, &_readFds, NULL, NULL, NULL);
-        if (active == -1 && errno != EINTR) {
-            std::cerr << "Error: select failed" << std::endl;
+        buffer[0] = '\0';
+        client = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        if (client == -1) {
+            std::cerr << "Error: recvfrom failed" << std::endl;
             return;
         }
-        if (FD_ISSET(_fd, &_readFds))
-            handleNewConnection();
-        else
-            handleClient();
+        if (handleClient() != 84) {
+        std::cout << "Client message: " << buffer << std::endl;
+        }
     }
 }
 
@@ -94,51 +92,32 @@ int server::Network::bindSocket()
         std::cerr << "Error: socket binding failed" << std::endl;
         return(84);
     }
-    if (listen(_fd, _maxClients) == -1) {
-        std::cerr << "Error: socket listening failed" << std::endl;
-        return(84);
-    }
     return 0;
 }
 
 int server::Network::handleNewConnection()
 {
-    int newFd;
-    struct sockaddr_in newAddr;
-    socklen_t newAddrLen = sizeof(newAddr);
-    std::string message = "";
-
-    newFd = accept(_fd, (struct sockaddr *)&newAddr, &newAddrLen);
-    if (newFd == -1) {
-        std::cerr << "Error: socket accepting failed" << std::endl;
-        return(84);
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
+            std::cout << "Client already connected" << std::endl;
+            return 0;
+        }
     }
-    if (_clients.size() >= _maxClients) {
-        std::cerr << "Error: new client tried to connect but server is full" << std::endl;
-        message = "Server is full";
-        send(newFd, message.c_str(), message.size(), 0);
-        close(newFd);
-        return 0;
-    }
-    _clients.push_back(Client(newFd, _clients.size(), "Player " + std::to_string(_clients.size())));
-    std::cout << "New client connected: " << _clients.back().getName() << std::endl;
-    dprintf(newFd, "Welcome aboard Captain\n");
+    _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
+    std::cout << "New client connected" << std::endl;
     return 0;
 }
 
 int server::Network::handleClient() {
     std::vector<Client> disconnectedClients;
 
-    for (auto client = _clients.begin(); client != _clients.end(); client++) {
-        if (FD_ISSET(client->getFd(), &_readFds)) {
-            if (client->readClient() == -1) {
-                disconnectedClients.push_back(*client);
-                FD_CLR(client->getFd(), &_readFds);
-            }
-        }
+    if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
+        std::cerr << "Error: ip or port recuperation failed" << std::endl;
+        return 84;
     }
-    for (auto client = disconnectedClients.begin(); client != disconnectedClients.end(); client++) {
-        _clients.erase(std::find(_clients.begin(), _clients.end(), *client));
-    }
+    std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
+    std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
+    if (handleNewConnection() == 84)
+        return 84;
     return 0;
 }

@@ -10,6 +10,9 @@
 #ifdef linux
     #include <sys/socket.h>
     #include <netinet/in.h>
+    #include <sys/types.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
     #define OS "linux"
 #endif
 
@@ -26,21 +29,26 @@
 #include <bitset>
 #include <fstream>
 #include <algorithm>
+#include <cstring>
+#include <netdb.h>
 
 namespace server {
     class Client {
         public:
-            Client(int fd, int id, std::string name): _fd(fd), _id(id), _name(name) {};
+            #ifdef linux
+                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                struct sockaddr_in getAddr() const {return _addr;};
+            #endif
             ~Client() {};
-            int getFd() const {return _fd;};
             int getId() const {return _id;};
             std::string getName() const {return _name;};
-            int readClient();
             bool operator==(const Client& other) const;
             Client& operator=(const Client& other);
 
         private:
-            int _fd;
+            #ifdef linux
+                struct sockaddr_in _addr;
+            #endif
             int _id;
             bool _isConnected = true;
             const std::string _name;
@@ -56,10 +64,10 @@ namespace server {
             unsigned int _maxClients;
             bool _isRunning = true;
             int _fd;
-            int _maxFd;
-            fd_set _readFds;
             #ifdef linux
                 struct sockaddr_in _addr;
+                struct sockaddr_in _clientAddr;
+                socklen_t _clientAddrLen;
             #endif
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
@@ -69,7 +77,6 @@ namespace server {
             int fillSocket();
             int fillAddr();
             int bindSocket();
-            int setMaxFd();
             int handleNewConnection();
             int handleClient();
     };

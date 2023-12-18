@@ -9,14 +9,14 @@
 
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 class ErrorHandling {
     public:
         ErrorHandling() {};
         ~ErrorHandling() {};
-        int errorHandling(int argc, char **argv);
+        std::vector<int> errorHandling(int argc, char **argv);
     private:
-        int checkFlags(int argc, char **argv);
         int checkPort(char *port);
         void help();
 };
