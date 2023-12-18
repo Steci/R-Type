@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(client)
 
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
@@ -9,23 +10,15 @@ set(OpenGL_GL_PREFERENCE GLVND)
 # Liste des fichiers source de la bibliothèque
 set(SOURCES src/main.cpp)
 
-# Intégration avec Vcpkg (ajustez le chemin vers vcpkg selon votre installation)
-# if (WIN32)
-#     set(VCPKG_TARGET_TRIPLET "x64-windows" CACHE STRING "")
-# elseif (APPLE)
-#     set(VCPKG_TARGET_TRIPLET "x64-osx" CACHE STRING "")
-# else()  # Linux
-#     set(VCPKG_TARGET_TRIPLET "x64-linux" CACHE STRING "")
-# endif()
-
 include(../cmake/Findraylib.cmake)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wall -Wextra -g3)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-# Recherche de raylib
-# find_package(raylib REQUIRED)
+# add static lib "libengine.a" to compilation of exec
+add_library(engine STATIC IMPORTED)
+set_property(TARGET engine PROPERTY IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../engine/build/libengine.a)
 
 include_directories(include)
 

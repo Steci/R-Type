@@ -45,3 +45,8 @@ build/
 # garbage
 .vscode/
 HelloWorld
+
+
+server/server
+client/rtype
+engine/libengine.a

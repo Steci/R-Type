@@ -9,17 +9,24 @@ set(OpenGL_GL_PREFERENCE GLVND)
 
 
 
+
+include(../cmake/Findraylib.cmake)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wall -Wextra -g3)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+# add static lib "libengine.a" to compilation of exec
+add_library(engine STATIC IMPORTED)
+set_property(TARGET engine PROPERTY IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../engine/build/libengine.a)
 
 include_directories(include)
-# target_link_libraries(server pthread)
+
+
+
 
 # Ajoutez ici votre exécutable
 add_executable(server main.cpp src/ErrorHandling.cpp src/Server.cpp src/Client.cpp src/Network.cpp)  # Ajoutez tous les fichiers source nécessaires pour votre exécutable
-
 
 if (WIN32)
     add_compile_options(-Wall)
