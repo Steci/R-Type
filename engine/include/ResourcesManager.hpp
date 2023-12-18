@@ -67,6 +67,5 @@ namespace Engine {
     private:
     };
 
-    static ResourcesManager rManager;
 }
 #endif //GAME_ENGINE_RESSOURCESMANAGER_HPP
