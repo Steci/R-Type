@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** R-Type
 ** File description:
-** ecs.cpp
+** Entity.cpp
 */
 
-// Todo : make it work
+#include "Entity.hpp"

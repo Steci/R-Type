@@ -24,6 +24,6 @@ endif(WIN32)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-include_directories(includes)
+include_directories(include)
 
 target_link_libraries(${PROJECT_NAME} raylib)

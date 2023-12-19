@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+project(r-type)
 
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT} CACHE STRING "Vcpkg toolchain file")
 
@@ -17,3 +18,4 @@ COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:HelloWorld> ${CMAKE_SOURCE_DIR}
 )
 
 add_subdirectory(server)
+add_subdirectory(engine)
