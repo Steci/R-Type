@@ -6,8 +6,7 @@
 */
 
 #pragma once
-#include <memory>
-#include <vector>
+
 #include "Entity.hpp"
 
 /**
@@ -58,7 +57,8 @@ class SystemManager {
          * @param args The arguments to pass to the system's constructor.
          */
         template<typename T, typename... Args>
-        void addSystem(Args&&... args) {
+        void addSystem(Args&&... args)
+        {
             _systems.push_back(new T(std::forward<Args>(args)...));
         }
 
@@ -69,7 +69,8 @@ class SystemManager {
          * @return A pointer to the system if found, nullptr otherwise.
          */
         template<typename T>
-        T* getSystem() {
+        T* getSystem()
+        {
             for (auto& system : _systems) {
                 if (typeid(*system) == typeid(T)) {
                     return dynamic_cast<T*>(system);
@@ -81,11 +82,7 @@ class SystemManager {
         /**
          * @brief Updates all systems in the collection.
          */
-        void update() {
-            for (auto& system : _systems) {
-                system->update();
-            }
-        }
+        void update();
 
         /**
          * @brief Destructor for the SystemManager class.
