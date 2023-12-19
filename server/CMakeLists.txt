@@ -22,7 +22,7 @@ set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
 
 # find_package(netinet REQUIRED)
 
-file(GLOB SOURCES "main.cpp" "src/*.cpp")
+file(GLOB SOURCES "main.cpp" "src/*.cpp" "${CMAKE_SOURCE_DIR}/engine/src/*.cpp")
 add_executable(server_build ${SOURCES})
 
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/include")
@@ -32,6 +32,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 target_include_directories(server_build PUBLIC ${EXTRA_INCLUDES})
 target_link_libraries(server_build pthread)
+target_link_libraries(server_build raylib)
 
 add_custom_command(TARGET server_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}

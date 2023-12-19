@@ -11,11 +11,12 @@
 int main(int argc, char **argv)
 {
     ErrorHandling error_handling;
-    try {
-        server::Server serv(9001, 4);
+    std::vector<int> error = error_handling.errorHandling(argc, argv);
 
-        if (error_handling.errorHandling(argc, argv) == 84)
-            return (84);
+    if (error[0] == 84)
+        return (84);
+    try {
+        server::Server serv(error[1], error[2]);
         return serv.run();
     } catch (std::invalid_argument &e) {
         std::cerr << e.what() << std::endl;

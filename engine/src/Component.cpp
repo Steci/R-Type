@@ -2,7 +2,6 @@
 ** EPITECH PROJECT, 2023
 ** R-Type
 ** File description:
-** ecs.cpp
+** Component.cpp
 */
 
-// Todo : make it work
