@@ -9,6 +9,7 @@
 
 client::Network::Network(std::string serverIP, int port): _serverIP(serverIP), _port(port)
 {
+    std::cout << "Client port: " << _port << std::endl;
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
         throw std::invalid_argument("Error: Network creation failed");
 }

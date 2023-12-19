@@ -12,26 +12,16 @@
 int main(int argc, char **argv)
 {
     ErrorHandling error_handling;
+    std::vector<std::string> error = error_handling.errorHandling(argc, argv);
 
+    if (error[0] == "84")
+        return (84);
     try {
-        client::Client client("127.0.0.1", 9002);
-
-        if (error_handling.errorHandling(argc, argv) == 84)
-            return (84);
+        std::cout << error[1] << " " << error[2] << std::endl;
+        client::Client client(error[1], std::atoi(error[2].c_str()));
         return client.run();
     } catch (std::invalid_argument &e) {
         std::cerr << e.what() << std::endl;
         return (84);
     }
 }
-
-// TODO: Params for the client binary:
-//          - -p --port
-//          - -i --ip
-
-
-// TODO: Network class:
-//         - Network run
-//         - fillSocket
-//         - fillAddr
-//         - bindSocket
