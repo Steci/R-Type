@@ -32,6 +32,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 target_include_directories(server_build PUBLIC ${EXTRA_INCLUDES})
 target_link_libraries(server_build pthread)
+target_link_libraries(server_build raylib)
 
 add_custom_command(TARGET server_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
