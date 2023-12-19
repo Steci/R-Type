@@ -32,6 +32,7 @@ namespace server
             std::mutex _mutex;
             std::vector<std::string> functions;
             // std::map<int, Key> m{{KEY_A, Key}, {KEY_RIGHT, Key}, {KEY_LEFT, Key}, {KEY_DOWN, Key}, {KEY_ESCAPE, Key}};
-            typedef void (*Key)(int button); 
+            typedef void (*Key)(int button);
+            std::vector<std::string> _functions;
     };
 }
