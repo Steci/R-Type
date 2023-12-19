@@ -20,7 +20,6 @@ namespace server {
 
         private:
             Network _network;
-            Game _game;
 
             std::thread _gameThread;
             std::thread _checkClientsThread;

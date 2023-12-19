@@ -71,17 +71,23 @@ void server::Network::run()
 {
     int client;
     char buffer[1024];
+    Game game;
 
+    std::thread gameThread = std::thread(&Game::run, &game);
+
+    // std::cout << "start loop" << std::endl;
     while(_isRunning) {
         buffer[0] = '\0';
+        // std::cout << "wait for client" << std::endl;
         client = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         if (client == -1) {
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
         }
         buffer[client - 1] = '\0';
-        if (handleClient() != 84) {
-        std::cout << "Client message: " << buffer << std::endl;
+        if (handleClient(buffer) != 84) {
+            game.addFunction(buffer);
+            std::cout << "Client message: " << buffer << std::endl;
         }
     }
 }
@@ -100,7 +106,7 @@ int server::Network::handleNewConnection()
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             std::cout << "Client already connected" << std::endl;
-            return 0;
+            return client->getId();
         }
     }
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
@@ -110,8 +116,9 @@ int server::Network::handleNewConnection()
     return 0;
 }
 
-int server::Network::handleClient() {
+int server::Network::handleClient(std::string message) {
     std::vector<Client> disconnectedClients;
+    int id;
 
     if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
         std::cerr << "Error: ip or port recuperation failed" << std::endl;
@@ -119,8 +126,10 @@ int server::Network::handleClient() {
     }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
     std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
-    if (handleNewConnection() == 84)
+    id = handleNewConnection();
+    if (id == 84)
         return 84;
+    // handleClientMessage(message, id);
     return 0; //set_tickrate
 }
 

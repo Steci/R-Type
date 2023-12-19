@@ -83,7 +83,7 @@ namespace server {
             int fillAddr();
             int bindSocket();
             int handleNewConnection();
-            int handleClient();
+            int handleClient(std::string message);
             int handleClientMessage(std::string message, int client_id);
 
             // Commands

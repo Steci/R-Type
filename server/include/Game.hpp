@@ -23,14 +23,14 @@ namespace server
             Game();
             ~Game();
             void run();
-            void addFunction(std::string function) {_mutex.lock(); functions.push_back(function); _mutex.unlock();}
-            std::vector<std::string> getFunctions() {return functions;}
+            void addFunction(std::string function);
+            std::vector<std::string> getFunctions() {return _functions;}
 
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
             std::mutex _mutex;
-            std::vector<std::string> functions;
+            std::vector<std::string> _functions_server;
             // std::map<int, Key> m{{KEY_A, Key}, {KEY_RIGHT, Key}, {KEY_LEFT, Key}, {KEY_DOWN, Key}, {KEY_ESCAPE, Key}};
             typedef void (*Key)(int button);
             std::vector<std::string> _functions;
