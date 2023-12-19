@@ -124,6 +124,11 @@ int server::Network::handleClient() {
     return 0; //set_tickrate
 }
 
+int server::Network::handleClientMessage(std::string message, int client_id)
+{
+    _game.addFunction(message);
+}
+
 int server::Network::commandKill()
 {
     std::string kickMessage = "You've been kicked: Server Disconnection";

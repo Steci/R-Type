@@ -8,7 +8,6 @@
 #pragma once
 
 #include "Network.hpp"
-#include "Game.hpp"
 #include <iostream>
 #include <thread>
 
