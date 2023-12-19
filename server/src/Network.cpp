@@ -23,7 +23,6 @@ int server::Network::fillSocket()
     int opt = 1;
 
     _fd = _maxClients;
-
     #ifdef linux
         _fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (_fd == -1) {
@@ -80,6 +79,7 @@ void server::Network::run()
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
         }
+        buffer[client - 1] = '\0';
         if (handleClient() != 84) {
         std::cout << "Client message: " << buffer << std::endl;
         }
@@ -104,6 +104,8 @@ int server::Network::handleNewConnection()
         }
     }
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
+    sockaddr_in cli = _clients.back().getAddr();
+    sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     std::cout << "New client connected" << std::endl;
     return 0;
 }
@@ -119,5 +121,94 @@ int server::Network::handleClient() {
     std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
     if (handleNewConnection() == 84)
         return 84;
+    return 0; //set_tickrate
+}
+
+int server::Network::commandKill()
+{
+    std::string kickMessage = "You've been kicked: Server Disconnection";
+
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        struct sockaddr_in cli = client->getAddr();
+        sendto(_fd, kickMessage.c_str(), kickMessage.size(), 0, (struct sockaddr *)&cli, sizeof(cli)); 
+        // TODO: Error handling if it didn't send
+    }
+    _clients.clear();
     return 0;
 }
+
+int server::Network::commandKick(int client_id, std::string message)
+{
+    std::string kickMessage = "You've been kicked: " + message;
+
+    // send(_fd, kickMessage.c_str(), kickMessage.size(), 0);
+    // TODO: Error handling if it didn't send
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        if (client->getId() == client_id) {
+            struct sockaddr_in cli = client->getAddr();
+            sendto(_fd, kickMessage.c_str(), kickMessage.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+            _clients.erase(client);
+           return 0;
+            // Return success
+        }
+    }
+    return 1;
+    // Return client not found
+}
+
+int server::Network::commandSetTickrate() const
+{
+    std::string newTickrate = "New tickrate: " + std::to_string(0);
+
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        struct sockaddr_in cli = client->getAddr();
+        sendto(_fd, newTickrate.c_str(), newTickrate.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    }
+    // TODO: Error handling if it didn't send
+    return 0;
+}
+
+int server::Network::commandPing(int client_id) const
+{
+    auto start = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::string pingRes = std::to_string(duration.count());
+
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        if (client->getId() == client_id) {
+            struct sockaddr_in cli = client->getAddr();
+            sendto(_fd, pingRes.c_str(), pingRes.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+           return 0;
+            // Return success
+        }
+    }
+    // TODO: Error handling if it didn't send
+    return 0;
+}
+
+int server::Network::commandError(int client_id, std::string error) const
+{
+    std::string errorMessage = "Error: " + error;
+
+    for (auto client = _clients.begin(); client != _clients.end(); client++)
+        if (client->getId() == client_id) {
+            struct sockaddr_in cli = client->getAddr();
+            sendto(_fd, errorMessage.c_str(), errorMessage.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        }
+    // TODO: Error handling if it didn't send
+    return 0;
+}
+
+// server::Network &server::Network::operator=(const server::Network &other)
+// {
+//     _port = other._port;
+//     _maxClients = other._maxClients;
+//     _isRunning = other._isRunning;
+//     _fd = other._fd;
+//     _maxFd = other._maxFd;
+//     _readFds = other._readFds;
+//     _addr = other._addr;
+//     _clients = other._clients;
+//     return *this;
+// }

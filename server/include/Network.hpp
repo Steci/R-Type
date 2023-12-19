@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <cstring>
 #include <netdb.h>
+#include <chrono>
 
 namespace server {
     class Client {
@@ -72,6 +73,7 @@ namespace server {
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
             #endif
+            int _tickrate;
             std::vector<Client> _clients;
 
             int fillSocket();
@@ -79,5 +81,12 @@ namespace server {
             int bindSocket();
             int handleNewConnection();
             int handleClient();
+
+            // Commands
+            int commandKill();
+            int commandKick(int client_id, std::string message);
+            int commandSetTickrate() const;
+            int commandPing(int client_id) const;
+            int commandError(int client_id, std::string error) const;
     };
 }
