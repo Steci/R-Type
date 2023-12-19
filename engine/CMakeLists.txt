@@ -13,12 +13,7 @@ if (WIN32)
     #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
 endif(WIN32)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  set(LIBRARY_NAME engine_lib.so)
-endif(CMAKE_COMPILER_IS_GNUCXX)
-if (WIN32)
-  set(LIBRARY_NAME engine_lib.dll)
-endif(WIN32)
+set(LIBRARY_NAME engine_lib)
 
 set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
