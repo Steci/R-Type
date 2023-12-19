@@ -39,6 +39,7 @@ namespace client {
             Network(std::string serverIP, int port);
             ~Network();
             void run();
+            int connect();
         private:
             std::string _serverIP;
             int _port;

@@ -69,13 +69,25 @@ int client::Network::fillAddr()
     return 0;
 }
 
+int client::Network::connect()
+{
+    int server;
+    char buffer[1024];
+
+    sendto(_fd, "New Client Connexion.", 22, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+    server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+    if (server == -1) {
+        std::cerr << "Error: recvfrom failed" << std::endl;
+        return 84;
+    }
+    return 0;
+}
+
 void client::Network::run()
 {
     int server;
     char buffer[1024];
 
-    sendto(_fd, "BUBU", 5, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-    server = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
     //while(_isRunning) {
     //    buffer[0] = '\0';
     //    server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
@@ -84,9 +96,6 @@ void client::Network::run()
     //        return;
     //    }
     //    buffer[client - 1] = '\0';
-    //    if (handleServer() != 84) {
-    //    std::cout << "Server message: " << buffer << std::endl;
-    //    }
     //}
 }
 

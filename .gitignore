@@ -46,3 +46,4 @@ build/
 .vscode/
 HelloWorld
 server_build
+client_build
