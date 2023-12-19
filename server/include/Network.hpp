@@ -16,6 +16,7 @@
 #include <bitset>
 #include <fstream>
 #include <algorithm>
+#include <chrono>
 
 namespace server {
     class Client {
@@ -46,6 +47,7 @@ namespace server {
             bool _isRunning = true;
             int _fd;
             int _maxFd;
+            int _tickrate;
             fd_set _readFds;
             struct sockaddr_in _addr;
             std::vector<Client> _clients;
@@ -56,5 +58,12 @@ namespace server {
             int setMaxFd();
             int handleNewConnection();
             int handleClient();
+
+            // Commands
+            int commandKill() const;
+            int commandKick(int _fd, std::string message) const;
+            int commandSetTickrate(int _fd) const;
+            int commandPing(int _fd) const;
+            int commandError(int _fd, std::string error) const;
     };
 }

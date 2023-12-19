@@ -11,6 +11,7 @@
 int main(int argc, char **argv)
 {
     ErrorHandling error_handling;
+
     try {
         server::Server serv(9001, 4);
 

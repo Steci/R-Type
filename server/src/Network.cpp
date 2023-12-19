@@ -7,8 +7,6 @@
 
 #include "Network.hpp"
 
-
-
 server::Network::Network(int port, int maxClients): _port(port), _maxClients(maxClients)
 {
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
@@ -23,9 +21,9 @@ server::Network::~Network()
 int server::Network::fillSocket()
 {
     int opt = 1;
+
     _fd = _maxClients;
     _fd = socket(AF_INET, SOCK_STREAM, 0);
-
     if (_fd == -1) {
         std::cerr << "Error: socket creation failed" << std::endl;
         return(84);
@@ -60,7 +58,7 @@ int server::Network::setMaxFd()
 
 void server::Network::run()
 {
-    int active;
+    int active = 0;
 
     FD_ZERO(&_readFds);
     FD_SET(_fd, &_readFds);
@@ -142,7 +140,68 @@ int server::Network::handleClient() {
     for (auto client = disconnectedClients.begin(); client != disconnectedClients.end(); client++) {
         _clients.erase(std::find(_clients.begin(), _clients.end(), *client));
     }
+    return 0; //set_tickrate
+}
+
+int server::Network::commandKill() const
+{
+    std::string kickMessage = "You've been kicked: Server Disconnection";
+    int fd = 0;
+
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        fd = client->getFd();
+        send(fd, kickMessage.c_str(), kickMessage.size(), 0);
+        // TODO: Error handling if it didn't send
+        _clients.erase(client);
+        close(_fd);
+    }
+    close(this->_fd);
     return 0;
+}
+
+int server::Network::commandKick(int _fd, std::string message) const
+{
+    std::string kickMessage = "You've been kicked: " + message;
+
+    send(_fd, kickMessage.c_str(), kickMessage.size(), 0);
+    // TODO: Error handling if it didn't send
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        (client->getFd() == _fd) {
+            close(_fd);
+            _clients.erase(client);
+           return 0;
+            // Return success
+        }
+    }
+    return 1;
+    // Return client not found
+}
+
+int server::Network::commandSetTickrate(int _fd) const
+{
+    std::string newTickrate = "New tickrate: " + std::to_string(0);
+
+    send(_fd, newTickrate.c_str(), newTickrate.size(), 0);
+    // TODO: Error handling if it didn't send
+}
+
+int server::Network::commandPing(int _fd) const
+{
+    auto start = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::string pingRes = std::to_string(duration.count());
+
+    send(_fd, pingRes.c_str(), pingRes.size(), 0);
+    // TODO: Error handling if it didn't send
+}
+
+int server::Network::commandError(int _fd, std::string error) const
+{
+    std::string errorMessage = "Error: " + error;
+
+    send(_fd, errorMessage.c_str(), errorMessage.size(), 0);
+    // TODO: Error handling if it didn't send
 }
 
 // server::Network &server::Network::operator=(const server::Network &other)
