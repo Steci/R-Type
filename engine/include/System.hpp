@@ -120,6 +120,26 @@ class S_EnemyAI : public ASystem {
 };
 
 class S_Collision : public ASystem {
+    public:
+        void update() override
+        {
+
+        };
+
+        bool checkCollision(IEntity* entity1, IEntity* entity2)
+        {
+            C_Hitbox *hitbox1 = getComponentRef<C_Hitbox>(*entity1);
+            C_Hitbox *hitbox2 = getComponentRef<C_Hitbox>(*entity2);
+            C_Transform *transform1 = getComponentRef<C_Transform>(*entity1);
+            C_Transform *transform2 = getComponentRef<C_Transform>(*entity2);
+
+            if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
+                transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
+                transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
+                transform1->_position.y + hitbox1->_size.y > transform2->_position.y)
+                return true;
+            return false;
+        };
 };
 
 class S_Animation : public ASystem {
