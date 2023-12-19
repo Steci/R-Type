@@ -41,3 +41,8 @@ CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 build/
+
+# garbage
+.vscode/
+HelloWorld
+server_build
