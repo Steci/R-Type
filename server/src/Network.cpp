@@ -177,9 +177,9 @@ int server::Network::commandKick(int _fd, std::string message) const
     // Return client not found
 }
 
-int server::Network::commandSetTickrate(int _fd) const
+int server::Network::commandSetTickrate(int _fd, int tickrate) const
 {
-    std::string newTickrate = "New tickrate: " + std::to_string(0);
+    std::string newTickrate = "New tickrate: " + std::to_string(tickrate);
 
     send(_fd, newTickrate.c_str(), newTickrate.size(), 0);
     // TODO: Error handling if it didn't send

@@ -62,7 +62,7 @@ namespace server {
             // Commands
             int commandKill() const;
             int commandKick(int _fd, std::string message) const;
-            int commandSetTickrate(int _fd) const;
+            int commandSetTickrate(int _fd, int tickrate) const;
             int commandPing(int _fd) const;
             int commandError(int _fd, std::string error) const;
     };
