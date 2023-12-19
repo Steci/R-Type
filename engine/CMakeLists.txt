@@ -13,7 +13,7 @@ if (WIN32)
     #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
 endif(WIN32)
 
-set(LIBRARY_NAME engine_lib)
+set(LIBRARY_NAME engine)
 
 set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
