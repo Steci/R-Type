@@ -58,7 +58,7 @@ int client::Network::bindSocket()
         std::cerr << "Error: socket binding failed" << std::endl;
         return(84);
     }
-    if (listen(_fd, _maxClients) == -1) {
+    if (listen(_fd, 1) == -1) {
         std::cerr << "Error: socket listening failed" << std::endl;
         return(84);
     }

@@ -21,8 +21,8 @@ namespace client {
             ~Network();
             void run();
         private:
-            int _port;
             std::string _serverIP;
+            int _port;
             bool _isRunning = true;
             int _fd;
             fd_set _readFds;
