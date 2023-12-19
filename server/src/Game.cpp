@@ -20,6 +20,7 @@ void server::Game::run()
 {
     std::cout << "Game started" << std::endl;
     SystemManager manager;
+    SparseArray<IEntity> entities;
 
     while (true) {
         _mutex.lock();
@@ -28,6 +29,9 @@ void server::Game::run()
             functions.clear();
         }
         _mutex.unlock();
+        for (auto& function : _functions) {
+            std::cout << function << std::endl;
+        }
         manager.update();
         _tick++;
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
