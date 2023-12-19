@@ -7,7 +7,6 @@
 
 #include "Engine.hpp"
 
-
 int main(void)
 {
     SystemManager manager;
