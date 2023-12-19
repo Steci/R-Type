@@ -22,7 +22,7 @@ int main(void)
     manager.getSystem<S_Renderer>()->addEntity(player);
 
     // Modify the entity's components
-    C_Transform* transform = getComponentRef<C_Transform>(*player);
+    C_Transform* transform = Engine::getComponentRef<C_Transform>(*player);
     transform->_position = {200, 200};
 
     while (1) {

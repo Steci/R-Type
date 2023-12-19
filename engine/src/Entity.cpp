@@ -4,5 +4,3 @@
 ** File description:
 ** Entity.cpp
 */
-
-#include "Entity.hpp"

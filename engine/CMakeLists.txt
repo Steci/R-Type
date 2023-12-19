@@ -9,7 +9,7 @@ set(OpenGL_GL_PREFERENCE GLVND)
 
 include(../cmake/Findraylib.cmake)
 
-file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp")
+file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp" "main.cpp")
 
 add_library(EngineLib STATIC ${ENGINE_SOURCES})
 
@@ -22,7 +22,7 @@ if (WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "./build/")
 endif(WIN32)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} ${ENGINE_SOURCES})
 
 include_directories(include)
 

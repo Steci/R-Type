@@ -161,10 +161,10 @@ class S_Collision : public ASystem {
 
         bool checkCollision(IEntity* entity1, IEntity* entity2)
         {
-            C_Hitbox *hitbox1 = getComponentRef<C_Hitbox>(*entity1);
-            C_Hitbox *hitbox2 = getComponentRef<C_Hitbox>(*entity2);
-            C_Transform *transform1 = getComponentRef<C_Transform>(*entity1);
-            C_Transform *transform2 = getComponentRef<C_Transform>(*entity2);
+            C_Hitbox *hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
+            C_Hitbox *hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
+            C_Transform *transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+            C_Transform *transform2 = Engine::getComponentRef<C_Transform>(*entity2);
 
             if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
                 transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&

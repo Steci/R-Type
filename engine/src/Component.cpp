@@ -5,4 +5,3 @@
 ** Component.cpp
 */
 
-#include "Component.hpp"
