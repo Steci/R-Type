@@ -13,3 +13,24 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
+
+namespace client {
+    class Network {
+        public:
+            Network(std::string serverIP, int port);
+            ~Network();
+            void run();
+        private:
+            int _port;
+            std::string _serverIP;
+            bool _isRunning = true;
+            int _fd;
+            fd_set _readFds;
+            struct sockaddr_in _addr;
+
+            int fillSocket();
+            int fillAddr();
+            int bindSocket();
+    };
+
+}
