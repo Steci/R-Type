@@ -69,5 +69,4 @@ class SparseArray {
 // SparseArray<YourEntityType> entities;
 // entities.add(entityId, entity);
 
-
 // TODO : IMPLEMENT RESSOURCE MANAGER

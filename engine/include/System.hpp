@@ -15,18 +15,18 @@ class ISystem {
         virtual ~ISystem() = default;
         virtual void update() = 0;
     protected:
-        std::vector<std::unique_ptr<IEntity>> _entities;
+        std::vector<IEntity*> _entities;
 };
 
 class ASystem : public ISystem {
     public:
         void update() override = 0;
-        void addEntity(std::unique_ptr<IEntity> entity) {
-            _entities.push_back(std::move(entity));
+        void addEntity(IEntity* entity) {
+            _entities.push_back(entity);
         }
         void removeEntity(IEntity* entity) {
             for (auto it = _entities.begin(); it != _entities.end(); it++) {
-                if (it->get() == entity) {
+                if (*it == entity) {
                     _entities.erase(it);
                     return;
                 }
@@ -79,13 +79,12 @@ class S_Renderer : public ASystem {
 
         void render()
         {
+
             BeginDrawing();
                 ClearBackground(RAYWHITE);
-                BeginMode2D(_camera);
-                    for (auto& entity : _entities) {
-                        entity->render();
-                    }
-                EndMode2D();
+                for (auto& entity : _entities) {
+                    entity->render();
+                }
             EndDrawing();
         }
 

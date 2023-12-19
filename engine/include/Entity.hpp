@@ -20,6 +20,7 @@ class IEntity {
         virtual void addComponent(std::unique_ptr<Component> component) = 0;
         virtual void removeComponent(Component* component) = 0;
         virtual std::vector<std::unique_ptr<Component>>& getComponents() = 0;
+        virtual Component* getComponentOfType(const std::type_info& ti) = 0;
 };
 
 class AbstractEntity : public IEntity {
@@ -40,6 +41,14 @@ class AbstractEntity : public IEntity {
         std::vector<std::unique_ptr<Component>>& getComponents() override {
             return components;
         }
+        Component* getComponentOfType(const std::type_info& ti) override {
+            for (auto& component : components) {
+                if (typeid(*component) == ti) {
+                    return component.get();
+                }
+            }
+            return nullptr;
+        }
     private:
         std::vector<std::unique_ptr<Component>> components;
 };
@@ -50,20 +59,21 @@ class E_Player : public AbstractEntity {
             C_Transform transform;
             C_Health health;
             C_Sprite sprite;
+            C_Hitbox hitbox;
+            hitbox._size = {50, 50};
             addComponent(std::make_unique<C_Transform>(transform));
             addComponent(std::make_unique<C_Health>(health));
             addComponent(std::make_unique<C_Sprite>(sprite));
+            addComponent(std::make_unique<C_Hitbox>(hitbox));
         }
         void update() override {
             auto& transform = getComponents()[0];
             auto& health = getComponents()[1];
-            std::cout << "Player position: " << dynamic_cast<C_Transform*>(transform.get())->_position.x << std::endl;
-            std::cout << "Player health: " << dynamic_cast<C_Health*>(health.get())->_health << std::endl;
         }
         void render() override {
             int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
             int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int squareSize = 50; // Replace with the size you want for the square
+            int squareSize = 50;
             DrawRectangle(xPos, yPos, squareSize, squareSize, BLUE);
         }
 };
@@ -74,19 +84,23 @@ class E_Enemy : public AbstractEntity {
             C_Transform transform;
             C_Health health;
             C_Sprite sprite;
+            C_Hitbox hitbox;
+            hitbox._size = {50, 50};
             sprite._sprite = LoadTexture(path.c_str());
             addComponent(std::make_unique<C_Transform>(transform));
             addComponent(std::make_unique<C_Health>(health));
             addComponent(std::make_unique<C_Sprite>(sprite));
+            addComponent(std::make_unique<C_Hitbox>(hitbox));
         }
         void update() override {
             auto& transform = getComponents()[0];
             auto& health = getComponents()[1];
         }
         void render() override {
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int squareSize = 50; // Replace with the size you want for the square
+            auto& transform = getComponents()[0];
+            int xPos = dynamic_cast<C_Transform*>(transform.get())->_position.x;
+            int yPos = dynamic_cast<C_Transform*>(transform.get())->_position.y;
+            int squareSize = 50;
             DrawRectangle(xPos, yPos, squareSize, squareSize, RED);
         }
 };

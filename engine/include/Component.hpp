@@ -39,3 +39,7 @@ struct C_Sprite : public Component {
     std::string _name;
     Texture2D _sprite = LoadTexture("assets/placeholder.png");
 };
+
+struct C_Hitbox : public Component {
+    Vec2 _size = {0, 0};
+};
