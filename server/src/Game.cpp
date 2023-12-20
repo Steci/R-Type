@@ -158,3 +158,4 @@ std::vector<std::string> server::Game::getFunctionsClient()
     _mutex_client.unlock();
     return functions;
 }
+

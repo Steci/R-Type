@@ -19,3 +19,4 @@ COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:HelloWorld> ${CMAKE_SOURCE_DIR}
 
 # add_subdirectory(engine)
 add_subdirectory(server)
+add_subdirectory(client)
