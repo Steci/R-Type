@@ -7,9 +7,8 @@
 
 #include "Network.hpp"
 
-client::Network::Network(std::string serverIP, int port): _serverIP(serverIP), _port(port)
+client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort)
 {
-    std::cout << "Client port: " << _port << std::endl;
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
         throw std::invalid_argument("Error: Network creation failed");
 }
@@ -56,17 +55,23 @@ int client::Network::fillSocket()
     return 0;
 }
 
+int client::Network::getRandomPort() {
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    return std::rand() % 65536;
+}
+
 int client::Network::fillAddr()
 {
     std::memset(&_addr, 0, sizeof(_addr));
     std::memset(&_serverAddr, 0, sizeof(_serverAddr));
     _addr.sin_family = AF_INET;
-    _addr.sin_port = htons(_port);
     _addr.sin_addr.s_addr = INADDR_ANY;
+    _addr.sin_port = htons(getRandomPort());
     _serverAddr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
-    _serverAddr.sin_port = htons(9001);
+    _serverAddr.sin_port = htons(_serverPort);
     std::cout << "Server IP: " << inet_ntoa(_serverAddr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_serverAddr.sin_port) << std::endl;
+    std::cout << "CLIENT port: " << ntohs(_addr.sin_port) << std::endl;
     return 0;
 }
 

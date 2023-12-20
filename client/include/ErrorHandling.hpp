@@ -17,7 +17,7 @@ class ErrorHandling {
         ~ErrorHandling() {};
         std::vector<std::string> errorHandling(int argc, char **argv);
     private:
-        int checkPort(char *port);
-        int checkIp(char *ip);
+        int checkPort(char *serverPort);
+        int checkIP(char *serverIP);
         void help();
 };

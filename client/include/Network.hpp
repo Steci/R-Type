@@ -33,17 +33,19 @@
 #include <netdb.h>
 #include <chrono>
 #include <thread>
+#include <cstdlib>
+#include <ctime>
 
 namespace client {
     class Network {
         public:
-            Network(std::string serverIP, int port);
+            Network(std::string serverIP, int serverPort);
             ~Network();
             void run();
             int connect();
         private:
             std::string _serverIP;
-            int _port;
+            int _serverPort;
             bool _isRunning = true;
             int _fd;
             #ifdef linux
@@ -59,6 +61,7 @@ namespace client {
             int fillSocket();
             int fillAddr();
             int bindSocket();
+            int getRandomPort();
     };
 
 }
