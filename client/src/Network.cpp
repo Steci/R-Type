@@ -126,27 +126,43 @@ int client::Network::connectCommand()
     return 84;
 }
 
-void client::Network::run()
+int client::Network::disconnectCommand()
 {
-    int server;
-    char buffer[1024];
+    int bytesSent = sendto(_fd, "disconnect", 11, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
 
-    //while(_isRunning) {
-    //    buffer[0] = '\0';
-    //    server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-    //    if (server == -1) {
-    //        std::cerr << "Error: recvfrom failed" << std::endl;
-    //        return;
-    //    }
-    //    buffer[client - 1] = '\0';
-    //}
+    if (bytesSent == -1)
+        return 84;
+    return 0;
 }
 
-int client::Network::bindSocket()
+int client::Network::inputCommand(std::string input)
 {
-    if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
-        std::cerr << "Error: socket binding failed" << std::endl;
-        return(84);
+    int bytesSent = 0;
+
+    input = "input " + input;
+    bytesSent = sendto(_fd, input.c_str(), input.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+    if (bytesSent == -1)
+        return 84;
+    return 0;
+}
+
+int client::Network::pingCommand()
+{
+    char buffer[1024];
+    int bytesReturn = sendto(_fd, "ping", 5, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+
+    if (bytesReturn == -1)
+        return 84;
+    bytesReturn = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+    // TODO: Check if it's really the ping response from the server.
+    if (bytesReturn == -1) {
+        return 84;
     }
     return 0;
+}
+
+int client::Network::handleCommands(const char *serverMessage)
+{
+    // TODO: Add all function they are supposed to receive: kill, kick, set_tickrate, update, and error.
+    return (0);
 }

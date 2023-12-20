@@ -62,6 +62,13 @@ namespace client {
             int fillAddr();
             int bindSocket();
             int getRandomPort();
+
+            // Commands Send to the server
+            int disconnectCommand();
+            int pingCommand();
+            int inputCommand(std::string input);
+
+            int handleCommands(const char *serverMessage);
     };
 
 }
