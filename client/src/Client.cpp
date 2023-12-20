@@ -9,7 +9,7 @@
 
 int client::Client::run()
 {
-    if (_network.connect() == 0) {
+    if (_network.connectCommand() == 0) {
         _network.run();
     } else {
         return 84;
@@ -19,7 +19,7 @@ int client::Client::run()
 
 int client::Client::validatePort(int port) {
     if (port <= 0 || port > 65535) {
-        return 8080;
+        return 9001;
     }
     return port;
 }
