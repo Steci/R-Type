@@ -85,8 +85,6 @@ class SystemManager {
         std::vector<ISystem*> _systems; /**< The collection of systems managed by the SystemManager. */
 };
 
-// TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
-
 class S_Renderer : public ASystem {
     public:
         S_Renderer(int w, int h, int fps, std::string wName);
