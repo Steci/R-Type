@@ -125,6 +125,9 @@ void server::Game::run()
                     }
                 }
             }
+            _mutex_client.lock();
+            _functions_client.push_back("POS " + std::to_string(Engine::getComponentRef<C_Transform>(*players[0].first)->_position.x) + " " + std::to_string(Engine::getComponentRef<C_Transform>(*players[0].first)->_position.y) + " " + clientID);
+            _mutex_client.unlock();
         }
         _functions.clear();
         manager.update();
@@ -140,4 +143,13 @@ void server::Game::addFunction(std::string function)
     _mutex.lock();
     _functions_server.push_back(function);
     _mutex.unlock();
+}
+
+std::vector<std::string> server::Game::getFunctionsClient()
+{
+    _mutex_client.lock();
+    std::vector<std::string> functions = _functions_client;
+    _functions_client.clear();
+    _mutex_client.unlock();
+    return functions;
 }

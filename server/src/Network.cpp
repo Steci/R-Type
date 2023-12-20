@@ -74,6 +74,7 @@ void server::Network::run()
     Game game;
     int id;
     std::string message;
+    std::vector<std::string> functions_clients;
 
     std::thread gameThread = std::thread(&Game::run, &game);
 
@@ -81,10 +82,9 @@ void server::Network::run()
     while(_isRunning) {
         buffer[0] = '\0';
         // std::cout << "wait for client" << std::endl;
-        client = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        client = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         if (client == -1) {
-            std::cerr << "Error: recvfrom failed" << std::endl;
-            return;
+            continue;
         }
         buffer[client - 1] = '\0';
         id = handleClient(buffer);
@@ -92,6 +92,13 @@ void server::Network::run()
             message = handleClientMessage(buffer, id);
                 game.addFunction(message);
             std::cout << "Client message: " << buffer << std::endl;
+        }
+        functions_clients = game.getFunctionsClient();
+        for (auto function : functions_clients) {
+            for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                struct sockaddr_in cli = client->getAddr();
+                sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+            }
         }
     }
 }
