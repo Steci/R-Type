@@ -99,12 +99,10 @@ class E_Player : public AbstractEntity {
         E_Player() {
             C_Transform transform;
             C_Health health;
-            C_Sprite sprite;
             C_Hitbox hitbox;
             hitbox._size = {50, 50};
             addComponent(std::make_unique<C_Transform>(transform));
             addComponent(std::make_unique<C_Health>(health));
-            addComponent(std::make_unique<C_Sprite>(sprite));
             addComponent(std::make_unique<C_Hitbox>(hitbox));
         }
         void update() override {

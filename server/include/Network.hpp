@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "Game.hpp"
+
 #ifdef linux
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -75,12 +77,15 @@ namespace server {
             #endif
             int _tickrate;
             std::vector<Client> _clients;
+            Game _game;
+            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG"};
 
             int fillSocket();
             int fillAddr();
             int bindSocket();
             int handleNewConnection();
-            int handleClient();
+            int handleClient(std::string message);
+            std::string handleClientMessage(std::string message, int client_id);
 
             // Commands
             int commandKill();

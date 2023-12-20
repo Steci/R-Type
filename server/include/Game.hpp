@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include "../../engine/include/Engine.hpp"
 #include <iostream>
 #include <thread>
-#include "../../engine/include/Engine.hpp"
+#include <mutex>
+#include <map>
 
 #define TICK_SPEED 15
 
@@ -21,9 +23,20 @@ namespace server
             Game();
             ~Game();
             void run();
+            void addFunction(std::string function);
+            std::vector<std::string> getFunctions() {return _functions;}
+            std::pair<std::string, std::string> parseCommand(const std::string& input);
+            std::vector<std::string> getFunctionsClient();
 
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
+            std::mutex _mutex;
+            std::vector<std::string> _functions_server;
+            // std::map<int, Key> m{{KEY_A, Key}, {KEY_RIGHT, Key}, {KEY_LEFT, Key}, {KEY_DOWN, Key}, {KEY_ESCAPE, Key}};
+            typedef void (*Key)(int button);
+            std::vector<std::string> _functions;
+            std::vector<std::string> _functions_client;
+            std::mutex _mutex_client;
     };
 }

@@ -8,7 +8,6 @@
 #pragma once
 
 #include "Network.hpp"
-#include "Game.hpp"
 #include <iostream>
 #include <thread>
 
@@ -21,7 +20,6 @@ namespace server {
 
         private:
             Network _network;
-            Game _game;
 
             std::thread _gameThread;
             std::thread _checkClientsThread;

@@ -71,19 +71,48 @@ void server::Network::run()
 {
     int client;
     char buffer[1024];
+    Game game;
+    int id;
+    std::string message;
+    std::vector<std::string> functions_clients;
 
+    std::thread gameThread = std::thread(&Game::run, &game);
+
+    // std::cout << "start loop" << std::endl;
     while(_isRunning) {
         buffer[0] = '\0';
-        client = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        // std::cout << "wait for client" << std::endl;
+        client = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         if (client == -1) {
-            std::cerr << "Error: recvfrom failed" << std::endl;
-            return;
+            continue;
         }
         buffer[client - 1] = '\0';
-        if (handleClient() != 84) {
-        std::cout << "Client message: " << buffer << std::endl;
+        id = handleClient(buffer);
+        if (id != 84) {
+            message = handleClientMessage(buffer, id);
+            if (std::strcmp(message.c_str(), buffer) != 0)
+                game.addFunction(message);
+            std::cout << "Client message: " << buffer << std::endl;
+        }
+        functions_clients = game.getFunctionsClient();
+        for (auto function : functions_clients) {
+            for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                struct sockaddr_in cli = client->getAddr();
+                sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+            }
         }
     }
+}
+
+std::string server::Network::handleClientMessage(std::string message, int client_id)
+{
+    for (auto command : _commands)
+        if (message == command) {
+            message = message + " " + std::to_string(client_id);
+            return message;
+        }
+    std::cout << "Wrong command" << std::endl;
+    return message;
 }
 
 int server::Network::bindSocket()
@@ -99,11 +128,11 @@ int server::Network::handleNewConnection()
 {
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
-            std::cout << "Client already connected" << std::endl;
-            return 0;
+            // std::cout << "Client already connected" << std::endl;
+            return client->getId();
         }
     }
-    _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
+    _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
     ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     if (bytesSent == -1)
@@ -112,7 +141,7 @@ int server::Network::handleNewConnection()
     return 0;
 }
 
-int server::Network::handleClient() {
+int server::Network::handleClient(std::string message) {
     std::vector<Client> disconnectedClients;
 
     if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
@@ -120,11 +149,10 @@ int server::Network::handleClient() {
         return 84;
     }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
-    std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
-    if (handleNewConnection() == 84)
-        return 84;
-    return 0; //set_tickrate
+    // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
+    return handleNewConnection();
 }
+
 
 int server::Network::commandKill()
 {
