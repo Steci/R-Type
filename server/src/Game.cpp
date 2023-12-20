@@ -43,9 +43,11 @@ bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerI
 void server::Game::run()
 {
     printf("Game started");
+
     SystemManager manager;
+    manager.addSystem<S_Renderer>(800, 600, 60, "debug");
     std::vector<std::pair<IEntity *, int>> players;
-    // printf("start loop");
+
     while (true) {
         _mutex.lock();
         if (_functions_server.size() > 0) {
@@ -55,7 +57,6 @@ void server::Game::run()
         _mutex.unlock();
 
         for (auto& function : _functions) {
-            // printf("Current function : %s\n", function.c_str());
             auto [command, clientID] = parseCommand(function);
             printf("\nCommand : %s\n", command.c_str());
             printf("\nClient ID : %s\n", clientID.c_str());
@@ -73,6 +74,16 @@ void server::Game::run()
                 Engine::setTransformPos(*player, {50, (float)atoi(clientID.c_str()) * 100});
                 // add entity to entities
                 players.push_back({player, atoi(clientID.c_str())});
+                manager.getSystem<S_Renderer>()->addEntity(player);
+            }
+            if (command == "QUIT") {
+                for (auto& player : players) {
+                    if (player.second == atoi(clientID.c_str())) {
+                        manager.getSystem<S_Renderer>()->removeEntity(player.first);
+                        players.erase(std::remove(players.begin(), players.end(), player), players.end());
+                        break;
+                    }
+                }
             }
             if (command == "DEBUG")
             {
@@ -83,33 +94,27 @@ void server::Game::run()
             }
             if (command == "UP") {
                 printf("up");
-                // get the transform of the player with the clientID
                 for (auto& player : players) {
                     if (player.second == atoi(clientID.c_str())) {
                         C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
-                        // move the player
                         transform->_position.y -= 10;
                     }
                 }
             }
             if (command == "DOWN") {
                 printf("down");
-                // get the transform of the player with the clientID
                 for (auto& player : players) {
                     if (player.second == atoi(clientID.c_str())) {
                         C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
-                        // move the player
                         transform->_position.y += 10;
                     }
                 }
             }
             if (command == "LEFT") {
                 printf("left");
-                // get the transform of the player with the clientID
                 for (auto& player : players) {
                     if (player.second == atoi(clientID.c_str())) {
                         C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
-                        // move the player
                         transform->_position.x -= 10;
                     }
                 }
