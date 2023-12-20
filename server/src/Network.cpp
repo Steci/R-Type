@@ -105,7 +105,9 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
-    sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
+    ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
+    if (bytesSent == -1)
+        return 84;
     std::cout << "New client connected" << std::endl;
     return 0;
 }

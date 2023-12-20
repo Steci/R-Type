@@ -9,7 +9,7 @@
 
 int client::Client::run()
 {
-    if (_network.connect() == 0) {
+    if (_network.connectCommand() == 0) {
         _network.run();
     } else {
         return 84;

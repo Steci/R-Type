@@ -75,17 +75,49 @@ int client::Network::fillAddr()
     return 0;
 }
 
-int client::Network::connect()
+void client::Network::run()
+{
+    int server = 0;
+    char buffer[1024];
+    std::string serverMessage;
+
+    while(_isRunning) {
+        std::memset(&buffer, 0, sizeof(buffer));
+        server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        if (server == -1) {
+            std::cerr << "Error: recvfrom failed" << std::endl;
+            return;
+        } else {
+            buffer[server - 1] = '\0';
+            if (handleCommands(buffer) == 84)
+                std::cerr << "Unknow Command From Server..." << std::endl;
+        }
+    }
+}
+
+int client::Network::bindSocket()
+{
+    if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+        std::cerr << "Error: socket binding failed" << std::endl;
+        return(84);
+    }
+    return 0;
+}
+
+int client::Network::connectCommand()
 {
     int server;
     char buffer[1024];
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
+    std::string connectionMessage = "connect " + _serverIP + " " + std::to_string(_serverPort);
 
-    sendto(_fd, "New Client Connexion.", 22, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+    sendto(_fd, connectionMessage.c_str(), connectionMessage.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
+        std::memset(&buffer, 0, sizeof(buffer));
         server = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
+            std::cout << "Successfully connected with the server." << std::endl;
             return 0;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

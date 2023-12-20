@@ -42,7 +42,7 @@ namespace client {
             Network(std::string serverIP, int serverPort);
             ~Network();
             void run();
-            int connect();
+            int connectCommand();
         private:
             std::string _serverIP;
             int _serverPort;
