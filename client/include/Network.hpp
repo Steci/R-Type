@@ -32,6 +32,7 @@
 #include <cstring>
 #include <netdb.h>
 #include <chrono>
+#include <thread>
 
 namespace client {
     class Network {

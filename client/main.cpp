@@ -17,7 +17,6 @@ int main(int argc, char **argv)
     if (error[0] == "84")
         return (84);
     try {
-        std::cout << error[1] << " " << error[2] << std::endl;
         client::Client client(error[1], std::atoi(error[2].c_str()));
         return client.run();
     } catch (std::invalid_argument &e) {

@@ -74,14 +74,19 @@ int client::Network::connect()
 {
     int server;
     char buffer[1024];
+    auto startTime = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::seconds(5);
 
     sendto(_fd, "New Client Connexion.", 22, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-    server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-    if (server == -1) {
-        std::cerr << "Error: recvfrom failed" << std::endl;
-        return 84;
+    while (std::chrono::high_resolution_clock::now() - startTime < duration) {
+        server = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        if (server != -1) {
+            return 0;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    return 0;
+    std::cerr << "Error: Connection timeout" << std::endl;
+    return 84;
 }
 
 void client::Network::run()
