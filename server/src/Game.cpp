@@ -5,6 +5,8 @@
 ** Game.cpp
 */
 
+#include <sstream>
+#include <algorithm>
 #include "Game.hpp"
 
 server::Game::Game()
@@ -16,35 +18,119 @@ server::Game::~Game()
 {
 }
 
+std::pair<std::string, std::string> server::Game::parseCommand(const std::string& input) {
+    std::istringstream iss(input);
+    std::string command;
+    std::string clientID;
+
+    std::getline(iss, command, ' ');
+    std::getline(iss, clientID, ' ');
+
+    return {command, clientID};
+}
+
+bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerIndex)
+{
+    for (auto pair : playerList) {
+        if (pair.second == playerIndex)
+            return true;
+    }
+    return false;
+}
+
 void server::Game::run()
 {
-    std::cout << "Game started" << std::endl;
+    printf("Game started");
     SystemManager manager;
-    SparseArray<IEntity> entities;
-
-    // std::cout << "start loop" << std::endl;
+    manager.addSystem<S_Renderer>(800, 600, 60, "debug");
+    std::vector<std::pair<IEntity *, int>> players;
+    // printf("start loop");
     while (true) {
-        // std::cout << "lock mutex" << std::endl;
         _mutex.lock();
-        // std::cout << "check if queue is not empty" << std::endl;
         if (_functions_server.size() > 0) {
-            // std::cout << "discharge queue" << std::endl;
             _functions = _functions_server;
             _functions_server.clear();
         }
-        // std::cout << "unlock mutex" << std::endl;
         _mutex.unlock();
-        // std::cout << "loop functions" << std::endl;
+
         for (auto& function : _functions) {
-            std::cout << "function = " << function << std::endl;
+            // printf("Current function : %s\n", function.c_str());
+            auto [command, clientID] = parseCommand(function);
+            printf("\nCommand : %s\n", command.c_str());
+            printf("\nClient ID : %s\n", clientID.c_str());
+            if (command == "CONNECT") {
+                printf("connection");
+                if (players.size() >= 4)
+                    continue;
+                if (findPlayerID(players, atoi(clientID.c_str())))
+                {
+                    printf("player already connected");
+                    continue;
+                }
+                // create entity
+                IEntity *player = new E_Player();
+                Engine::setTransformPos(*player, {50, (float)atoi(clientID.c_str()) * 100});
+                // add entity to entities
+                players.push_back({player, atoi(clientID.c_str())});
+                manager.getSystem<S_Renderer>()->addEntity(player);
+            }
+            if (command == "DEBUG")
+            {
+                for (auto& player : players) {
+                    printf("Player ID : %d\n", player.second);
+                    printf("Player Position : %f, %f\n", Engine::getComponentRef<C_Transform>(*player.first)->_position.x, Engine::getComponentRef<C_Transform>(*player.first)->_position.y);
+                }
+            }
+            if (command == "UP") {
+                printf("up");
+                // get the transform of the player with the clientID
+                for (auto& player : players) {
+                    if (player.second == atoi(clientID.c_str())) {
+                        C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
+                        // move the player
+                        transform->_position.y -= 10;
+                    }
+                }
+            }
+            if (command == "DOWN") {
+                printf("down");
+                // get the transform of the player with the clientID
+                for (auto& player : players) {
+                    if (player.second == atoi(clientID.c_str())) {
+                        C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
+                        // move the player
+                        transform->_position.y += 10;
+                    }
+                }
+            }
+            if (command == "LEFT") {
+                printf("left");
+                // get the transform of the player with the clientID
+                for (auto& player : players) {
+                    if (player.second == atoi(clientID.c_str())) {
+                        C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
+                        // move the player
+                        transform->_position.x -= 10;
+                    }
+                }
+            }
+            if (command == "RIGHT") {
+                printf("right");
+                // get the transform of the player with the clientID
+                for (auto& player : players) {
+                    if (player.second == atoi(clientID.c_str())) {
+                        C_Transform *transform = Engine::getComponentRef<C_Transform>(*player.first);
+                        // move the player
+                        transform->_position.x += 10;
+                    }
+                }
+            }
         }
-        // std::cout << "clear functions" << std::endl;
         _functions.clear();
-        // std::cout << "update manager" << std::endl;
         manager.update();
-        // std::cout << "tick++" << std::endl;
+        // printf("tick++");
         _tick++;
-        // std::cout << "tick = " << _tick << std::endl;
+        // printf("tick = " << _tick);
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
 }

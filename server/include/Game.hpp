@@ -25,6 +25,7 @@ namespace server
             void run();
             void addFunction(std::string function);
             std::vector<std::string> getFunctions() {return _functions;}
+            std::pair<std::string, std::string> parseCommand(const std::string& input);
 
         private:
             int _tickSpeed = TICK_SPEED;

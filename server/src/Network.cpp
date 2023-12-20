@@ -90,7 +90,6 @@ void server::Network::run()
         id = handleClient(buffer);
         if (id != 84) {
             message = handleClientMessage(buffer, id);
-            if (std::strcmp(message.c_str(), buffer) != 0)
                 game.addFunction(message);
             std::cout << "Client message: " << buffer << std::endl;
         }
@@ -121,11 +120,11 @@ int server::Network::handleNewConnection()
 {
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
-            std::cout << "Client already connected" << std::endl;
+            // std::cout << "Client already connected" << std::endl;
             return client->getId();
         }
     }
-    _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
+    _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
     sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     std::cout << "New client connected" << std::endl;
@@ -140,7 +139,7 @@ int server::Network::handleClient(std::string message) {
         return 84;
     }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
-    std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
+    // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
     return handleNewConnection();
 }
 
