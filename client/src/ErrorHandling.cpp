@@ -30,32 +30,32 @@ std::vector<std::string> ErrorHandling::errorHandling(int argc, char **argv)
             if (i + 1 < argc) {
                 if (checkIp(argv[i + 1]) == 84) {
                     std::cerr << "Invalid IP" << std::endl;
-                    return {"84", port, ipServer};
+                    return {"84", ipServer, port};
                 }
                 ipServer = argv[i + 1];
                 ++i;
             } else {
                 std::cerr << "Invalid IP" << std::endl;
-                return {"84", port, ipServer};
+                return {"84", ipServer, port};
             }
         } else if (std::strcmp(argv[i], "-p") == 0 || std::strcmp(argv[i], "--port") == 0) {
             if (i + 1 < argc) {
                 if (checkPort(argv[i + 1]) == 84) {
                     std::cerr << "Invalid port" << std::endl;
-                    return {"84", port, ipServer};
+                    return {"84", ipServer, port};
                 }
                 port = argv[i + 1];
                 ++i;
             } else {
                 std::cerr << "Invalid port" << std::endl;
-                return {"84", port, ipServer};
+                return {"84", ipServer, port};
             }
         } else {
             std::cerr << "Invalid argument" << std::endl;
-            return {"84", port, ipServer};
+            return {"84", ipServer, port};
         }
     }
-    return {"0", port, ipServer};
+    return {"0", ipServer, port};
 }
 
 int ErrorHandling::checkPort(char *port)
