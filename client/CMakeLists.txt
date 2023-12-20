@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(client)
-
-set(CMAKE_BUILD_TYPE Release)
-
-set(CMAKE_CXX_STANDARD 20)
-set(GRAPHICS GRAPHICS_API_OPENGL_43)
-set(OpenGL_GL_PREFERENCE GLVND)
-
-include(../cmake/Findraylib.cmake)
+project(client_build)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wall -Wextra -g3)
@@ -19,9 +11,28 @@ if (WIN32)
     #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
 endif(WIN32)
 
-#ADD_LIBRARY(MyStaticLib STATIC
-add_executable(${PROJECT_NAME} src/main.cpp)
+# ADD_LIBRARY(MyStaticLib STATIC)
 
-include_directories(includes)
+set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT} CACHE STRING "Vcpkg toolchain file")
 
-target_link_libraries(${PROJECT_NAME} raylib)
+set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
+
+# find_package(sys REQUIRED)
+
+# find_package(netinet REQUIRED)
+
+file(GLOB SOURCES "main.cpp" "src/*.cpp")
+add_executable(client_build ${SOURCES})
+
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/include")
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
+target_link_libraries(client_build pthread)
+target_link_libraries(client_build raylib)
+
+add_custom_command(TARGET client_build POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
+)
