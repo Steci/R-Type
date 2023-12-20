@@ -61,6 +61,7 @@ namespace client {
             int fillSocket();
             int fillAddr();
             int bindSocket();
+            int getRandomPort();
     };
 
 }

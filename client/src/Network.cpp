@@ -55,7 +55,7 @@ int client::Network::fillSocket()
     return 0;
 }
 
-int getRandomPort() {
+int client::Network::getRandomPort() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     return std::rand() % 65536;
 }
