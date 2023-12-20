@@ -19,7 +19,7 @@ int client::Client::run()
 
 int client::Client::validatePort(int port) {
     if (port <= 0 || port > 65535) {
-        return 8080;
+        return 9001;
     }
     return port;
 }
