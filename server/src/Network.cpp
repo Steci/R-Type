@@ -90,6 +90,7 @@ void server::Network::run()
         id = handleClient(buffer);
         if (id != 84) {
             message = handleClientMessage(buffer, id);
+            if (std::strcmp(message.c_str(), buffer) != 0)
                 game.addFunction(message);
             std::cout << "Client message: " << buffer << std::endl;
         }

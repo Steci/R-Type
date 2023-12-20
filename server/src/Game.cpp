@@ -31,6 +31,8 @@ std::pair<std::string, std::string> server::Game::parseCommand(const std::string
 
 bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerIndex)
 {
+    if (playerList.size() == 0)
+        return false;
     for (auto pair : playerList) {
         if (pair.second == playerIndex)
             return true;
@@ -42,7 +44,6 @@ void server::Game::run()
 {
     printf("Game started");
     SystemManager manager;
-    manager.addSystem<S_Renderer>(800, 600, 60, "debug");
     std::vector<std::pair<IEntity *, int>> players;
     // printf("start loop");
     while (true) {
@@ -59,7 +60,7 @@ void server::Game::run()
             printf("\nCommand : %s\n", command.c_str());
             printf("\nClient ID : %s\n", clientID.c_str());
             if (command == "CONNECT") {
-                printf("connection");
+                printf("connection\n");
                 if (players.size() >= 4)
                     continue;
                 if (findPlayerID(players, atoi(clientID.c_str())))
@@ -72,7 +73,6 @@ void server::Game::run()
                 Engine::setTransformPos(*player, {50, (float)atoi(clientID.c_str()) * 100});
                 // add entity to entities
                 players.push_back({player, atoi(clientID.c_str())});
-                manager.getSystem<S_Renderer>()->addEntity(player);
             }
             if (command == "DEBUG")
             {
