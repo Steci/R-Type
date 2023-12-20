@@ -72,6 +72,8 @@ void server::Network::run()
     int client;
     char buffer[1024];
     Game game;
+    int id;
+    std::string message;
 
     std::thread gameThread = std::thread(&Game::run, &game);
 
@@ -85,11 +87,26 @@ void server::Network::run()
             return;
         }
         buffer[client - 1] = '\0';
-        if (handleClient(buffer) != 84) {
+        id = handleClient(buffer);
+        if (id != 84) {
+            message = handleClientMessage(buffer, id);
+            if (message.c_str() == buffer)
+                break;
             game.addFunction(buffer);
             std::cout << "Client message: " << buffer << std::endl;
         }
     }
+}
+
+std::string server::Network::handleClientMessage(std::string message, int client_id)
+{
+    for (auto command : _commands)
+        if (message == command) {
+            message = message + " " + std::to_string(client_id);
+            return message;
+        }
+    std::cout << "Wrong command" << std::endl;
+    return message;
 }
 
 int server::Network::bindSocket()
@@ -118,7 +135,6 @@ int server::Network::handleNewConnection()
 
 int server::Network::handleClient(std::string message) {
     std::vector<Client> disconnectedClients;
-    int id;
 
     if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
         std::cerr << "Error: ip or port recuperation failed" << std::endl;
@@ -126,17 +142,9 @@ int server::Network::handleClient(std::string message) {
     }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
     std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
-    id = handleNewConnection();
-    if (id == 84)
-        return 84;
-    // handleClientMessage(message, id);
-    return 0; //set_tickrate
+    return handleNewConnection();
 }
 
-int server::Network::handleClientMessage(std::string message, int client_id)
-{
-    _game.addFunction(message);
-}
 
 int server::Network::commandKill()
 {

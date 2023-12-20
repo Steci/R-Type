@@ -78,13 +78,14 @@ namespace server {
             int _tickrate;
             std::vector<Client> _clients;
             Game _game;
+            std::vector<std::string> _commands = {"UP", "DOWN", "LEFT", "RIGHT"};
 
             int fillSocket();
             int fillAddr();
             int bindSocket();
             int handleNewConnection();
             int handleClient(std::string message);
-            int handleClientMessage(std::string message, int client_id);
+            std::string handleClientMessage(std::string message, int client_id);
 
             // Commands
             int commandKill();
