@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(server_build)
 
 
+
+
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wall -Wextra -g3)
 endif(CMAKE_COMPILER_IS_GNUCXX)
@@ -17,6 +19,11 @@ endif(WIN32)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT} CACHE STRING "Vcpkg toolchain file")
 
 set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
+
+
+include(cmake/Findraylib.cmake)
+# find_package(raylib REQUIRED)
+
 
 # find_package(sys REQUIRED)
 
