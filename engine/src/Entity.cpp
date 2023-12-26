@@ -5,7 +5,7 @@
 ** Entity.cpp
 */
 
-#include "../include/Engine.hpp"
+#include "Engine.hpp"
 
 namespace Engine {
 
@@ -79,11 +79,11 @@ namespace Engine {
         }
     }
 
-    void setSprite (IEntity& entity, Texture2D newSprite)
+    void setSprite(IEntity& entity, Texture2D newTexture)
     {
         C_Sprite* sprite = dynamic_cast<C_Sprite*>(entity.getComponentOfType(typeid(C_Sprite)));
         if (sprite) {
-            sprite->_sprite = newSprite;
+            sprite->_texture = newTexture;
         }
     }
 
