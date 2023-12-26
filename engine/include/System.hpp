@@ -140,4 +140,5 @@ class S_EventManager : public ASystem {
         S_EventManager() = default;
         ~S_EventManager() = default;
         int EventKeyPressed(std::list<int> keys);
+        void update() override;
 };

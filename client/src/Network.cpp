@@ -6,6 +6,8 @@
 */
 
 #include "Network.hpp"
+#include <map>
+#include "../../engine/include/Engine.hpp"
 
 client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort)
 {
@@ -80,10 +82,23 @@ void client::Network::run()
     int server = 0;
     char buffer[1024];
     std::string serverMessage;
+    std::map<int, std::string> commands = {{KEY_A, "A"}, {KEY_RIGHT, "RIGHT"}, {KEY_LEFT, "LEFT"}, {KEY_DOWN, "DOWN"}, {KEY_UP, "U"}, {KEY_ESCAPE, "ESCAPE"}};
+    std::list<int> keys = {KEY_A, KEY_RIGHT, KEY_LEFT, KEY_DOWN, KEY_UP, KEY_ESCAPE};
+    SystemManager systemManager;
+    int command;
+    std::string connectionMessage = "connect " + _serverIP + " " + std::to_string(_serverPort);
 
+
+    systemManager.addSystem<S_EventManager>();
+    // systemManager.getSystem<S_EventManager>()->EventKeyPressed(keys);
     while(_isRunning) {
+        command = systemManager.getSystem<S_EventManager>()->EventKeyPressed(keys);
+        if (command != -1) {
+            auto send = commands.find(command)->second;
+            sendto(_fd, (void*)send, connectionMessage.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        }
         std::memset(&buffer, 0, sizeof(buffer));
-        server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        server = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server == -1) {
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
