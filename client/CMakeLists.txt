@@ -11,17 +11,11 @@ if (WIN32)
     #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
 endif(WIN32)
 
-# ADD_LIBRARY(MyStaticLib STATIC)
-
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT} CACHE STRING "Vcpkg toolchain file")
-
 set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
 
-# find_package(sys REQUIRED)
+file(GLOB SOURCES "main.cpp" "src/*.cpp" "src/network/*.cpp")  # Mettez à jour cette ligne
 
-# find_package(netinet REQUIRED)
-
-file(GLOB SOURCES "main.cpp" "src/*.cpp")
 add_executable(client_build ${SOURCES})
 
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/include")
@@ -31,7 +25,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
 target_link_libraries(client_build pthread)
-target_link_libraries(client_build raylib)
 
 add_custom_command(TARGET client_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
