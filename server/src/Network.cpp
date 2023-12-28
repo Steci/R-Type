@@ -67,16 +67,13 @@ int server::Network::fillAddr()
     return 0;
 }
 
-void server::Network::run()
+void server::Network::run(Game *game)
 {
     int client;
     char buffer[1024];
-    Game game;
     int id;
     std::string message;
-    std::vector<std::string> functions_clients;
 
-    std::thread gameThread = std::thread(&Game::run, &game);
 
     // std::cout << "start loop" << std::endl;
     while(_isRunning) {
@@ -89,19 +86,31 @@ void server::Network::run()
         buffer[client - 1] = '\0';
         id = handleClient(buffer);
         if (id != 84) {
-            message = handleClientMessage(buffer, id);
-            if (std::strcmp(message.c_str(), buffer) != 0)
-                game.addFunction(message);
-            std::cout << "Client message: " << buffer << std::endl;
+            manageMessage(buffer, id, game);            
         }
-        functions_clients = game.getFunctionsClient();
-        for (auto function : functions_clients) {
-            for (auto client = _clients.begin(); client != _clients.end(); client++) {
-                struct sockaddr_in cli = client->getAddr();
-                sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-            }
+        updateClients(id, buffer, game);
+    }
+}
+
+void server::Network::updateClients(int client_id, std::string message, Game *game)
+{
+    std::vector<std::string> functions_clients;
+
+    functions_clients = (*game).getFunctionsClient();
+    for (auto function : functions_clients) {
+        for (auto client = _clients.begin(); client != _clients.end(); client++) {
+            struct sockaddr_in cli = client->getAddr();
+            sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         }
     }
+}
+
+void server::Network::manageMessage(std::string message, int client_id, Game *game)
+{
+    std::string messageParse = handleClientMessage(message, client_id);
+    if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
+        (*game).addFunction(messageParse);
+    std::cout << "Client message: " << message << std::endl;
 }
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
