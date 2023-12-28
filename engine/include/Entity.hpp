@@ -97,13 +97,9 @@ class AbstractEntity : public IEntity {
 class E_Player : public AbstractEntity {
     public:
         E_Player() {
-            C_Transform transform;
-            C_Health health;
-            C_Hitbox hitbox;
-            hitbox._size = {50, 50};
-            addComponent(std::make_unique<C_Transform>(transform));
-            addComponent(std::make_unique<C_Health>(health));
-            addComponent(std::make_unique<C_Hitbox>(hitbox));
+            addComponent(std::make_unique<C_Transform>(0, 0, 0, 0));
+            addComponent(std::make_unique<C_Health>(100));
+            addComponent(std::make_unique<C_Hitbox>(50, 50));
         }
         void update() override {
             auto& transform = getComponents()[0];
@@ -120,16 +116,10 @@ class E_Player : public AbstractEntity {
 class E_Enemy : public AbstractEntity {
     public:
         E_Enemy(std::string path) {
-            C_Transform transform;
-            C_Health health;
-            C_Sprite sprite;
-            C_Hitbox hitbox;
-            hitbox._size = {50, 50};
-            sprite._sprite = LoadTexture(path.c_str());
-            addComponent(std::make_unique<C_Transform>(transform));
-            addComponent(std::make_unique<C_Health>(health));
-            addComponent(std::make_unique<C_Sprite>(sprite));
-            addComponent(std::make_unique<C_Hitbox>(hitbox));
+            addComponent(std::make_unique<C_Transform>(0, 0, 0, 0));
+            addComponent(std::make_unique<C_Health>(100));
+            addComponent(std::make_unique<C_Sprite>(path));
+            addComponent(std::make_unique<C_Hitbox>(50, 50));
         }
         void update() override {
             auto& transform = getComponents()[0];
@@ -153,7 +143,7 @@ namespace Engine {
     void setTransformRot(IEntity& entity, Vec2 newTransform);
     void setHealth(IEntity& entity, int newHealth);
     void setSpriteName(IEntity& entity, std::string newSpriteName);
-    void setSprite(IEntity& entity, Texture2D newSprite);
+    void setSprite(IEntity& entity, Texture2D newTexture);
     void setHitbox(IEntity& entity, Vec2 newHitbox);
 
     template<typename T>

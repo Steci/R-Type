@@ -5,7 +5,7 @@
 ** System.cpp
 */
 
-#include "../include/System.hpp"
+#include "System.hpp"
 
 void SystemManager::update()
 {
