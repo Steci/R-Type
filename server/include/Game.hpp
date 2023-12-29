@@ -27,6 +27,7 @@ namespace server
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
+            std::vector<char> serialize();
 
         private:
             int _tickSpeed = TICK_SPEED;

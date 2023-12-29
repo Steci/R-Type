@@ -159,3 +159,10 @@ std::vector<std::string> server::Game::getFunctionsClient()
     return functions;
 }
 
+std::vector<char> server::Game::serialize()
+{
+    std::vector<char> data;
+    data.insert(data.end(), reinterpret_cast<const char *>(&_tickSpeed), reinterpret_cast<const char *>(&_tickSpeed + 1));
+    data.insert(data.end(), reinterpret_cast<const char *>(&_tick), reinterpret_cast<const char *>(&_tick + 1));
+    return data;
+}

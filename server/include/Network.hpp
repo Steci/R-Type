@@ -92,7 +92,7 @@ namespace server {
             // Commands
             int commandKill();
             int commandKick(int client_id, std::string message);
-            int commandSetTickrate() const;
+            int commandSetTickrate(std::vector<char> data) const;
             int commandPing(int client_id) const;
             int commandError(int client_id, std::string error) const;
     };

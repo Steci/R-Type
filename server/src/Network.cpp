@@ -86,7 +86,11 @@ void server::Network::run(Game *game)
         buffer[client - 1] = '\0';
         id = handleClient(buffer);
         if (id != 84) {
-            manageMessage(buffer, id, game);            
+            if  (std::strcmp(buffer, "TICKRATE") == 0) {
+                std::vector<char> data = game->serialize();
+                commandSetTickrate(data);
+            } else
+                manageMessage(buffer, id, game);            
         }
         updateClients(id, buffer, game);
     }
@@ -195,13 +199,11 @@ int server::Network::commandKick(int client_id, std::string message)
     // Return client not found
 }
 
-int server::Network::commandSetTickrate() const
+int server::Network::commandSetTickrate(std::vector<char> data) const
 {
-    std::string newTickrate = "New tickrate: " + std::to_string(0);
-
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, newTickrate.c_str(), newTickrate.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
     // TODO: Error handling if it didn't send
     return 0;
