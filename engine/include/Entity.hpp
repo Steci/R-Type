@@ -94,12 +94,15 @@ class AbstractEntity : public IEntity {
         std::vector<std::unique_ptr<Component>> components;
 };
 
+//33.2 => width
+//17.2 => height
 class E_Player : public AbstractEntity {
     public:
-        E_Player() {
-            addComponent(std::make_unique<C_Transform>(0, 0, 0, 0));
+        E_Player(std::string path, int position_x, int position_y, float size_x, float size_y) {
+            addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y));
             addComponent(std::make_unique<C_Health>(100));
-            addComponent(std::make_unique<C_Hitbox>(50, 50));
+            addComponent(std::make_unique<C_Sprite>(path));
+            addComponent(std::make_unique<C_Hitbox>(33, 17));
         }
         void update() override {
             auto& transform = getComponents()[0];
@@ -108,8 +111,14 @@ class E_Player : public AbstractEntity {
         void render() override {
             int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
             int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int squareSize = 50;
-            DrawRectangle(xPos, yPos, squareSize, squareSize, BLUE);
+            int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+            int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+            int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
+            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+            Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+            Vector2 origin = { 0.0f, 0.0f };
+            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
         }
 };
 

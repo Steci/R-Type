@@ -12,6 +12,7 @@
 #include <string>
 #include <iostream>
 #include <raylib.h>
+#include <list>
 
 #include "Utils.hpp"
 
@@ -35,10 +36,12 @@ struct Component {
  */
 struct C_Transform : public Component {
     Vec2 _position; /**< The position of the entity. */
-    Vec2 _rotation; /**< The rotation of the entity. */
-    C_Transform(int position_x, int position_y, int rotation_x, int rotation_y) {
+    Vec2 _size; /**< The rotation of the entity. */
+    int _animation;
+    C_Transform(int position_x, int position_y, float size_x, float size_y) {
         _position = {position_x, position_y};
-        _rotation = {rotation_x, rotation_y};
+        _size = {size_x, size_y};
+        _animation = 0;
     }
     ~C_Transform() = default;
 };

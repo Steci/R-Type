@@ -37,6 +37,17 @@ void server::Game::actionUpCommand(int clientID, SystemManager manager, SparseAr
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
             transform->_position.y -= 10;
+            if (transform->_animation == 3) {
+                transform->_animation = 4;
+            } else if (transform->_animation == 2) {
+                transform->_animation = 1;
+            } else if (transform->_animation == 1) {
+                transform->_animation = 0;
+            } else if (transform->_animation == 0) {
+                transform->_animation = 3;
+            } else {
+                transform->_animation = 4;
+            }
         }
     }
 }
@@ -53,6 +64,17 @@ void server::Game::actionDownCommand(int clientID, SystemManager manager, Sparse
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
             transform->_position.y += 10;
+            if (transform->_animation == 1) {
+                transform->_animation = 2;
+            } else if (transform->_animation == 4) {
+                transform->_animation = 3;
+            } else if (transform->_animation == 3) {
+                transform->_animation = 0;
+            } else if (transform->_animation == 0) {
+                transform->_animation = 1;
+            } else {
+                transform->_animation = 2;
+            }
         }
     }
 }
@@ -69,6 +91,13 @@ void server::Game::actionLeftCommand(int clientID, SystemManager manager, Sparse
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
             transform->_position.x -= 10;
+            if (transform->_animation == 2) {
+                transform->_animation = 1;
+            } else if (transform->_animation == 4) {
+                transform->_animation = 3;
+            } else {
+                transform->_animation = 0;
+            }
         }
     }
 }
@@ -85,6 +114,13 @@ void server::Game::actionRightCommand(int clientID, SystemManager manager, Spars
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
             transform->_position.x += 10;
+            if (transform->_animation == 2) {
+                transform->_animation = 1;
+            } else if (transform->_animation == 4) {
+                transform->_animation = 3;
+            } else {
+                transform->_animation = 0;
+            }
         }
     }
 }
@@ -137,16 +173,9 @@ void server::Game::actionConnectCommand(int clientID, SystemManager manager, Spa
         return;
     }
     // create entity
-    std::string tmp = "../assets/placeholder.png";
-    entities.add(clientID, std::make_unique<E_Player>());
-    printf("%d\n", clientID);
+    std::string path = "./assets/r-typesheet42.png";
+    entities.add(clientID, std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2));
     auto& playerEntity = entities.get(clientID);
-    if (typeid(playerEntity) == typeid(E_Player)) {
-        printf("VUIIIIII\n");
-    } else {
-        printf("NOOOOOOOOOOOO\n");
-    }
-    Engine::setTransformPos(playerEntity, {50, (float)clientID * 100});
     // add entity to entities
     manager.getSystem<S_Renderer>()->addEntity(&playerEntity);
 }

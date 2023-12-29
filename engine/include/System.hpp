@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Engine.hpp"
 
 /**
  * @brief The base interface for all systems in the engine.
@@ -30,18 +31,11 @@ class ISystem {
 
 class ASystem : public ISystem {
     public:
+        ASystem() = default;
+        ~ASystem() = default;
         void update() override = 0;
-        void addEntity(IEntity* entity) {
-            _entities.push_back(entity);
-        }
-        void removeEntity(IEntity* entity) {
-            for (auto it = _entities.begin(); it != _entities.end(); it++) {
-                if (*it == entity) {
-                    _entities.erase(it);
-                    return;
-                }
-            }
-        }
+        void addEntity(IEntity* entity);
+        void removeEntity(IEntity* entity);
 };
 
 /**
@@ -49,6 +43,11 @@ class ASystem : public ISystem {
  */
 class SystemManager {
     public:
+        /**
+        * @brief Destructor for the SystemManager class.
+        */
+        SystemManager() = default;
+        ~SystemManager() = default;
         /**
          * @brief Adds a new system to the collection.
          *
@@ -83,53 +82,18 @@ class SystemManager {
          * @brief Updates all systems in the collection.
          */
         void update();
-
-        /**
-         * @brief Destructor for the SystemManager class.
-         */
-        ~SystemManager() {
-        }
-
     private:
         std::vector<ISystem*> _systems; /**< The collection of systems managed by the SystemManager. */
 };
 
-// TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
-
 class S_Renderer : public ASystem {
     public:
-        S_Renderer(int w, int h, int fps, std::string wName) {
-            _screenWidth = w;
-            _screenHeight = h;
-            _targetFps = fps;
-            _windowName = wName;
-            InitWindow(_screenWidth, _screenHeight, _windowName.c_str());
-            SetTargetFPS(_targetFps);
-        };
+        S_Renderer(int w, int h, int fps, std::string wName);
+        ~S_Renderer() = default;
 
-        void render()
-        {
-
-            BeginDrawing();
-                ClearBackground(RAYWHITE);
-                for (auto& entity : _entities) {
-                    entity->render();
-                }
-            EndDrawing();
-        }
-
-        void update() override
-        {
-            if (IsKeyPressed(KEY_ESCAPE))
-                closeWindow();
-            if (!WindowShouldClose())
-                render();
-        }
-
-        void closeWindow()
-        {
-            CloseWindow();
-        }
+        void render();
+        void update() override;
+        void closeWindow();
 
     private:
         int _screenWidth;
@@ -141,36 +105,41 @@ class S_Renderer : public ASystem {
 };
 
 class S_Network : public ASystem {
+    public:
+        S_Network() = default;
+        ~S_Network() = default;
 };
 
 class S_AudioManager : public ASystem {
+    public:
+        S_AudioManager() = default;
+        ~S_AudioManager() = default;
 };
 
 class S_EnemyAI : public ASystem {
+    public:
+        S_EnemyAI() = default;
+        ~S_EnemyAI() = default;
 };
 
 class S_Collision : public ASystem {
     public:
-        void update() override
-        {
-
-        };
-
-        bool checkCollision(IEntity* entity1, IEntity* entity2)
-        {
-            C_Hitbox *hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
-            C_Hitbox *hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
-            C_Transform *transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-            C_Transform *transform2 = Engine::getComponentRef<C_Transform>(*entity2);
-
-            if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
-                transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
-                transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
-                transform1->_position.y + hitbox1->_size.y > transform2->_position.y)
-                return true;
-            return false;
-        };
+        S_Collision() = default;
+        ~S_Collision() = default;
+        void update() override;
+        bool checkCollision(IEntity* entity1, IEntity* entity2);
 };
 
 class S_Animation : public ASystem {
+    public:
+        S_Animation() = default;
+        ~S_Animation() = default;
+};
+
+class S_EventManager : public ASystem {
+    public:
+        S_EventManager() = default;
+        ~S_EventManager() = default;
+        int EventKeyPressed(std::list<int> keys);
+        void update() override;
 };

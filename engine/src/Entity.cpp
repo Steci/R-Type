@@ -59,7 +59,7 @@ namespace Engine {
     {
         C_Transform* transform = dynamic_cast<C_Transform*>(entity.getComponentOfType(typeid(C_Transform)));
         if (transform) {
-            transform->_rotation = newTransform;
+            transform->_position = newTransform;
         }
     };
 
@@ -79,11 +79,11 @@ namespace Engine {
         }
     }
 
-    void setSprite(IEntity& entity, Texture2D newTexture)
+    void setSprite (IEntity& entity, Texture2D newSprite)
     {
         C_Sprite* sprite = dynamic_cast<C_Sprite*>(entity.getComponentOfType(typeid(C_Sprite)));
         if (sprite) {
-            sprite->_texture = newTexture;
+            sprite->_texture = newSprite;
         }
     }
 

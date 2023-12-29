@@ -10,7 +10,7 @@
 #include <cassert>
 #include <memory>
 
-#include "System.hpp"
+#include "Entity.hpp"
 
 /**
  * @brief A sparse array data structure that maps IDs to elements.
@@ -39,18 +39,14 @@ class SparseArray {
         void add(int id, std::unique_ptr<T> element) {
             if (id >= sparse.size()) {
                 sparse.resize(id + 1, -1);
-                printf("1111111111\n");
             }
-
             if (sparse[id] == -1) {
                 sparse[id] = dense.size();
                 dense.push_back(std::move(element));
                 indices.push_back(id);
-                printf("2222222222\n");
             } else {
                 // Replace if already exists
                 dense[sparse[id]] = std::move(element);
-                printf("33333333333\n");
             }
         }
 

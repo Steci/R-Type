@@ -8,6 +8,7 @@
 #pragma once
 
 #include "../../engine/include/Engine.hpp"
+#include "../../engine/include/System.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
