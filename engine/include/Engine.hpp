@@ -99,8 +99,8 @@ class SparseArray {
             return id < sparse.size() && sparse[id] != -1;
         }
 
-        const std::vector<int>& getAllSparse() const {
-            return sparse;
+        const std::vector<int>& getAllIndices() const {
+            return indices;
         }
 
     private:

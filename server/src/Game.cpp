@@ -157,7 +157,7 @@ void server::Game::actionConnectCommand(int clientID, SystemManager manager, Spa
 {
     printf("connection\n");
     int nbrPlayer = 0;
-    const auto& sparseIds = entities.getAllSparse();
+    const auto& sparseIds = entities.getAllIndices();
     for (auto id : sparseIds) {
         if (id != -1) {
             auto& tmpEntity = entities.get(id);
@@ -209,6 +209,10 @@ void server::Game::run()
     SystemManager manager;
     manager.addSystem<S_Renderer>(800, 600, 60, "debug");
     SparseArray<IEntity> entities;
+    std::string path = "./assets/r-typesheet24.png";
+    entities.add(10, std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66));
+    auto& ennemyEntity = entities.get(10);
+    manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     int numClientID = 0;
 
     while (true) {
