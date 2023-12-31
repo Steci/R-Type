@@ -34,6 +34,8 @@ class IEntity {
          */
         virtual void render() = 0;
 
+        virtual void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) = 0;
+
         /**
          * @brief Adds a component to the entity.
          *
@@ -68,6 +70,8 @@ class AbstractEntity : public IEntity {
     public:
         void update() override = 0;
         void render() override = 0;
+        void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override = 0;
+
         void addComponent(std::unique_ptr<Component> component) override {
             components.push_back(std::move(component));
         }
@@ -94,12 +98,34 @@ class AbstractEntity : public IEntity {
         std::vector<std::unique_ptr<Component>> components;
 };
 
-//33.2 => width
-//17.2 => height
+class E_Bullet : public AbstractEntity {
+    public:
+        E_Bullet(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
+            addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
+            addComponent(std::make_unique<C_Sprite>(path));
+            addComponent(std::make_unique<C_Damage>(name, damage));
+        }
+        void update() override {}
+        void render() override {
+            auto* transform = dynamic_cast<C_Transform*>(getComponents()[0].get());
+            auto* spriteComponent = dynamic_cast<C_Sprite*>(getComponents()[1].get());
+            if (transform && spriteComponent) {
+                transform->_position.x += transform->_velocity.x;
+                transform->_position.y += transform->_velocity.y;
+                Texture2D sprite = spriteComponent->_texture;
+                Rectangle sourceRec = { 0.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
+                Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            }
+        }
+        void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override {}
+};
+
 class E_Player : public AbstractEntity {
     public:
         E_Player(std::string path, int position_x, int position_y, float size_x, float size_y) {
-            addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y));
+            addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
             addComponent(std::make_unique<C_Health>(100));
             addComponent(std::make_unique<C_Sprite>(path));
             addComponent(std::make_unique<C_Hitbox>(33, 17));
@@ -119,13 +145,22 @@ class E_Player : public AbstractEntity {
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            for (auto& bullet : _bullets) {
+                bullet->render();
+            }
         }
+        void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override {
+            auto newBullet = std::make_unique<E_Bullet>(path, name, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+            _bullets.push_back(std::move(newBullet));
+        }
+    private:
+        std::vector<std::unique_ptr<E_Bullet>> _bullets;
 };
 
 class E_Enemy : public AbstractEntity {
     public:
         E_Enemy(std::string path, int position_x, int position_y, float size_x, float size_y) {
-            addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y));
+            addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
             addComponent(std::make_unique<C_Health>(20));
             addComponent(std::make_unique<C_Sprite>(path));
             addComponent(std::make_unique<C_Hitbox>(65, 66));
@@ -145,7 +180,16 @@ class E_Enemy : public AbstractEntity {
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            for (auto& bullet : _bullets) {
+                bullet->render();
+            }
         }
+        void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override {
+            auto newBullet = std::make_unique<E_Bullet>(path, name, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+            _bullets.push_back(std::move(newBullet));
+        }
+    private:
+        std::vector<std::unique_ptr<E_Bullet>> _bullets;
 };
 
 namespace Engine {

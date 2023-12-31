@@ -37,11 +37,14 @@ struct Component {
 struct C_Transform : public Component {
     Vec2 _position; /**< The position of the entity. */
     Vec2 _size; /**< The rotation of the entity. */
+    Vec2 _velocity;
     int _animation;
-    C_Transform(int position_x, int position_y, float size_x, float size_y) {
+    C_Transform(int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
         _position = {position_x, position_y};
         _size = {size_x, size_y};
         _animation = 0;
+        _velocity.x = velocity_x;
+        _velocity.y = velocity_y;
     }
     ~C_Transform() = default;
 };

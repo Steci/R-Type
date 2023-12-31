@@ -19,6 +19,7 @@ server::Game::Game()
     _fonctions_map["DOWN"] = &server::Game::actionDownCommand;
     _fonctions_map["LEFT"] = &server::Game::actionLeftCommand;
     _fonctions_map["RIGHT"] = &server::Game::actionRightCommand;
+    _fonctions_map["SHOOT"] = &server::Game::actionShootCommand;
 }
 
 server::Game::~Game()
@@ -178,6 +179,20 @@ void server::Game::actionConnectCommand(int clientID, SystemManager manager, Spa
     auto& playerEntity = entities.get(clientID);
     // add entity to entities
     manager.getSystem<S_Renderer>()->addEntity(&playerEntity);
+}
+
+void server::Game::actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
+{
+    printf("shoot");
+    if (entities.exists(clientID) == false) {
+        printf("player not connected");
+        return;
+    }
+    auto& playerEntity = entities.get(clientID);
+    if (typeid(playerEntity) == typeid(E_Player)) {
+        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
+        playerEntity.newShoot("./assets/r-typesheet24.png", "missile", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
+    }
 }
 
 std::pair<std::string, std::string> server::Game::parseCommand(const std::string& input) {

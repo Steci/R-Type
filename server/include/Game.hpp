@@ -37,6 +37,7 @@ namespace server
             void actionDebugCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
 
         private:
             int _tickSpeed = TICK_SPEED;
