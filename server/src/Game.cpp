@@ -252,7 +252,7 @@ void server::Game::run()
     printf("Game started");
 
     SystemManager manager;
-    manager.addSystem<S_Renderer>(800, 600, 60, "debug");
+    manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
     entities.add(10, std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66));

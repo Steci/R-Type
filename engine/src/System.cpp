@@ -27,19 +27,23 @@ void SystemManager::update()
     }
 }
 
-S_Renderer::S_Renderer(int w, int h, int fps, std::string wName) {
+S_Renderer::S_Renderer(int w, int h, int fps, std::string wName, const std::string& imagePath) {
     _screenWidth = w;
     _screenHeight = h;
     _targetFps = fps;
     _windowName = wName;
     InitWindow(_screenWidth, _screenHeight, _windowName.c_str());
     SetTargetFPS(_targetFps);
+    _parallax = S_Parallax();
+    _parallax.initialize(imagePath, w, h);
 };
 
 void S_Renderer::render()
 {
     BeginDrawing();
         ClearBackground(RAYWHITE);
+        float maxScale = std::max(_parallax.getScaleFactor().x, _parallax.getScaleFactor().y);
+        DrawTextureEx(_parallax.getBackground(), (Vector2){ 0, 0 }, 0.0f, maxScale, WHITE);
         for (auto& entity : _entities) {
             entity->render();
         }
@@ -82,4 +86,28 @@ int S_EventManager::EventKeyPressed(std::list<int> keys)
         }
     }
     return -1;
+}
+
+void S_Parallax::initialize(const std::string& imagePath, int screenWidth, int screenHeight)
+{
+    _image = LoadImage(imagePath.c_str());
+    if (_image.data == nullptr) {
+        std::cerr << "Erreur de chargement de l'image : " << imagePath << std::endl;
+        return;
+    } else {
+        _background = LoadTextureFromImage(_image);
+    }
+    if (_background.id == 0) {
+        std::cerr << "Erreur de chargement de la texture de l'image." << std::endl;
+        return;
+    }
+    float scaleX = (float)screenWidth / ((float)_background.width);
+    float scaleY = (float)screenHeight / ((float)_background.height);
+    _scaleFactor = {scaleX, scaleY};
+}
+
+S_Parallax::~S_Parallax()
+{
+    UnloadTexture(_background);
+    UnloadImage(_image);
 }

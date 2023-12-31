@@ -86,9 +86,27 @@ class SystemManager {
         std::vector<ISystem*> _systems; /**< The collection of systems managed by the SystemManager. */
 };
 
+class S_Parallax : public ASystem {
+    public:
+        S_Parallax() = default;
+        ~S_Parallax();
+
+        void initialize(const std::string &imagePath, int screenWidth, int screenHeight);
+        Texture2D getBackground() const { return _background; }
+        Vec2 getScaleFactor() const { return _scaleFactor; }
+        Image getImage() const { return _image; }
+        void update() override {};
+
+    private:
+        Image _image;
+        Texture2D _background;
+        Vec2 _scaleFactor;
+};
+
 class S_Renderer : public ASystem {
     public:
-        S_Renderer(int w, int h, int fps, std::string wName);
+        S_Renderer() = default;
+        S_Renderer(int w, int h, int fps, std::string wName, const std::string& imagePath);
         ~S_Renderer() = default;
 
         void render();
@@ -100,6 +118,7 @@ class S_Renderer : public ASystem {
         int _screenHeight;
         int _targetFps;
         std::string _windowName;
+        S_Parallax _parallax;
 
         Camera2D _camera;
 };
