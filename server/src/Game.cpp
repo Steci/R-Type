@@ -20,6 +20,7 @@ server::Game::Game()
     _fonctions_map["LEFT"] = &server::Game::actionLeftCommand;
     _fonctions_map["RIGHT"] = &server::Game::actionRightCommand;
     _fonctions_map["SHOOT"] = &server::Game::actionShootCommand;
+    _fonctions_map["DAMAGE"] = &server::Game::actionDamageCommand;
 }
 
 server::Game::~Game()
@@ -37,17 +38,17 @@ void server::Game::actionUpCommand(int clientID, SystemManager manager, SparseAr
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
-            transform->_position.y -= 10;
+            Engine::setTransformPos(playerEntity, {transform->_position.x, transform->_position.y - 10});
             if (transform->_animation == 3) {
-                transform->_animation = 4;
+                Engine::setTransformAni(playerEntity, 4);
             } else if (transform->_animation == 2) {
-                transform->_animation = 1;
+                Engine::setTransformAni(playerEntity, 1);
             } else if (transform->_animation == 1) {
-                transform->_animation = 0;
+                Engine::setTransformAni(playerEntity, 0);
             } else if (transform->_animation == 0) {
-                transform->_animation = 3;
+                Engine::setTransformAni(playerEntity, 3);
             } else {
-                transform->_animation = 4;
+                Engine::setTransformAni(playerEntity, 4);
             }
         }
     }
@@ -64,17 +65,17 @@ void server::Game::actionDownCommand(int clientID, SystemManager manager, Sparse
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
-            transform->_position.y += 10;
+            Engine::setTransformPos(playerEntity, {transform->_position.x, transform->_position.y + 10});
             if (transform->_animation == 1) {
-                transform->_animation = 2;
+                Engine::setTransformAni(playerEntity, 2);
             } else if (transform->_animation == 4) {
-                transform->_animation = 3;
+                Engine::setTransformAni(playerEntity, 3);
             } else if (transform->_animation == 3) {
-                transform->_animation = 0;
+                Engine::setTransformAni(playerEntity, 0);
             } else if (transform->_animation == 0) {
-                transform->_animation = 1;
+                Engine::setTransformAni(playerEntity, 1);
             } else {
-                transform->_animation = 2;
+                Engine::setTransformAni(playerEntity, 2);
             }
         }
     }
@@ -91,13 +92,13 @@ void server::Game::actionLeftCommand(int clientID, SystemManager manager, Sparse
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
-            transform->_position.x -= 10;
+            Engine::setTransformPos(playerEntity, {transform->_position.x - 10, transform->_position.y});
             if (transform->_animation == 2) {
-                transform->_animation = 1;
+                Engine::setTransformAni(playerEntity, 1);
             } else if (transform->_animation == 4) {
-                transform->_animation = 3;
+                Engine::setTransformAni(playerEntity, 3);
             } else {
-                transform->_animation = 0;
+                Engine::setTransformAni(playerEntity, 0);
             }
         }
     }
@@ -114,13 +115,13 @@ void server::Game::actionRightCommand(int clientID, SystemManager manager, Spars
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         if (transform) {
-            transform->_position.x += 10;
+            Engine::setTransformPos(playerEntity, {transform->_position.x + 10, transform->_position.y});
             if (transform->_animation == 2) {
-                transform->_animation = 1;
+                Engine::setTransformAni(playerEntity, 1);
             } else if (transform->_animation == 4) {
-                transform->_animation = 3;
+                Engine::setTransformAni(playerEntity, 3);
             } else {
-                transform->_animation = 0;
+                Engine::setTransformAni(playerEntity, 0);
             }
         }
     }
@@ -192,6 +193,35 @@ void server::Game::actionShootCommand(int clientID, SystemManager manager, Spars
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         playerEntity.newShoot("./assets/r-typesheet24.png", "missile", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
+    }
+}
+
+void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
+{
+    printf("damage");
+    if (entities.exists(clientID) == false) {
+        printf("player not connected");
+        return;
+    }
+    auto& entity = entities.get(clientID);
+    C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(entity);
+    C_Health *health = Engine::getComponentRef<C_Health>(entity);
+    if (health->_health <= 0) {
+        Engine::setHitboxStatus(entity, 2);
+        std::string dead_path = "./assets/r-typesheet1.png";
+        Image newImage = LoadImage(dead_path.c_str());
+        if (newImage.data == nullptr) {
+            std::cerr << "Erreur de chargement de l'image : " << dead_path << std::endl;
+        }
+        Engine::setSpriteImage(entity, newImage);
+        Texture2D newTexture = LoadTextureFromImage(newImage);
+        Engine::setSpriteTexture(entity, newTexture);
+        C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
+        Engine::setTransformSize(entity, {33.25, 345});
+        Engine::setTransformAni(entity, 0);
+    } else {
+        Engine::setHealth(entity, health->_health - 10);
+        Engine::setHitboxStatus(entity, 1);
     }
 }
 

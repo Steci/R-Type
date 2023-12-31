@@ -38,6 +38,9 @@ namespace server
             void actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionDeadCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+
 
         private:
             int _tickSpeed = TICK_SPEED;

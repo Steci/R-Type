@@ -135,18 +135,62 @@ class E_Player : public AbstractEntity {
             auto& health = getComponents()[1];
         }
         void render() override {
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-            int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-            int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-            Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
-            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            for (auto& bullet : _bullets) {
-                bullet->render();
+            C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponents()[3].get());
+            if (hitbox->_status == 1) {
+                if ((hitbox->_time % 2) != 0) {
+                    int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+                    int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+                    int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+                    int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+                    int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
+                    Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                    Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                    Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                    Vector2 origin = { 0.0f, 0.0f };
+                    DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                    for (auto& bullet : _bullets) {
+                        bullet->render();
+                    }
+                    hitbox->_time -= 1;
+                } else {
+                    hitbox->_time -= 1;
+                }
+                if (hitbox->_time <= 0) {
+                    hitbox->_time = 10;
+                    hitbox->_status = 0;
+                }
+            } else if (hitbox->_status == 2) {
+                int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+                int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+                int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+                int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                C_Transform *transform = dynamic_cast<C_Transform*>(getComponents()[0].get());
+                if (transform->_animation <= 7) {
+                    Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                    Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
+                    Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                    Vector2 origin = { 0.0f, 0.0f };
+                    DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                    transform->_animation += 1;
+                }
+                for (auto& bullet : _bullets) {
+                    bullet->render();
+                }
+            } else {
+                int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+                int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+                int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+                int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+                int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
+                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                for (auto& bullet : _bullets) {
+                    bullet->render();
+                } 
             }
         }
         void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override {
@@ -170,18 +214,62 @@ class E_Enemy : public AbstractEntity {
             auto& health = getComponents()[1];
         }
         void render() override {
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-            int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-            int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-            Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
-            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            for (auto& bullet : _bullets) {
-                bullet->render();
+            C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponents()[3].get());
+            if (hitbox->_status == 1) {
+                if ((hitbox->_time % 2) != 0) {
+                    int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+                    int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+                    int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+                    int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+                    int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
+                    Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                    Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                    Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                    Vector2 origin = { 0.0f, 0.0f };
+                    DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                    for (auto& bullet : _bullets) {
+                        bullet->render();
+                    }
+                    hitbox->_time -= 1;
+                } else {
+                    hitbox->_time -= 1;
+                }
+                if (hitbox->_time <= 0) {
+                    hitbox->_time = 10;
+                    hitbox->_status = 0;
+                }
+            } else if (hitbox->_status == 2) {
+                int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+                int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+                int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+                int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                C_Transform *transform = dynamic_cast<C_Transform*>(getComponents()[0].get());
+                if (transform->_animation <= 7) {
+                    Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                    Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
+                    Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                    Vector2 origin = { 0.0f, 0.0f };
+                    DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                    transform->_animation += 1;
+                }
+                for (auto& bullet : _bullets) {
+                    bullet->render();
+                }
+            } else {
+                int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
+                int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
+                int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
+                int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
+                int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
+                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+                Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                for (auto& bullet : _bullets) {
+                    bullet->render();
+                } 
             }
         }
         void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override {
@@ -194,15 +282,23 @@ class E_Enemy : public AbstractEntity {
 
 namespace Engine {
     C_Transform* getTransform(std::unique_ptr<IEntity> entity);
+    C_Damage* getDamage(std::unique_ptr<IEntity> entity);
     C_Health* getHealth(std::unique_ptr<IEntity> entity);
     C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
     C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
-    void setTransformPos(IEntity& entity, Vec2 newTransform);
-    void setTransformRot(IEntity& entity, Vec2 newTransform);
+    void setTransformPos(IEntity& entity, Vec2 newPos);
+    void setTransformSize(IEntity& entity, Vec2 newSize);
+    void setTransformVel(IEntity& entity, Vec2 newVel);
+    void setTransformAni(IEntity& entity, int newAni);
+    void setDamageName(IEntity& entity, std::string newName);
+    void setDamageDamage(IEntity& entity, int newDamage);
     void setHealth(IEntity& entity, int newHealth);
     void setSpriteName(IEntity& entity, std::string newSpriteName);
-    void setSprite(IEntity& entity, Texture2D newTexture);
-    void setHitbox(IEntity& entity, Vec2 newHitbox);
+    void setSpriteImage(IEntity& entity, Image newImage);
+    void setSpriteTexture(IEntity& entity, Texture2D newTexture);
+    void setHitboxSize(IEntity& entity, Vec2 newHitbox);
+    void setHitboxTime(IEntity& entity, int newTime);
+    void setHitboxStatus(IEntity& entity, int newStatus);
 
     template<typename T>
     T* getComponentRef(IEntity& entity)

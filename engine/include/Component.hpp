@@ -101,8 +101,12 @@ struct C_Sprite : public Component {
  */
 struct C_Hitbox : public Component {
     Vec2 _size;
+    int _time;
+    int _status;
     C_Hitbox(int x, int y) {
         _size = {x, y};
+        _time = 10;
+        _status = 0;
     }
     ~C_Hitbox() = default;
 };

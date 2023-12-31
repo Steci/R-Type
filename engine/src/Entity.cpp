@@ -18,6 +18,15 @@ namespace Engine {
         return (nullptr);
     }
 
+    C_Damage* getDamage(std::unique_ptr<IEntity> entity)
+    {
+        C_Damage* damage = dynamic_cast<C_Damage*>(entity->getComponentOfType(typeid(C_Damage)));
+        if (damage) {
+            return (damage);
+        }
+        return (nullptr);
+    }
+
     C_Health* getHealth(std::unique_ptr<IEntity> entity)
     {
         C_Health* health = dynamic_cast<C_Health*>(entity->getComponentOfType(typeid(C_Health)));
@@ -47,23 +56,55 @@ namespace Engine {
 
     // Set Components
 
-    void setTransformPos (IEntity& entity, Vec2 newTransform)
+    void setTransformPos(IEntity& entity, Vec2 newPos)
     {
         C_Transform* transform = dynamic_cast<C_Transform*>(entity.getComponentOfType(typeid(C_Transform)));
         if (transform) {
-            transform->_position = newTransform;
+            transform->_position = newPos;
         }
     };
 
-    void setTransformRot (IEntity& entity, Vec2 newTransform)
+    void setTransformSize(IEntity& entity, Vec2 newSize)
     {
         C_Transform* transform = dynamic_cast<C_Transform*>(entity.getComponentOfType(typeid(C_Transform)));
         if (transform) {
-            transform->_position = newTransform;
+            transform->_size = newSize;
         }
     };
 
-    void setHealth (IEntity& entity, int newHealth)
+    void setTransformVel(IEntity& entity, Vec2 newVel)
+    {
+        C_Transform* transform = dynamic_cast<C_Transform*>(entity.getComponentOfType(typeid(C_Transform)));
+        if (transform) {
+            transform->_velocity = newVel;
+        }
+    };
+
+    void setTransformAni(IEntity& entity, int newAni)
+    {
+        C_Transform* transform = dynamic_cast<C_Transform*>(entity.getComponentOfType(typeid(C_Transform)));
+        if (transform) {
+            transform->_animation = newAni;
+        }
+    };
+
+    void setDamageName(IEntity& entity, std::string newName)
+    {
+        C_Damage* damage = dynamic_cast<C_Damage*>(entity.getComponentOfType(typeid(C_Damage)));
+        if (damage) {
+            damage->_name = newName;
+        }
+    }
+
+    void setDamageDamage(IEntity& entity, int newDamage)
+    {
+        C_Damage* damage = dynamic_cast<C_Damage*>(entity.getComponentOfType(typeid(C_Damage)));
+        if (damage) {
+            damage->_damage = newDamage;
+        }
+    }
+
+    void setHealth(IEntity& entity, int newHealth)
     {
         C_Health* health = dynamic_cast<C_Health*>(entity.getComponentOfType(typeid(C_Health)));
         if (health) {
@@ -71,7 +112,7 @@ namespace Engine {
         }
     }
 
-    void setSpriteName (IEntity& entity, std::string newSpriteName)
+    void setSpriteName(IEntity& entity, std::string newSpriteName)
     {
         C_Sprite* sprite = dynamic_cast<C_Sprite*>(entity.getComponentOfType(typeid(C_Sprite)));
         if (sprite) {
@@ -79,19 +120,43 @@ namespace Engine {
         }
     }
 
-    void setSprite (IEntity& entity, Texture2D newSprite)
+    void setSpriteImage(IEntity& entity, Image newImage)
     {
         C_Sprite* sprite = dynamic_cast<C_Sprite*>(entity.getComponentOfType(typeid(C_Sprite)));
         if (sprite) {
-            sprite->_texture = newSprite;
+            sprite->_image = newImage;
         }
     }
 
-    void setHitbox (IEntity& entity, Vec2 newHitbox)
+    void setSpriteTexture(IEntity& entity, Texture2D newTexture)
+    {
+        C_Sprite* sprite = dynamic_cast<C_Sprite*>(entity.getComponentOfType(typeid(C_Sprite)));
+        if (sprite) {
+            sprite->_texture = newTexture;
+        }
+    }
+
+    void setHitboxSize(IEntity& entity, Vec2 newHitbox)
     {
         C_Hitbox* hitbox = dynamic_cast<C_Hitbox*>(entity.getComponentOfType(typeid(C_Hitbox)));
         if (hitbox) {
             hitbox->_size = newHitbox;
+        }
+    }
+
+    void setHitboxTime(IEntity& entity, int newTime)
+    {
+        C_Hitbox* hitbox = dynamic_cast<C_Hitbox*>(entity.getComponentOfType(typeid(C_Hitbox)));
+        if (hitbox) {
+            hitbox->_time = newTime;
+        }
+    }
+
+    void setHitboxStatus(IEntity& entity, int newStatus)
+    {
+        C_Hitbox* hitbox = dynamic_cast<C_Hitbox*>(entity.getComponentOfType(typeid(C_Hitbox)));
+        if (hitbox) {
+            hitbox->_status = newStatus;
         }
     }
 };
