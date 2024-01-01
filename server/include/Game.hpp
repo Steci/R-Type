@@ -39,7 +39,7 @@ namespace server
             void actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            void actionDeadCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
 
 
         private:

@@ -95,6 +95,13 @@ class S_Parallax : public ASystem {
         Texture2D getBackground() const { return _background; }
         Vec2 getScaleFactor() const { return _scaleFactor; }
         Image getImage() const { return _image; }
+        void setBackground(Image newTexture) { _background = LoadTextureFromImage(newTexture); }
+        void setScaleFactor(Vec2 newVec2) { _scaleFactor = newVec2; }
+        void setImage(std::string newImage)
+        { 
+            _image = LoadImage(newImage.c_str());
+            setBackground(_image);
+        }
         void update() override {};
 
     private:

@@ -21,6 +21,7 @@ server::Game::Game()
     _fonctions_map["RIGHT"] = &server::Game::actionRightCommand;
     _fonctions_map["SHOOT"] = &server::Game::actionShootCommand;
     _fonctions_map["DAMAGE"] = &server::Game::actionDamageCommand;
+    _fonctions_map["SCORE"] = &server::Game::actionScoreCommand;
 }
 
 server::Game::~Game()
@@ -222,6 +223,20 @@ void server::Game::actionDamageCommand(int clientID, SystemManager manager, Spar
     } else {
         Engine::setHealth(entity, health->_health - 10);
         Engine::setHitboxStatus(entity, 1);
+    }
+}
+
+void server::Game::actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
+{
+    printf("score");
+    if (entities.exists(clientID) == false) {
+        printf("player not connected");
+        return;
+    }
+    auto& playerEntity = entities.get(clientID);
+    if (typeid(playerEntity) == typeid(E_Player)) {
+        C_Score *score = Engine::getComponentRef<C_Score>(playerEntity);
+        Engine::setScore(playerEntity, score->_score + 10);
     }
 }
 

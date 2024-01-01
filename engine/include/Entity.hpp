@@ -129,12 +129,16 @@ class E_Player : public AbstractEntity {
             addComponent(std::make_unique<C_Health>(100));
             addComponent(std::make_unique<C_Sprite>(path));
             addComponent(std::make_unique<C_Hitbox>(33, 17));
+            addComponent(std::make_unique<C_Score>());
         }
         void update() override {
             auto& transform = getComponents()[0];
             auto& health = getComponents()[1];
         }
         void render() override {
+            C_Score *score = dynamic_cast<C_Score*>(getComponents()[4].get());
+            std::string scoreText = "Score: " + std::to_string(score->_score);
+            DrawText(scoreText.c_str(), 250, 250, 30, WHITE);
             C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponents()[3].get());
             if (hitbox->_status == 1) {
                 if ((hitbox->_time % 2) != 0) {
@@ -286,6 +290,7 @@ namespace Engine {
     C_Health* getHealth(std::unique_ptr<IEntity> entity);
     C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
     C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
+    C_Score* getScore(std::unique_ptr<IEntity> entity);
     void setTransformPos(IEntity& entity, Vec2 newPos);
     void setTransformSize(IEntity& entity, Vec2 newSize);
     void setTransformVel(IEntity& entity, Vec2 newVel);
@@ -299,6 +304,7 @@ namespace Engine {
     void setHitboxSize(IEntity& entity, Vec2 newHitbox);
     void setHitboxTime(IEntity& entity, int newTime);
     void setHitboxStatus(IEntity& entity, int newStatus);
+    void setScore(IEntity& entity, int newScore);
 
     template<typename T>
     T* getComponentRef(IEntity& entity)

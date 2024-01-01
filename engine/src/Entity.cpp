@@ -159,4 +159,12 @@ namespace Engine {
             hitbox->_status = newStatus;
         }
     }
+
+    void setScore(IEntity& entity, int newScore)
+    {
+        C_Score* score = dynamic_cast<C_Score*>(entity.getComponentOfType(typeid(C_Score)));
+        if (score) {
+            score->_score = newScore;
+        }
+    }
 };

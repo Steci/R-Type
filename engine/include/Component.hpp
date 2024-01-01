@@ -110,3 +110,11 @@ struct C_Hitbox : public Component {
     }
     ~C_Hitbox() = default;
 };
+
+struct C_Score : public Component {
+    int _score;
+    C_Score() {
+        _score = 0;
+    }
+    ~C_Score() = default;
+};
