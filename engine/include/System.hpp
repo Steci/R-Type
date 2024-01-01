@@ -9,6 +9,7 @@
 
 #include "Entity.hpp"
 #include "Engine.hpp"
+#include <map>
 
 /**
  * @brief The base interface for all systems in the engine.
@@ -138,8 +139,15 @@ class S_Network : public ASystem {
 
 class S_AudioManager : public ASystem {
     public:
-        S_AudioManager() = default;
-        ~S_AudioManager() = default;
+        S_AudioManager();
+        ~S_AudioManager();
+        
+        void update() override {};
+        std::map<std::string, Sound> const getSoundEffect() { return _sound_effects; }
+        std::map<std::string, Music> const getBackgroundMusic() { return _background_music_game; }
+    private:
+        std::map<std::string, Sound> _sound_effects;
+        std::map<std::string, Music> _background_music_game;
 };
 
 class S_EnemyAI : public ASystem {

@@ -195,6 +195,8 @@ void server::Game::actionShootCommand(int clientID, SystemManager manager, Spars
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
         playerEntity.newShoot("./assets/r-typesheet24.png", "missile", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
     }
+    auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
+    PlaySound(effect->second);
 }
 
 void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
@@ -268,13 +270,16 @@ void server::Game::run()
 
     SystemManager manager;
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
+    manager.addSystem<S_AudioManager>();
     SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
     entities.add(10, std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66));
     auto& ennemyEntity = entities.get(10);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     int numClientID = 0;
+    auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
 
+    PlayMusicStream(backgroundMusic->second);
     while (true) {
         _mutex.lock();
         if (_functions_server.size() > 0) {
@@ -283,6 +288,7 @@ void server::Game::run()
         }
         _mutex.unlock();
 
+        UpdateMusicStream(backgroundMusic->second);
         for (auto& function : _functions) {
             auto [command, clientID] = parseCommand(function);
             printf("\nCommand : %s\n", command.c_str());
