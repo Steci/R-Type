@@ -269,17 +269,22 @@ void server::Game::run()
     printf("Game started");
 
     SystemManager manager;
+
+    // To Remove
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     manager.addSystem<S_AudioManager>();
+
     SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
     entities.add(10, std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66));
     auto& ennemyEntity = entities.get(10);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     int numClientID = 0;
-    auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
 
+    // To Remove
+    auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
     PlayMusicStream(backgroundMusic->second);
+
     while (true) {
         _mutex.lock();
         if (_functions_server.size() > 0) {
@@ -287,8 +292,9 @@ void server::Game::run()
             _functions_server.clear();
         }
         _mutex.unlock();
-
+        // To Remove
         UpdateMusicStream(backgroundMusic->second);
+
         for (auto& function : _functions) {
             auto [command, clientID] = parseCommand(function);
             printf("\nCommand : %s\n", command.c_str());
@@ -301,12 +307,12 @@ void server::Game::run()
                 auto fptr = it->second;
                 (this->*fptr)(numClientID, manager, entities);
             } else {
-                std::cout << "Commande not find." << std::endl;
+                std::cout << "Commande not found." << std::endl;
             }
 
             _mutex_client.lock();
             if (entities.exists(numClientID) == false) {
-                printf("player not connected");
+                printf("Player not connected");
                 continue;
             }
             auto& playerEntity = entities.get(numClientID);
