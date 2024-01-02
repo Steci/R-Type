@@ -57,6 +57,7 @@ namespace client {
                 SOCKADDR_IN _addr;
             #endif
             int _tickrate;
+            std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR", "DEBUG"};
 
             int fillSocket();
             int fillAddr();
@@ -68,7 +69,7 @@ namespace client {
             int pingCommand();
             int inputCommand(std::string input);
 
-            int handleCommands(const char *serverMessage);
+            std::string handleCommands(const char *serverMessage);
     };
 
 }
