@@ -5,7 +5,7 @@
 ** main.cpp
 */
 
-#include "Engine.hpp"
+#include "./include/Engine.hpp"
 
 int main(void)
 {
@@ -46,3 +46,32 @@ int main(void)
 
     return 0;
 }
+
+
+/*#include "Engine.hpp"
+#include "System.hpp"
+#include "Entity.hpp"
+
+int main(void)
+{
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+
+    InitWindow(screenWidth, screenHeight, "raylib [textures] example - image loading");
+    
+    SparseArray<IEntity> arraysE;
+    std::string tmp = "../assets/placeholder.png";
+
+    arraysE.add(0, std::make_unique<E_Player>());
+    arraysE.add(1, std::make_unique<E_Enemy>(tmp));
+
+    auto& playerEntity = arraysE.get(0);
+    auto& enemyEntity = arraysE.get(1);
+
+    if (typeid(playerEntity) == typeid(E_Enemy)) {
+        printf("VUIIIIII\n");
+    } else {
+        printf("NOOOOOOOOOOOO\n");
+    }
+    return 0;
+}*/
