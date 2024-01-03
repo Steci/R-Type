@@ -30,10 +30,10 @@ class ISystem {
         std::vector<IEntity*> _entities; /**< The list of entities managed by the system. */
 };
 
-class ASystem : public ISystem {
+class System : public ISystem {
     public:
-        ASystem() = default;
-        ~ASystem() = default;
+        System() = default;
+        ~System() = default;
         void update() override = 0;
         void addEntity(IEntity* entity);
         void removeEntity(IEntity* entity);

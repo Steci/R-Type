@@ -66,7 +66,7 @@ class IEntity {
         virtual Component* getComponentOfType(const std::type_info& ti) = 0;
 };
 
-class AbstractEntity : public IEntity {
+class Entity : public IEntity {
     public:
         void update() override = 0;
         void render() override = 0;
