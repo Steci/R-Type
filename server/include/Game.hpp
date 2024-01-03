@@ -8,12 +8,15 @@
 #pragma once
 
 #include "../../engine/include/Engine.hpp"
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <sstream>
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <map>
 
-#define TICK_SPEED 15
+#define TICK_SPEED 66
 
 namespace server
 {
@@ -28,6 +31,12 @@ namespace server
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
             std::vector<char> serialize();
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar& _tick;
+                ar& _tickSpeed;
+            }
 
         private:
             int _tickSpeed = TICK_SPEED;

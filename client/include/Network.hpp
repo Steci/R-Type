@@ -35,8 +35,29 @@
 #include <thread>
 #include <cstdlib>
 #include <ctime>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <sstream>
 
 namespace client {
+    class Test {
+        public:
+            Test() = default;
+            ~Test() = default;
+            int getTick() const {return _Tick;};
+            int getTickspeed() const {return _Tickspeed;};
+            void setTick(int tick) {_Tick = tick;};
+            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar& _Tick;
+                ar& _Tickspeed;
+            }
+        private:
+            int _Tick;
+            int _Tickspeed;
+    };
     class Network {
         public:
             Network(std::string serverIP, int serverPort);
