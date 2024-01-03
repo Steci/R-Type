@@ -3,10 +3,9 @@ services:
   server:
     build:
       context: .
-      dockerfile: server/Dockerfile
+      dockerfile: Dockerfile
     container_name: server
     ports:
       - "8080:8080"
     volumes:
-      - ./server:/app
-      - ./engine:/engine
+      - ./:/app
