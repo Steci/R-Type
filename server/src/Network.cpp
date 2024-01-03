@@ -246,7 +246,7 @@ int server::Network::commandKick(std::string data, int client_id)
     return 1;
 }
 
-int server::Network::commandSetTickrate(std::string data) const
+int server::Network::commandSetTickrate(std::vector<char> data) const
 {
     server::Serialize convert;
     std::vector<char> dataTest = convert.serialize(data);
