@@ -73,16 +73,18 @@ class S_EnemyAI : public System {
 
 class S_Collision : public System {
     public:
-        S_Collision() = default;
-        ~S_Collision() = default;
+        S_Collision();
+        ~S_Collision();
         void update() override;
         bool checkCollision(IEntity* entity1, IEntity* entity2);
+        int screenWidth = 800;
+        int screenHeight = 600;
 };
 
 class S_EventManager : public System {
     public:
         S_EventManager() = default;
         ~S_EventManager() = default;
-        int EventKeyPressed(std::list<int> keys);
         void update() override;
+        int EventKeyPressed(std::list<int> keys);
 };

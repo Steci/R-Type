@@ -273,6 +273,7 @@ void server::Game::run()
     // To Remove
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     manager.addSystem<S_AudioManager>();
+    manager.addSystem<S_Collision>();
 
     SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
@@ -280,6 +281,15 @@ void server::Game::run()
     auto& ennemyEntity = entities.get(10);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     int numClientID = 0;
+
+    // parse the entities in the sparse array and add them to the collision system
+    const auto& sparseIds = entities.getAllIndices();
+    for (auto id : sparseIds) {
+        if (id != -1) {
+            auto& tmpEntity = entities.get(id);
+            manager.getSystem<S_Collision>()->addEntity(&tmpEntity);
+        }
+    }
 
     // To Remove
     auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
@@ -316,6 +326,7 @@ void server::Game::run()
                 continue;
             }
             auto& playerEntity = entities.get(numClientID);
+            manager.getSystem<S_Collision>()->addEntity(&playerEntity);
             _functions_client.push_back("POS " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.x) + " " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.y) + " " + clientID);
             _mutex_client.unlock();
         }
