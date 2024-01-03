@@ -8,8 +8,9 @@
 #pragma once
 
 #include <cassert>
+#include <memory>
 
-#include "System.hpp"
+#include "Entity.hpp"
 
 /**
  * @brief A sparse array data structure that maps IDs to elements.
@@ -35,18 +36,17 @@ class SparseArray {
          * @param id The ID of the element.
          * @param element The element to be added.
          */
-        void add(int id, const T& element) {
+        void add(int id, std::unique_ptr<T> element) {
             if (id >= sparse.size()) {
                 sparse.resize(id + 1, -1);
             }
-
             if (sparse[id] == -1) {
                 sparse[id] = dense.size();
-                dense.push_back(element);
+                dense.push_back(std::move(element));
                 indices.push_back(id);
             } else {
                 // Replace if already exists
-                dense[sparse[id]] = element;
+                dense[sparse[id]] = std::move(element);
             }
         }
 
@@ -86,7 +86,7 @@ class SparseArray {
          */
         T& get(int id) {
             assert(id < sparse.size() && sparse[id] != -1 && "Invalid ID");
-            return dense[sparse[id]];
+            return *(dense[sparse[id]].get());
         }
 
         /**
@@ -99,14 +99,14 @@ class SparseArray {
             return id < sparse.size() && sparse[id] != -1;
         }
 
+        const std::vector<int>& getAllIndices() const {
+            return indices;
+        }
+
     private:
-        std::vector<T> dense; // Stores actual elements
+        std::vector<std::unique_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'
         std::vector<int> indices; // Stores original IDs
 };
-
-// Usage
-// SparseArray<YourEntityType> entities;
-// entities.add(entityId, entity);
 
 // TODO : IMPLEMENT RESSOURCE MANAGER
