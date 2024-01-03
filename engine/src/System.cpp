@@ -7,11 +7,11 @@
 
 #include "../include/System.hpp"
 
-void ASystem::addEntity(IEntity* entity) {
+void System::addEntity(IEntity* entity) {
     _entities.push_back(entity);
 }
 
-void ASystem::removeEntity(IEntity* entity) {
+void System::removeEntity(IEntity* entity) {
     for (auto it = _entities.begin(); it != _entities.end(); it++) {
         if (*it == entity) {
             _entities.erase(it);
