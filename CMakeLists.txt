@@ -105,8 +105,13 @@ add_custom_command(TARGET client_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
 )
 
+# Configuration des tests
+#enable_testing()
 
+# Ajouter le sous-projet pour les tests
+#add_subdirectory(tests)
 
 # Sous-projets
-# add_subdirectory(server)
-# add_subdirectory(client)
+#add_subdirectory(client)
+#add_subdirectory(server)
+#add_subdirectory(engine)
