@@ -36,6 +36,24 @@
 #include <chrono>
 
 namespace server {
+    class Test {
+        public:
+            Test() = default;
+            ~Test() = default;
+            int getTick() const {return _Tick;};
+            int getTickspeed() const {return _Tickspeed;};
+            void setTick(int tick) {_Tick = tick;};
+            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar& _Tick;
+                ar& _Tickspeed;
+            }
+        private:
+            int _Tick;
+            int _Tickspeed;
+    };
     class Client {
         public:
             #ifdef linux
@@ -92,7 +110,7 @@ namespace server {
             // Commands
             int commandKill();
             int commandKick(int client_id, std::string message);
-            int commandSetTickrate() const;
+            int commandSetTickrate(std::string data) const;
             int commandPing(int client_id) const;
             int commandError(int client_id, std::string error) const;
     };

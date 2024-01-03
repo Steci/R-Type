@@ -8,6 +8,9 @@
 #pragma once
 
 #include "../../engine/include/Engine.hpp"
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <sstream>
 #include "../../engine/include/System.hpp"
 #include <iostream>
 #include <thread>
@@ -16,7 +19,7 @@
 #include "Entity.hpp"
 #include "System.hpp"
 
-#define TICK_SPEED 15
+#define TICK_SPEED 66
 
 namespace server
 {
@@ -32,6 +35,13 @@ namespace server
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
+            std::vector<char> serialize();
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar& _tick;
+                ar& _tickSpeed;
+            }
             void actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionLeftCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
