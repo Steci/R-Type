@@ -13,6 +13,8 @@
 #include <thread>
 #include <mutex>
 #include <map>
+#include "Entity.hpp"
+#include "System.hpp"
 
 #define TICK_SPEED 15
 

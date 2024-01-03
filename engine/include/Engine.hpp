@@ -109,8 +109,4 @@ class SparseArray {
         std::vector<int> indices; // Stores original IDs
 };
 
-// Usage
-// SparseArray<YourEntityType> entities;
-// entities.add(entityId, entity);
-
 // TODO : IMPLEMENT RESSOURCE MANAGER
