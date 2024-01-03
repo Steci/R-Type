@@ -61,7 +61,7 @@ namespace server {
         public:
             Network(int port, int maxClients);
             ~Network();
-            void run();
+            void run(Game *game);
         private:
             int _port;
             unsigned int _maxClients;
@@ -78,7 +78,7 @@ namespace server {
             int _tickrate;
             std::vector<Client> _clients;
             Game _game;
-            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG"};
+            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
 
             int fillSocket();
             int fillAddr();
@@ -86,6 +86,8 @@ namespace server {
             int handleNewConnection();
             int handleClient(std::string message);
             std::string handleClientMessage(std::string message, int client_id);
+            void manageMessage(std::string message, int client_id, Game *game);
+            void updateClients(int client_id, std::string message, Game *game);
 
             // Commands
             int commandKill();

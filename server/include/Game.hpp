@@ -8,10 +8,13 @@
 #pragma once
 
 #include "../../engine/include/Engine.hpp"
+#include "../../engine/include/System.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <map>
+#include "Entity.hpp"
+#include "System.hpp"
 
 #define TICK_SPEED 15
 
@@ -19,6 +22,8 @@ namespace server
 {
     class Game
     {
+        typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
+
         public:
             Game();
             ~Game();
@@ -27,6 +32,17 @@ namespace server
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
+            void actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionLeftCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionRightCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionDebugCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+
 
         private:
             int _tickSpeed = TICK_SPEED;
@@ -38,5 +54,6 @@ namespace server
             std::vector<std::string> _functions;
             std::vector<std::string> _functions_client;
             std::mutex _mutex_client;
+            std::map<std::string, functionsExecution> _fonctions_map;
     };
 }
