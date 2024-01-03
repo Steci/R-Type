@@ -21,8 +21,6 @@ set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
 
 # find_package(netinet REQUIRED)
 
-find_package(Boost COMPONENTS serialization REQUIRED)
-
 file(GLOB SOURCES "main.cpp" "src/*.cpp")
 add_executable(client_build ${SOURCES})
 
@@ -34,7 +32,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
 target_link_libraries(client_build pthread)
 target_link_libraries(client_build raylib)
-target_link_libraries(client_build ${Boost_LIBRARIES})
 
 add_custom_command(TARGET client_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}

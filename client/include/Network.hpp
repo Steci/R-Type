@@ -35,8 +35,6 @@
 #include <thread>
 #include <cstdlib>
 #include <ctime>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/serialization.hpp>
 #include <sstream>
 
 namespace client {
@@ -48,15 +46,19 @@ namespace client {
             int getTickspeed() const {return _Tickspeed;};
             void setTick(int tick) {_Tick = tick;};
             void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-            template <class Archive>
-            void serialize(Archive& ar, const unsigned int version)
-            {
-                ar& _Tick;
-                ar& _Tickspeed;
+            std::vector<char> serialize() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Test));
+            }
+            void deserialize(const std::vector<char>& serializedData) {
+                // if (serializedData.size() != sizeof(Test)) {
+                //     throw std::runtime_error("Invalid data size for deserialization");
+                // }
+                *this = *reinterpret_cast<const Test*>(serializedData.data());
             }
         private:
-            int _Tick;
-            int _Tickspeed;
+            int _Tick = 10;
+            int _Tickspeed = 1000;
     };
     class Network {
         public:
