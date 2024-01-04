@@ -107,6 +107,12 @@ class SparseArray {
             return id < sparse.size() && sparse[id] != -1;
         }
 
+        /**
+         * @brief Returns all indices of existing entities.
+         *
+         * @param nothing.
+         * @return all the indices elements.
+         */
         const std::vector<int>& getAllIndices() const {
             return indices;
         }
@@ -116,5 +122,3 @@ class SparseArray {
         std::vector<int> sparse; // Maps IDs to indices in 'dense'
         std::vector<int> indices; // Stores original IDs
 };
-
-// TODO : IMPLEMENT RESSOURCE MANAGER
