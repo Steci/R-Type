@@ -7,6 +7,7 @@
 
 #include "ErrorHandling.hpp"
 #include "Server.hpp"
+#include "Engine.hpp"
 
 int main(int argc, char **argv)
 {

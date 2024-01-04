@@ -7,17 +7,17 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
+#include "Engine.hpp"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <sstream>
-#include "../../engine/include/System.hpp"
+#include "System.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <map>
-#include "Entity.hpp"
-#include "System.hpp"
+#include "EntityS.hpp"
+#include "SystemS.hpp"
 
 #define TICK_SPEED 66
 

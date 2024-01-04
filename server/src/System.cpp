@@ -9,7 +9,6 @@
 #include <algorithm>
 #include "Game.hpp"
 
-
 S_Renderer::S_Renderer(int w, int h, int fps, std::string wName, const std::string& imagePath) {
     _screenWidth = w;
     _screenHeight = h;
@@ -85,8 +84,8 @@ void S_Parallax::initialize(const std::string& imagePath, int screenWidth, int s
         std::cerr << "Erreur de chargement de la texture de l'image." << std::endl;
         return;
     }
-    float scaleX = (float)screenWidth / ((float)_background.width);
-    float scaleY = (float)screenHeight / ((float)_background.height);
+    float scaleX = static_cast<float>(screenWidth) / (static_cast<float>(_background.width));
+    float scaleY = static_cast<float>(screenHeight) / (static_cast<float>(_background.height));
     _scaleFactor = {scaleX, scaleY};
 }
 

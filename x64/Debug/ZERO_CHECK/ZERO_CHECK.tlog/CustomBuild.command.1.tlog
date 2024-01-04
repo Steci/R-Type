@@ -1,0 +1,10 @@
+^C:\USERS\LAETI\DOCUMENTS\GITHUB\R-TYPE\CMAKEFILES\D53B318FBC8DDCF8F35A28368B3FC5C1\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/laeti/Documents/GitHub/R-Type -BC:/Users/laeti/Documents/GitHub/R-Type --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/laeti/Documents/GitHub/R-Type/engine_build_windows.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

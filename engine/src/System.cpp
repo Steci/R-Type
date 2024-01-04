@@ -5,7 +5,7 @@
 ** System.cpp
 */
 
-#include "../include/System.hpp"
+#include "System.hpp"
 
 void System::addEntity(IEntity* entity) {
     _entities.push_back(entity);

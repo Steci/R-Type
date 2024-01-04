@@ -40,8 +40,10 @@ struct C_Transform : public Component {
     Vec2 _velocity;
     int _animation;
     C_Transform(int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
-        _position = {position_x, position_y};
-        _size = {size_x, size_y};
+        _position.x = static_cast<float>(position_x);
+        _position.y = static_cast<float>(position_y);
+        _size.x = size_x;
+        _size.y = size_y;
         _animation = 0;
         _velocity.x = velocity_x;
         _velocity.y = velocity_y;
@@ -104,7 +106,8 @@ struct C_Hitbox : public Component {
     int _time;
     int _status;
     C_Hitbox(int x, int y) {
-        _size = {x, y};
+        _size.x = static_cast<float>(x);
+        _size.y = static_cast<float>(y);
         _time = 10;
         _status = 0;
     }

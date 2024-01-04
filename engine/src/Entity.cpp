@@ -5,7 +5,7 @@
 ** Entity.cpp
 */
 
-#include "../include/Engine.hpp"
+#include "Engine.hpp"
 
 namespace Engine {
     C_Transform* getTransform(std::unique_ptr<IEntity> entity)

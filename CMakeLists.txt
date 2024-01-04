@@ -8,12 +8,11 @@ project(Rtype)
 # use c function
 # cast dynamic and static
 
-set(CMAKE_TOOLCHAIN_FILE "C:/Users/malek/Downloads/vcpkg-master/vcpkg-master/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
 # Configuration du générateur CMake en fonction du système d'exploitation
 if(WIN32)
-    set(CMAKE_GENERATOR "Visual Studio 16 2019" CACHE STRING "CMake generator" FORCE)
+    set(CMAKE_GENERATOR "Visual Studio 17 2022" CACHE STRING "CMake generator" FORCE)
     set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
 elseif(APPLE)
     set(CMAKE_GENERATOR "Xcode" CACHE STRING "CMake generator" FORCE)
@@ -79,30 +78,55 @@ add_custom_command(TARGET server_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
 )
 
-
-
-
-
-
-
-project(client_build)
+project(client_build_windows)
 
 file(GLOB SOURCES "client/main.cpp" "client/src/*.cpp")
 
-add_executable(client_build ${SOURCES})
+add_executable(client_build_windows ${SOURCES})
 
 list(APPEND EXTRA_INCLUDES "client/include")
+
+
+project(server_build_windows)
+
+file(GLOB SOURCES_SER "server/main.cpp" "server/src/*.cpp")
+
+add_executable(server_build_windows ${SOURCES_SER})
+
+list(APPEND EXTRA_INCLUDES_SER "server/include")
+
+
+project(engine_build_windows)
+
+file(GLOB SOURCES_ENG "engine/src/*.cpp")
+
+add_executable(engine_build_windows ${SOURCES_ENG})
+
+list(APPEND EXTRA_INCLUDES_ENG "engine/include")
+
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
+target_include_directories(client_build_windows PUBLIC ${EXTRA_INCLUDES})
+target_include_directories(server_build_windows PUBLIC ${EXTRA_INCLUDES_SER})
+target_include_directories(engine_build_windows PUBLIC ${EXTRA_INCLUDES_ENG})
 
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(client_build PRIVATE raylib)
+target_link_libraries(client_build_windows PRIVATE raylib)
+target_link_libraries(server_build_windows PRIVATE raylib)
+target_link_libraries(engine_build_windows PRIVATE raylib)
 
-add_custom_command(TARGET client_build POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
+add_custom_command(TARGET client_build_windows POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build_windows> ${CMAKE_SOURCE_DIR}
+)
+
+add_custom_command(TARGET server_build POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
+)
+
+add_custom_command(TARGET engine_build_windows POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:engine_build_windows> ${CMAKE_SOURCE_DIR}
 )
 
 # Configuration des tests
