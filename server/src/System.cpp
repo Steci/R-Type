@@ -171,6 +171,15 @@ void S_Collision::update()
                 if (transform1->_position.y > screenHeight)
                     transform1->_position.y = screenHeight;
             }
+            // if (typeid(*entity1) == typeid(E_Bullet)) {
+            //     // check if a bullet is leaving screenWidth, delete it if so
+            //     C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+
+            //     if (transform1->_position.x < 0)
+            //         entity1->removeComponent(entity1->getComponentOfType(typeid(C_Hitbox)));
+            //     if (transform1->_position.x > screenWidth)
+            //         entity1->removeComponent(entity1->getComponentOfType(typeid(C_Hitbox)));
+            // }
         }
     }
 }

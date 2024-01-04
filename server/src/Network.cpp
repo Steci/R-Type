@@ -86,7 +86,7 @@ void server::Network::run(Game *game)
         buffer[client - 1] = '\0';
         id = handleClient(buffer);
         if (id != 84) {
-            manageMessage(buffer, id, game);            
+            manageMessage(buffer, id, game);
         }
         updateClients(id, buffer, game);
     }

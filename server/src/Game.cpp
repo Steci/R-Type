@@ -190,10 +190,10 @@ void server::Game::actionShootCommand(int clientID, SystemManager manager, Spars
         printf("player not connected");
         return;
     }
-    auto& playerEntity = entities.get(clientID);
+    E_Player& playerEntity = static_cast<E_Player&>(entities.get(clientID));
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        playerEntity.newShoot("./assets/r-typesheet24.png", "missile", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
+        playerEntity.newShoot("./assets/r-typesheet24.png", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
     }
     auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
     PlaySound(effect->second);
