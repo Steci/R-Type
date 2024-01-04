@@ -1,0 +1,25 @@
+name: Format Code
+
+on:
+  pull_request:
+    paths:
+      - '**/*.cpp'
+      - '**/*.h'
+
+jobs:
+  format-code:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Install clang-format
+      run: sudo apt-get install -y clang-format
+
+    - name: Run clang-format
+      run: |
+        git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '\.(cpp|h)$' | xargs -I {} clang-format -i {}
+    
+    - name: Check for Changes
+      run: git diff --exit-code
