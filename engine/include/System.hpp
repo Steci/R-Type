@@ -8,6 +8,8 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Engine.hpp"
+#include <map>
 
 /**
  * @brief The base interface for all systems in the engine.
@@ -28,20 +30,13 @@ class ISystem {
         std::vector<IEntity*> _entities; /**< The list of entities managed by the system. */
 };
 
-class ASystem : public ISystem {
+class System : public ISystem {
     public:
+        System() = default;
+        ~System() = default;
         void update() override = 0;
-        void addEntity(IEntity* entity) {
-            _entities.push_back(entity);
-        }
-        void removeEntity(IEntity* entity) {
-            for (auto it = _entities.begin(); it != _entities.end(); it++) {
-                if (*it == entity) {
-                    _entities.erase(it);
-                    return;
-                }
-            }
-        }
+        void addEntity(IEntity* entity);
+        void removeEntity(IEntity* entity);
 };
 
 /**
@@ -49,6 +44,11 @@ class ASystem : public ISystem {
  */
 class SystemManager {
     public:
+        /**
+        * @brief Destructor for the SystemManager class.
+        */
+        SystemManager() = default;
+        ~SystemManager() = default;
         /**
          * @brief Adds a new system to the collection.
          *
@@ -83,94 +83,6 @@ class SystemManager {
          * @brief Updates all systems in the collection.
          */
         void update();
-
-        /**
-         * @brief Destructor for the SystemManager class.
-         */
-        ~SystemManager() {
-        }
-
     private:
         std::vector<ISystem*> _systems; /**< The collection of systems managed by the SystemManager. */
-};
-
-// TODO : IMPLEMENT AN EVENT SYSTEM (MAP OF EVENTS)
-
-class S_Renderer : public ASystem {
-    public:
-        S_Renderer(int w, int h, int fps, std::string wName) {
-            _screenWidth = w;
-            _screenHeight = h;
-            _targetFps = fps;
-            _windowName = wName;
-            InitWindow(_screenWidth, _screenHeight, _windowName.c_str());
-            SetTargetFPS(_targetFps);
-        };
-
-        void render()
-        {
-
-            BeginDrawing();
-                ClearBackground(RAYWHITE);
-                for (auto& entity : _entities) {
-                    entity->render();
-                }
-            EndDrawing();
-        }
-
-        void update() override
-        {
-            if (IsKeyPressed(KEY_ESCAPE))
-                closeWindow();
-            if (!WindowShouldClose())
-                render();
-        }
-
-        void closeWindow()
-        {
-            CloseWindow();
-        }
-
-    private:
-        int _screenWidth;
-        int _screenHeight;
-        int _targetFps;
-        std::string _windowName;
-
-        Camera2D _camera;
-};
-
-class S_Network : public ASystem {
-};
-
-class S_AudioManager : public ASystem {
-};
-
-class S_EnemyAI : public ASystem {
-};
-
-class S_Collision : public ASystem {
-    public:
-        void update() override
-        {
-
-        };
-
-        bool checkCollision(IEntity* entity1, IEntity* entity2)
-        {
-            C_Hitbox *hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
-            C_Hitbox *hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
-            C_Transform *transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-            C_Transform *transform2 = Engine::getComponentRef<C_Transform>(*entity2);
-
-            if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
-                transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
-                transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
-                transform1->_position.y + hitbox1->_size.y > transform2->_position.y)
-                return true;
-            return false;
-        };
-};
-
-class S_Animation : public ASystem {
 };

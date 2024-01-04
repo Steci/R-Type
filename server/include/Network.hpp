@@ -36,6 +36,24 @@
 #include <chrono>
 
 namespace server {
+    class Test {
+        public:
+            Test() = default;
+            ~Test() = default;
+            int getTick() const {return _Tick;};
+            int getTickspeed() const {return _Tickspeed;};
+            void setTick(int tick) {_Tick = tick;};
+            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
+            template <class Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                ar& _Tick;
+                ar& _Tickspeed;
+            }
+        private:
+            int _Tick;
+            int _Tickspeed;
+    };
     class Client {
         public:
             #ifdef linux
@@ -61,7 +79,7 @@ namespace server {
         public:
             Network(int port, int maxClients);
             ~Network();
-            void run();
+            void run(Game *game);
         private:
             int _port;
             unsigned int _maxClients;
@@ -78,7 +96,7 @@ namespace server {
             int _tickrate;
             std::vector<Client> _clients;
             Game _game;
-            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG"};
+            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
 
             int fillSocket();
             int fillAddr();
@@ -86,11 +104,13 @@ namespace server {
             int handleNewConnection();
             int handleClient(std::string message);
             std::string handleClientMessage(std::string message, int client_id);
+            void manageMessage(std::string message, int client_id, Game *game);
+            void updateClients(int client_id, std::string message, Game *game);
 
             // Commands
             int commandKill();
             int commandKick(int client_id, std::string message);
-            int commandSetTickrate() const;
+            int commandSetTickrate(std::string data) const;
             int commandPing(int client_id) const;
             int commandError(int client_id, std::string error) const;
     };

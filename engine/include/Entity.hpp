@@ -34,6 +34,8 @@ class IEntity {
          */
         virtual void render() = 0;
 
+        virtual void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) = 0;
+
         /**
          * @brief Adds a component to the entity.
          *
@@ -64,10 +66,12 @@ class IEntity {
         virtual Component* getComponentOfType(const std::type_info& ti) = 0;
 };
 
-class AbstractEntity : public IEntity {
+class Entity : public IEntity {
     public:
         void update() override = 0;
         void render() override = 0;
+        void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override = 0;
+
         void addComponent(std::unique_ptr<Component> component) override {
             components.push_back(std::move(component));
         }
@@ -94,67 +98,27 @@ class AbstractEntity : public IEntity {
         std::vector<std::unique_ptr<Component>> components;
 };
 
-class E_Player : public AbstractEntity {
-    public:
-        E_Player() {
-            C_Transform transform;
-            C_Health health;
-            C_Hitbox hitbox;
-            hitbox._size = {50, 50};
-            addComponent(std::make_unique<C_Transform>(transform));
-            addComponent(std::make_unique<C_Health>(health));
-            addComponent(std::make_unique<C_Hitbox>(hitbox));
-        }
-        void update() override {
-            auto& transform = getComponents()[0];
-            auto& health = getComponents()[1];
-        }
-        void render() override {
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int squareSize = 50;
-            DrawRectangle(xPos, yPos, squareSize, squareSize, BLUE);
-        }
-};
-
-class E_Enemy : public AbstractEntity {
-    public:
-        E_Enemy(std::string path) {
-            C_Transform transform;
-            C_Health health;
-            C_Sprite sprite;
-            C_Hitbox hitbox;
-            hitbox._size = {50, 50};
-            sprite._sprite = LoadTexture(path.c_str());
-            addComponent(std::make_unique<C_Transform>(transform));
-            addComponent(std::make_unique<C_Health>(health));
-            addComponent(std::make_unique<C_Sprite>(sprite));
-            addComponent(std::make_unique<C_Hitbox>(hitbox));
-        }
-        void update() override {
-            auto& transform = getComponents()[0];
-            auto& health = getComponents()[1];
-        }
-        void render() override {
-            auto& transform = getComponents()[0];
-            int xPos = dynamic_cast<C_Transform*>(transform.get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(transform.get())->_position.y;
-            int squareSize = 50;
-            DrawRectangle(xPos, yPos, squareSize, squareSize, RED);
-        }
-};
-
 namespace Engine {
     C_Transform* getTransform(std::unique_ptr<IEntity> entity);
+    C_Damage* getDamage(std::unique_ptr<IEntity> entity);
     C_Health* getHealth(std::unique_ptr<IEntity> entity);
     C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
     C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
-    void setTransformPos(IEntity& entity, Vec2 newTransform);
-    void setTransformRot(IEntity& entity, Vec2 newTransform);
+    C_Score* getScore(std::unique_ptr<IEntity> entity);
+    void setTransformPos(IEntity& entity, Vec2 newPos);
+    void setTransformSize(IEntity& entity, Vec2 newSize);
+    void setTransformVel(IEntity& entity, Vec2 newVel);
+    void setTransformAni(IEntity& entity, int newAni);
+    void setDamageName(IEntity& entity, std::string newName);
+    void setDamageDamage(IEntity& entity, int newDamage);
     void setHealth(IEntity& entity, int newHealth);
     void setSpriteName(IEntity& entity, std::string newSpriteName);
-    void setSprite(IEntity& entity, Texture2D newSprite);
-    void setHitbox(IEntity& entity, Vec2 newHitbox);
+    void setSpriteImage(IEntity& entity, Image newImage);
+    void setSpriteTexture(IEntity& entity, Texture2D newTexture);
+    void setHitboxSize(IEntity& entity, Vec2 newHitbox);
+    void setHitboxTime(IEntity& entity, int newTime);
+    void setHitboxStatus(IEntity& entity, int newStatus);
+    void setScore(IEntity& entity, int newScore);
 
     template<typename T>
     T* getComponentRef(IEntity& entity)

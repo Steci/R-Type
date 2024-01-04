@@ -67,16 +67,13 @@ int server::Network::fillAddr()
     return 0;
 }
 
-void server::Network::run()
+void server::Network::run(Game *game)
 {
     int client;
     char buffer[1024];
-    Game game;
     int id;
     std::string message;
-    std::vector<std::string> functions_clients;
 
-    std::thread gameThread = std::thread(&Game::run, &game);
 
     // std::cout << "start loop" << std::endl;
     while(_isRunning) {
@@ -86,22 +83,43 @@ void server::Network::run()
         if (client == -1) {
             continue;
         }
-        buffer[client - 1] = '\0';
+        if (buffer[std::strlen(buffer) - 1] == '\n')
+            buffer[std::strlen(buffer) - 1] = '\0';
         id = handleClient(buffer);
         if (id != 84) {
-            message = handleClientMessage(buffer, id);
-            if (std::strcmp(message.c_str(), buffer) != 0)
-                game.addFunction(message);
-            std::cout << "Client message: " << buffer << std::endl;
+            if  (std::strcmp(buffer, "TICKRATE") == 0) {
+                // std::vector<char> data = game->serialize();
+                std::ostringstream archive_stream;
+                boost::archive::binary_oarchive archive(archive_stream);
+                archive << game;
+                std::string data = archive_stream.str();
+                commandSetTickrate(data);
+            } else
+                manageMessage(buffer, id, game);            
         }
-        functions_clients = game.getFunctionsClient();
-        for (auto function : functions_clients) {
-            for (auto client = _clients.begin(); client != _clients.end(); client++) {
-                struct sockaddr_in cli = client->getAddr();
-                sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-            }
+        updateClients(id, buffer, game);
+    }
+}
+
+void server::Network::updateClients(int client_id, std::string message, Game *game)
+{
+    std::vector<std::string> functions_clients;
+
+    functions_clients = (*game).getFunctionsClient();
+    for (auto function : functions_clients) {
+        for (auto client = _clients.begin(); client != _clients.end(); client++) {
+            struct sockaddr_in cli = client->getAddr();
+            sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         }
     }
+}
+
+void server::Network::manageMessage(std::string message, int client_id, Game *game)
+{
+    std::string messageParse = handleClientMessage(message, client_id);
+    if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
+        (*game).addFunction(messageParse);
+    std::cout << "Client message: " << message << std::endl;
 }
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
@@ -134,9 +152,9 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
-    ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
-    if (bytesSent == -1)
-        return 84;
+    // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
+    // if (bytesSent == -1)
+    //     return 84;
     std::cout << "New client connected" << std::endl;
     return 0;
 }
@@ -186,13 +204,19 @@ int server::Network::commandKick(int client_id, std::string message)
     // Return client not found
 }
 
-int server::Network::commandSetTickrate() const
+int server::Network::commandSetTickrate(std::string data) const
 {
-    std::string newTickrate = "New tickrate: " + std::to_string(0);
+    server::Test test;
 
+    test.setTick(10);
+    test.setTickspeed(100);
+    std::ostringstream archive_stream;
+    boost::archive::binary_oarchive archive(archive_stream);
+    archive << test;
+    std::string test2 = archive_stream.str();
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, newTickrate.c_str(), newTickrate.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, test2.data(), test2.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
     // TODO: Error handling if it didn't send
     return 0;
