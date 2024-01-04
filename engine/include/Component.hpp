@@ -53,10 +53,8 @@ struct C_Transform : public Component {
  * @brief The C_Damage struct represents a component that stores information about damage.
  */
 struct C_Damage : public Component {
-    std::string _name; /**< The name of the damage component. */
     int _damage; /**< The amount of damage. */
-    C_Damage(std::string name, int damage) {
-        _name = name;
+    C_Damage(int damage) {
         _damage = damage;
     }
     ~C_Damage() = default;

@@ -34,8 +34,6 @@ class IEntity {
          */
         virtual void render() = 0;
 
-        virtual void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) = 0;
-
         /**
          * @brief Adds a component to the entity.
          *
@@ -70,7 +68,6 @@ class Entity : public IEntity {
     public:
         void update() override = 0;
         void render() override = 0;
-        void newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) override = 0;
 
         void addComponent(std::unique_ptr<Component> component) override {
             components.push_back(std::move(component));
@@ -109,7 +106,6 @@ namespace Engine {
     void setTransformSize(IEntity& entity, Vec2 newSize);
     void setTransformVel(IEntity& entity, Vec2 newVel);
     void setTransformAni(IEntity& entity, int newAni);
-    void setDamageName(IEntity& entity, std::string newName);
     void setDamageDamage(IEntity& entity, int newDamage);
     void setHealth(IEntity& entity, int newHealth);
     void setSpriteName(IEntity& entity, std::string newSpriteName);

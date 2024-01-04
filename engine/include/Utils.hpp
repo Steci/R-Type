@@ -5,7 +5,6 @@
 ** Utils.hpp
 */
 
-// TODO : IMPLEMENT OPERATORS IN THE VEC2 CLASS
 class Vec2 {
     public:
         float x, y;
