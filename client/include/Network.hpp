@@ -35,8 +35,31 @@
 #include <thread>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 namespace client {
+    class Test {
+        public:
+            Test() = default;
+            ~Test() = default;
+            int getTick() const {return _Tick;};
+            int getTickspeed() const {return _Tickspeed;};
+            void setTick(int tick) {_Tick = tick;};
+            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
+            std::vector<char> serialize() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Test));
+            }
+            void deserialize(const std::vector<char>& serializedData) {
+                // if (serializedData.size() != sizeof(Test)) {
+                //     throw std::runtime_error("Invalid data size for deserialization");
+                // }
+                *this = *reinterpret_cast<const Test*>(serializedData.data());
+            }
+        private:
+            int _Tick = 10;
+            int _Tickspeed = 1000;
+    };
     class Network {
         public:
             Network(std::string serverIP, int serverPort);

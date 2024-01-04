@@ -83,10 +83,19 @@ void server::Network::run(Game *game)
         if (client == -1) {
             continue;
         }
-        buffer[client - 1] = '\0';
+        std::cout << "Client message before: " << buffer << " end " << std::endl;
+        if (std::find(buffer, buffer + std::strlen(buffer), '\n') != buffer + std::strlen(buffer))
+            buffer[std::find(buffer, buffer + std::strlen(buffer), '\n') - buffer] = '\0';
+        else
+            buffer[std::strlen(buffer)] = '\0';
+        std::cout << "Client message after: " << buffer << " end " << std::endl;
         id = handleClient(buffer);
         if (id != 84) {
-            manageMessage(buffer, id, game);
+            if  (std::strcmp(buffer, "TICKRATE") == 0) {
+                std::vector<char> data = game->serialize();
+                commandSetTickrate(data);
+            } else
+                manageMessage(buffer, id, game);            
         }
         updateClients(id, buffer, game);
     }
@@ -110,7 +119,7 @@ void server::Network::manageMessage(std::string message, int client_id, Game *ga
     std::string messageParse = handleClientMessage(message, client_id);
     if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
         (*game).addFunction(messageParse);
-    std::cout << "Client message: " << message << std::endl;
+    std::cout << "Client message: " << message << " end " << std::endl;
 }
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
@@ -143,9 +152,9 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
-    ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
-    if (bytesSent == -1)
-        return 84;
+    // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
+    // if (bytesSent == -1)
+    //     return 84;
     std::cout << "New client connected" << std::endl;
     return 0;
 }
@@ -195,13 +204,13 @@ int server::Network::commandKick(int client_id, std::string message)
     // Return client not found
 }
 
-int server::Network::commandSetTickrate() const
+int server::Network::commandSetTickrate(std::vector<char> data) const
 {
-    std::string newTickrate = "New tickrate: " + std::to_string(0);
-
+    server::Test test;
+    std::vector<char> dataTest = test.serialize();
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, newTickrate.c_str(), newTickrate.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
     // TODO: Error handling if it didn't send
     return 0;

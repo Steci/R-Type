@@ -16,7 +16,7 @@
 #include "Entity.hpp"
 #include "System.hpp"
 
-#define TICK_SPEED 15
+#define TICK_SPEED 66
 
 namespace server
 {
@@ -32,6 +32,7 @@ namespace server
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
+            std::vector<char> serialize();
             void actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             void actionLeftCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);

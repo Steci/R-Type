@@ -34,8 +34,31 @@
 #include <cstring>
 #include <netdb.h>
 #include <chrono>
+#include <sstream>
 
 namespace server {
+    class Test {
+        public:
+            Test() = default;
+            ~Test() = default;
+            int getTick() const {return _Tick;};
+            int getTickspeed() const {return _Tickspeed;};
+            void setTick(int tick) {_Tick = tick;};
+            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
+            std::vector<char> serialize() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Test));
+            }
+            void deserialize(const std::vector<char>& serializedData) {
+                // if (serializedData.size() != sizeof(Test)) {
+                //     throw std::runtime_error("Invalid data size for deserialization");
+                // }
+                *this = *reinterpret_cast<const Test*>(serializedData.data());
+            }
+        private:
+            int _Tick = 10;
+            int _Tickspeed = 1100;
+    };
     class Client {
         public:
             #ifdef linux
@@ -92,7 +115,7 @@ namespace server {
             // Commands
             int commandKill();
             int commandKick(int client_id, std::string message);
-            int commandSetTickrate() const;
+            int commandSetTickrate(std::vector<char> data) const;
             int commandPing(int client_id) const;
             int commandError(int client_id, std::string error) const;
     };

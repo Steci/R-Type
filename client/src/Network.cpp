@@ -78,19 +78,31 @@ int client::Network::fillAddr()
 void client::Network::run()
 {
     int server = 0;
-    char buffer[1024];
+    std::vector<char> buffer(1024);
     std::string serverMessage;
+    int pass = 0;
+    client::Test test;
 
     while(_isRunning) {
-        std::memset(&buffer, 0, sizeof(buffer));
-        server = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        if (pass < 10) {
+            std::cout << "ask tickrate" << std::endl;
+            sendto(_fd, "TICKRATE\n", 9, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        }
+        // std::memset(&buffer, 0, sizeof(buffer));
+        server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server == -1) {
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
         } else {
-            buffer[server - 1] = '\0';
-            if (handleCommands(buffer) == 84)
-                std::cerr << "Unknow Command From Server..." << std::endl;
+            std::cout << "pass 1" << std::endl;
+            // buffer[server - 1] = '\0';
+            pass += 1;
+            test.deserialize(buffer);
+            std::cout << "Tick: " << test.getTick() << std::endl;
+            std::cout << "Tickspeed: " << test.getTickspeed() << std::endl;
+            // std::cout << "Server: " << buffer << std::endl;
+            // if (handleCommands(buffer) == 84)
+            //     std::cerr << "Unknow Command From Server..." << std::endl;
         }
     }
 }
@@ -110,10 +122,10 @@ int client::Network::connectCommand()
     char buffer[1024];
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
-    std::string connectionMessage = "connect " + _serverIP + " " + std::to_string(_serverPort);
+    std::string connectionMessage = "CONNECT";
 
-    sendto(_fd, connectionMessage.c_str(), connectionMessage.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
+        sendto(_fd, connectionMessage.c_str(), connectionMessage.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         std::memset(&buffer, 0, sizeof(buffer));
         server = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
