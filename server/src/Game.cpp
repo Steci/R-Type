@@ -177,7 +177,7 @@ void server::Game::actionConnectCommand(int clientID, SystemManager manager, Spa
     }
     // create entity
     std::string path = "./assets/r-typesheet42.png";
-    entities.add(clientID, std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2));
+    entities.add(std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2), clientID);
     auto& playerEntity = entities.get(clientID);
     // add entity to entities
     manager.getSystem<S_Renderer>()->addEntity(&playerEntity);
@@ -277,7 +277,7 @@ void server::Game::run()
 
     SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
-    entities.add(10, std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66));
+    entities.add(std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66), 10);
     auto& ennemyEntity = entities.get(10);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     int numClientID = 0;
