@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 3.20.0)
 project(Rtype)
 
 # Définit le fichier de chaîne d'outils de vcpkg
-# set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
 # include path
 # use c function
 # cast dynamic and static
 
-set(CMAKE_TOOLCHAIN_FILE "C:/Users/malek/Downloads/vcpkg-master/vcpkg-master/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+#set(CMAKE_TOOLCHAIN_FILE "C:/Users/malek/Downloads/vcpkg-master/vcpkg-master/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
 
 # Configuration du générateur CMake en fonction du système d'exploitation
 if(WIN32)
-    set(CMAKE_GENERATOR "Visual Studio 16 2019" CACHE STRING "CMake generator" FORCE)
+    set(CMAKE_GENERATOR "Visual Studio 17 2022" CACHE STRING "CMake generator" FORCE)
     set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
 elseif(APPLE)
     set(CMAKE_GENERATOR "Xcode" CACHE STRING "CMake generator" FORCE)
