@@ -181,6 +181,8 @@ int server::Network::bindSocket()
 
 std::tuple<int, server::Connection> server::Network::handleNewConnection(Connection connect)
 {
+    if (connect.getConnect() != 1)
+        return 84;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;
@@ -202,11 +204,6 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
 
 std::tuple<int, server::Connection> server::Network::handleClient(std::vector<char> buffer) {
     Connection connect;
-
-    if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
-        std::cerr << "Error: ip or port recuperation failed" << std::endl;
-        return std::make_tuple(-1, connect);
-    }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
     // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
     connect.deserializeConnection(buffer);

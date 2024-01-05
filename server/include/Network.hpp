@@ -80,9 +80,13 @@ namespace server {
             ~Connection() {};
             int getConnect() const {return _connect;};
             int getConnected() const {return _connected;};
+<<<<<<< HEAD
             void setConnected(int connected) {_connected = connected;};
             void setId(int id) {_id = id;};
             int getId() const {return _id;};
+=======
+            int setConnected(int connected) {_connected = connected;};
+>>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
             std::vector<char> serializeConnection() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Connection));
@@ -90,6 +94,7 @@ namespace server {
             void deserializeConnection(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Connection*>(serializedData.data());
             }
+<<<<<<< HEAD
             Connection& operator=(const Connection& other) {
                 _connect = other._connect;
                 _connected = other._connected;
@@ -100,6 +105,11 @@ namespace server {
             int _connect;
             int _connected;
             int _id;
+=======
+        private:
+            int _connect;
+            int _connected;
+>>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
     };
 
     class Network {
@@ -131,11 +141,19 @@ namespace server {
             int fillSocket();
             int fillAddr();
             int bindSocket();
+<<<<<<< HEAD
             std::tuple<int, server::Connection> handleNewConnection(Connection Connect);
             std::tuple<int, server::Connection> handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
             void updateClients(int client_id, Game *game);
+=======
+            int handleNewConnection(Connection Connect);
+            int handleClient(std::vector<char> buffer);
+            std::string handleClientMessage(std::string message, int client_id);
+            void manageMessage(std::string message, int client_id, Game *game);
+            void updateClients(int client_id, std::string message, Game *game);
+>>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
             void checkClass(std::vector<char> buffer);
 
             // Commands
@@ -146,4 +164,21 @@ namespace server {
             int commandError(std::string data, int client_id) const;
             void manageClient(std::vector<char> buffer, int client_id, Game *game);
     };
+
+    namespace Errors {
+        class Error : public std::exception {
+            public:
+                Error(const std::string &message) {_message += message;};
+                ~Error() throw() {};
+                virtual const char *what() const throw() {return _message.c_str();};
+            protected:
+                std::string _message = "Error: ";
+        };
+
+        class WrongClass : public Error {
+            public:
+                WrongClass(const std::string &message) : Error(message) {};
+                ~WrongClass() {};
+        };
+    }
 }
