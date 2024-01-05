@@ -36,33 +36,9 @@
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
+#include "Game.hpp"
 
 namespace client {
-    class Test {
-        public:
-            Test() = default;
-            ~Test() = default;
-            int getTick() const {return _Tick;};
-            int getTickspeed() const {return _Tickspeed;};
-            void setTick(int tick) {_Tick = tick;};
-            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-
-            std::vector<char> serializeTick() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Test));
-            }
-            void deserializeTick(const std::vector<char>& serializedData) {
-                // if (serializedData.size() != sizeof(Test)) {
-                //     throw std::runtime_error("Invalid data size for deserialization");
-                // }
-                *this = *reinterpret_cast<const Test*>(serializedData.data());
-            }
-
-        private:
-            int _Tick = 10;
-            int _Tickspeed = 1000;
-    };
-
     class Serialize {
         public:
             Serialize() = default;
@@ -82,7 +58,7 @@ namespace client {
         public:
             Network(std::string serverIP, int serverPort);
             ~Network();
-            void run();
+            void run(Game *game);
             int connectCommand();
         private:
             std::string _serverIP;
@@ -112,7 +88,7 @@ namespace client {
             // Commands Send to the server
             int inputCommand(std::string input);
 
-            std::string handleCommands(std::string message);
+            void handleCommands(std::vector<char> buffer, Game *game);
     };
 
     class Connection {
@@ -131,21 +107,4 @@ namespace client {
             int _connect = 1;
             int _connected = 0;
     };
-
-    namespace Errors {
-        class Error : public std::exception {
-            public:
-                Error(const std::string &message) {_message += message;};
-                ~Error() throw() {};
-                virtual const char *what() const throw() {return _message.c_str();};
-            protected:
-                std::string _message = "Error: ";
-        };
-
-        class WrongClass : public Error {
-            public:
-                WrongClass(const std::string &message) : Error(message) {};
-                ~WrongClass() {};
-        };
-    }
 }

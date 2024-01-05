@@ -325,8 +325,22 @@ void server::Game::run()
         // printf("tick++");
         _tick++;
         // printf("tick = " << _tick);
+
+        //remplir la frame ici
+        fillFrame();
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
+}
+
+void server::Game::fillFrame()
+{
+    //remplir la frame ici
+    Frame frame;
+
+    frame.setTick(_tick);
+    _mutex_frame.lock();
+    _frames.push_back(frame);
+    _mutex_frame.unlock();
 }
 
 // void server::Game::addFunction(std::string function)
@@ -345,10 +359,8 @@ std::vector<std::string> server::Game::getFunctionsClient()
     return functions;
 }
 
-std::vector<char> server::Game::serialize()
+server::Frame& server::Frame::operator=(const Frame& other)
 {
-    std::vector<char> data;
-    data.insert(data.end(), reinterpret_cast<const char *>(&_tick), reinterpret_cast<const char *>(&_tick + 1));
-    data.insert(data.end(), reinterpret_cast<const char *>(&_tickSpeed), reinterpret_cast<const char *>(&_tickSpeed + 1));
-    return data;
+    _tick = other._tick;
+    return *this;
 }

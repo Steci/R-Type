@@ -80,6 +80,7 @@ void server::Network::run(Game *game)
 
     while(_isRunning) {
         client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        updateClients(id, game);
         if (client < 0) {
             continue;
         }
@@ -92,20 +93,37 @@ void server::Network::run(Game *game)
         //     } else
         //         manageMessage(resData, id, game);
         // }
-        // updateClients(id, resData, game);
     }
 }
 
-void server::Network::updateClients(int client_id, std::string message, Game *game)
+void server::Network::updateClients(int client_id, Game *game)
 {
     std::vector<std::string> functions_clients;
+    std::vector<Frame> frames = (*game).getFrames();
+    Frame frame;
+    bool frame_found = false;
 
-    functions_clients = (*game).getFunctionsClient();
-    for (auto function : functions_clients) {
-        for (auto client = _clients.begin(); client != _clients.end(); client++) {
-            struct sockaddr_in cli = client->getAddr();
-            sendto(_fd, function.c_str(), function.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    if (frames.size() == 0 || frames.size() <= _last_tick_send + 1)
+        return;
+    if (frames[_last_tick_send].getTick() == _last_tick_send) {
+        frame_found = true;
+        frame = frames[_last_tick_send + 1];
+    } else {
+        for (auto frame_tmp : frames) {
+            if (frame_tmp.getTick() == _last_tick_send + 1) {
+                frame = frame_tmp;
+                frame_found = true;
+                break;
+            }
         }
+    }
+    if (!frame_found)
+        return;
+    _last_tick_send = frame.getTick();
+    std::vector<char> data = frame.serializeFrame();
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        struct sockaddr_in cli = client->getAddr();
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
 }
 
@@ -143,8 +161,10 @@ int server::Network::bindSocket()
 
 int server::Network::handleNewConnection(Connection connect)
 {
-    if (connect.getConnect() != 1)
+    if (connect.getConnect() != 1) {
+        std::cout << "error connection" << std::endl;
         return 84;
+    }
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;
@@ -155,7 +175,6 @@ int server::Network::handleNewConnection(Connection connect)
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    std::cout << "send back to client " << connect.getConnected() << std::endl;
     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)

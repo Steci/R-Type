@@ -39,6 +39,24 @@ namespace server
             //etc...
     };
 
+    class Frame {
+        public:
+            Frame() {}; // penser à remplir le constructeur si besoin
+            ~Frame() {}; // penser à remplir le destructeur si besoin
+            void setTick(int tick) {_tick = tick;};
+            std::vector<char> serializeFrame() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Frame));
+            }
+            bool operator==(const Frame& other) const {return *this == other;}
+            bool operator!=(const Frame& other) const {return !(*this == other);}
+            Frame& operator=(const Frame& other);
+            int getTick() const {return _tick;};
+        private:
+            int _tick;
+            // ici mettre les infos de la frame à display
+    };
+
     class Game
     {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
@@ -51,7 +69,7 @@ namespace server
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
-            std::vector<char> serialize();
+            std::vector<Frame> getFrames() {_mutex_frame.lock();std::vector<Frame> frame = _frames;_mutex_frame.unlock();return frame;};
 
             // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
 
@@ -79,5 +97,8 @@ namespace server
             std::vector<std::string> _functions_client;
             std::mutex _mutex_client;
             std::map<std::string, functionsExecution> _fonctions_map;
+            std::mutex _mutex_frame;
+            std::vector<Frame> _frames; // ici mettre les frames à display
+            void fillFrame();
     };
 }

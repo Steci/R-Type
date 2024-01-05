@@ -75,7 +75,7 @@ int client::Network::fillAddr()
     return 0;
 }
 
-void client::Network::run()
+void client::Network::run(Game *game)
 {
     int server = 0;
     std::vector<char> buffer(1024);
@@ -87,8 +87,7 @@ void client::Network::run()
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
         } else {
-            std::string resData = convert.deserialize(buffer);
-            handleCommands(resData);
+            handleCommands(buffer, game);
         }
     }
 }
@@ -110,18 +109,13 @@ int client::Network::connectCommand()
     client::Connection connect;
     client::Connection receiveConnection;
     std::vector<char> data = connect.serializeConnection();
-    std::vector<char> receiveData(1280);
+    std::vector<char> receiveData(sizeof(client::Connection));
 
-    std::cout << "Connecting to the server..." << std::endl;
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
-        std::cout << "Sending connection request..." << std::endl;
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        std::cout << "Waiting for server response..." << std::endl;
         server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
-            std::cout << "Server response received." << std::endl;
             receiveConnection.deserializeConnection(receiveData);
-            std::cout << "deserialiszation done with success" << std::endl;
             if (receiveConnection.getConnected() == 1) {
                 std::cout << "Successfully connected with the server." << std::endl;
                 return 0;
@@ -155,13 +149,13 @@ int client::Network::inputCommand(std::string input)
     return 0;
 }
 
-std::string client::Network::handleCommands(std::string message)
+void client::Network::handleCommands(std::vector<char> buffer, Game *game)
 {
-    for (auto command : _commands) {
-        if (message == command) {
-            return message;
-        }
+    client::Frame frame;
+
+    frame.deserializeFrame(buffer);
+    if (frame.getTick() != -1) {
+        game->addFrame(frame);
+        return;
     }
-    std::cerr << "Wrong command" << std::endl;
-    return "";
 }

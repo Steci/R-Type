@@ -41,6 +41,19 @@ namespace client {
             //etc...
     };
 
+    class Frame {
+        public:
+            Frame() {}; // penser à remplir le constructeur si besoin
+            ~Frame() {}; // penser à remplir le destructeur si besoin
+            int getTick() const {return _tick;};
+            void deserializeFrame(const std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<const Frame*>(serializedData.data());
+            }
+        private:
+            int _tick = -1;
+            // ici mettre les infos de la frame à display
+    };
+
     class Game
     {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
@@ -50,6 +63,7 @@ namespace client {
             ~Game();
             void run();
             std::vector<Interaction> getInteractions() {return _interactions;}
+            void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
             // à faire pour rajouter les frame à display
             // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
 
@@ -75,6 +89,7 @@ namespace client {
             std::vector<Interaction> _interactions;
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frame;
-            // std::vector<Frame> _frames
+            std::vector<Frame> _frames; // ici mettre les frames à display
     };
+
 }

@@ -37,33 +37,6 @@
 #include <sstream>
 
 namespace server {
-    class Test {
-        public:
-            Test() = default;
-            ~Test() = default;
-            int getTick() const {return _Tick;};
-            int getTickspeed() const {return _Tickspeed;};
-            void setTick(int tick) {_Tick = tick;};
-            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-
-            std::vector<char> serializeTick() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Test));
-            }
-            void deserializeTick(const std::vector<char>& serializedData) {
-                // if (serializedData.size() != sizeof(Test)) {
-                //     throw std::runtime_error("Invalid data size for deserialization");
-                // }
-                *this = *reinterpret_cast<const Test*>(serializedData.data());
-            }
-
-
-
-        private:
-            int _Tick = 10;
-            int _Tickspeed = 1100;
-    };
-
     class Serialize {
         public:
             Serialize() = default;
@@ -138,6 +111,7 @@ namespace server {
                 SOCKADDR_IN _addr;
             #endif
             int _tickrate;
+            int _last_tick_send = 0;
             std::vector<Client> _clients;
             Game _game;
             std::vector<std::string> _commands = {"CONNECT", "QUIT", "INPUT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
@@ -149,7 +123,7 @@ namespace server {
             int handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
-            void updateClients(int client_id, std::string message, Game *game);
+            void updateClients(int client_id, Game *game);
             void checkClass(std::vector<char> buffer);
 
             // Commands
@@ -159,21 +133,4 @@ namespace server {
             int commandPing(std::string data, int client_id) const;
             int commandError(std::string data, int client_id) const;
     };
-
-    namespace Errors {
-        class Error : public std::exception {
-            public:
-                Error(const std::string &message) {_message += message;};
-                ~Error() throw() {};
-                virtual const char *what() const throw() {return _message.c_str();};
-            protected:
-                std::string _message = "Error: ";
-        };
-
-        class WrongClass : public Error {
-            public:
-                WrongClass(const std::string &message) : Error(message) {};
-                ~WrongClass() {};
-        };
-    }
 }
