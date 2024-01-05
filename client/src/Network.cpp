@@ -112,6 +112,7 @@ int client::Network::connectCommand()
     std::vector<char> data = connect.serializeConnection();
     std::vector<char> receiveData(sizeof(client::Connection));
 
+    std::cout << "Connecting to the server..." << std::endl;
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
