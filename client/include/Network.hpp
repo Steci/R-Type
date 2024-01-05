@@ -74,7 +74,10 @@ namespace client {
                 SOCKADDR_IN _serverAddr;
                 int _serverAddrLen;
             #endif
-            bool _isRunning;
+            int _tickrate;
+            std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR"};
+            std::vector<std::string> _inputs = {"UP", "DOWN", "LEFT", "RIGHT", "SHOOT", "DAMAGE", "SCORE"};
+            int _clientID;
 
             int fillSocket();
             int fillAddr();
