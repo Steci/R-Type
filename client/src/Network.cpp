@@ -140,6 +140,17 @@ std::string client::Network::inputHandle(std::string message)
     return "";
 }
 
+std::string client::Network::inputHandle(std::string message)
+{
+    for (auto input : _inputs) {
+        if (message == input) {
+            return "UPDATE " + message;
+        }
+    }
+    std::cerr << "Wrong input" << std::endl;
+    return "";
+}
+
 int client::Network::inputCommand(std::string input)
 {
     client::Serialize convert;
