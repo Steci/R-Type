@@ -67,18 +67,21 @@ class S_AudioManager : public System {
 
 class S_EnemyAI : public System {
     public:
-        S_EnemyAI() = default;
-        ~S_EnemyAI() = default;
+        S_EnemyAI();
+        ~S_EnemyAI();
+        void update() override;
 };
 
 class S_Collision : public System {
     public:
-        S_Collision();
+        S_Collision(SparseArray<IEntity> &sparseEntities);
         ~S_Collision();
         void update() override;
         bool checkCollision(IEntity* entity1, IEntity* entity2);
         int screenWidth = 800;
         int screenHeight = 600;
+    private:
+        SparseArray<IEntity> &_sparseEntities;
 };
 
 class S_EventManager : public System {

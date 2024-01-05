@@ -122,6 +122,7 @@ E_Enemy::E_Enemy(std::string path, int position_x, int position_y, float size_x,
     addComponent(std::make_unique<C_Health>(20));
     addComponent(std::make_unique<C_Sprite>(path));
     addComponent(std::make_unique<C_Hitbox>(65, 66));
+    addComponent(std::make_unique<C_EnemyInfo>(2));
 }
 
 void E_Enemy::update()

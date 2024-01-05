@@ -158,4 +158,12 @@ namespace Engine {
             score->_score = newScore;
         }
     }
+
+    void setEnemyInfoType(IEntity& entity, int newType)
+    {
+        C_EnemyInfo* enemyInfo = dynamic_cast<C_EnemyInfo*>(entity.getComponentOfType(typeid(C_EnemyInfo)));
+        if (enemyInfo) {
+            enemyInfo->_type = newType;
+        }
+    }
 };

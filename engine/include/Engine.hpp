@@ -107,6 +107,15 @@ class SparseArray {
             return id < sparse.size() && sparse[id] != -1;
         }
 
+        /**
+         * @brief Gets the all the elements in the dense array.
+         *
+         * @return The arrary of actual elements
+         */
+        std::vector<std::unique_ptr<T>>& getAll() {
+            return dense;
+        }
+
         const std::vector<int>& getAllIndices() const {
             return indices;
         }

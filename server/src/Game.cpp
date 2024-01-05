@@ -269,17 +269,21 @@ void server::Game::run()
     printf("Game started");
 
     SystemManager manager;
+    SparseArray<IEntity> entities;
 
-    // To Remove
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     manager.addSystem<S_AudioManager>();
-    manager.addSystem<S_Collision>();
+    manager.addSystem<S_Collision>(entities);
+    manager.addSystem<S_EnemyAI>();
 
-    SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
-    entities.add(std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66), 10);
+    entities.add(std::make_unique<E_Enemy>(path, 700, 200, 65.2, 66), 10);
     auto& ennemyEntity = entities.get(10);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
+    manager.getSystem<S_EnemyAI>()->addEntity(&ennemyEntity);
+    // entities.add(std::make_unique<E_Enemy>(path, 700, 200, 65.2, 66), 11);
+    // auto& ennemyEntity2 = entities.get(11);
+    // manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity2);
     int numClientID = 0;
 
     // parse the entities in the sparse array and add them to the collision system
@@ -287,7 +291,6 @@ void server::Game::run()
     for (auto id : sparseIds) {
         if (id != -1) {
             auto& tmpEntity = entities.get(id);
-            manager.getSystem<S_Collision>()->addEntity(&tmpEntity);
         }
     }
 
@@ -326,7 +329,6 @@ void server::Game::run()
                 continue;
             }
             auto& playerEntity = entities.get(numClientID);
-            manager.getSystem<S_Collision>()->addEntity(&playerEntity);
             _functions_client.push_back("POS " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.x) + " " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.y) + " " + clientID);
             _mutex_client.unlock();
         }
