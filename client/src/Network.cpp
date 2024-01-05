@@ -83,6 +83,7 @@ void client::Network::run(Game *game)
 
     while(_isRunning) {
         server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        checkInteraction(game);
         if (server == -1) {
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
@@ -157,5 +158,17 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
     if (frame.getTick() != -1) {
         game->addFrame(frame);
         return;
+    }
+}
+
+void client::Network::checkInteraction(Game *game)
+{
+    std::vector<Interaction> interactions = game->getInteractions();
+    std::vector<char> data;
+
+    if (interactions.size() > 0) {
+        data = interactions[0].serializeInteraction();
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        game->deleteInteraction(0);
     }
 }

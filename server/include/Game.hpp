@@ -23,19 +23,16 @@ namespace server
         public:
             Interaction() {};
             ~Interaction() {};
-            void setInteraction() {}; //ici laetitia tu mettre le mouvement qui nous intéresse à la valeur qu'on veut
-            void clearInteraction(); //ici laetitia tu clear les intéraction donc celles que tu vas rajouter aussi
-            std::vector<char> serializeInteraction() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Interaction));
-            }
+            int getMovement() const {return _movement;};
+            int getShoot() const {return _shoot;};
+            int getQuit() const {return _quit;};
             void deserializeInteraction(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
         private:
-            int _movement = 0; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server)
-            int _shoot = 0; // 0 si rien 1 si quelque chose
-            int _quit = 0; // 0 si rien 1 si le client veut quitter
+            int _movement = -1; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server)
+            int _shoot = -1; // 0 si rien 1 si quelque chose
+            int _quit = -1; // 0 si rien 1 si le client veut quitter
             //etc...
     };
 

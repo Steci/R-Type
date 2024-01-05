@@ -89,6 +89,8 @@ namespace client {
             int inputCommand(std::string input);
 
             void handleCommands(std::vector<char> buffer, Game *game);
+
+            void checkInteraction(Game *game);
     };
 
     class Connection {

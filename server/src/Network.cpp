@@ -84,8 +84,12 @@ void server::Network::run(Game *game)
         if (client < 0) {
             continue;
         }
+        std::cout << "receive new message" << std::endl;
         // std::string resData = convert.deserialize(buffer);
         id = handleClient(buffer);
+        if (id != 84 && id != 0) {
+            manageInteraction(buffer, id, game);
+        }
         // if (id != 84) {
         //     if (resData == "TICKRATE") {
         //         std::vector<char> data = game->serialize();
@@ -94,6 +98,14 @@ void server::Network::run(Game *game)
         //         manageMessage(resData, id, game);
         // }
     }
+}
+
+void server::Network::manageInteraction(std::vector<char> buffer, int client_id, Game *game)
+{
+    Interaction interaction;
+
+    interaction.deserializeInteraction(buffer);
+    std::cout << "Interaction: " << interaction.getMovement() << std::endl;
 }
 
 void server::Network::updateClients(int client_id, Game *game)
@@ -161,17 +173,13 @@ int server::Network::bindSocket()
 
 int server::Network::handleNewConnection(Connection connect)
 {
-    if (connect.getConnect() != 1) {
-        std::cout << "error connection" << std::endl;
-        return 84;
-    }
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;
             return client->getId();
         }
     }
-    _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
+    _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
@@ -198,7 +206,6 @@ int server::Network::handleClient(std::vector<char> buffer) {
 
     // return handleNewConnection();
 }
-
 
 int server::Network::commandKill(std::string data)
 {

@@ -7,9 +7,13 @@
 
 #include "Game.hpp"
 
-void client::Interaction::clearInteraction()
+void client::Interaction::setInteraction(int inter)
 {
-    _movement = 0;
-    _shoot = 0;
-    _quit = 0;
+    //exemple tu feras bien plus propre surement avec un tableau de poiteur sur fonction mais là j'ai la flemme
+    if (inter > 0 && inter < 4)
+        _movement = inter;
+    else if (inter == 4)
+        _shoot = 1;
+    else if (inter == 5)
+        _quit = 1;
 }

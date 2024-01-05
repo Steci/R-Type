@@ -25,17 +25,13 @@ namespace client {
         public:
             Interaction() {};
             ~Interaction() {};
-            void setInteraction() {}; //ici laetitia tu mettre le mouvement qui nous intéresse à la valeur qu'on veut
-            void clearInteraction(); //ici laetitia tu clear les intéraction donc celles que tu vas rajouter aussi
+            void setInteraction(int inter); //ici laetitia tu mettre l'interaction qui nous intéresse à la valeur qu'on veut et surtout hésite pas à le changer prck c'est que du fonctionel là
             std::vector<char> serializeInteraction() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Interaction));
             }
-            void deserializeInteraction(const std::vector<char>& serializedData) {
-                *this = *reinterpret_cast<const Interaction*>(serializedData.data());
-            }
         private:
-            int _movement = 0; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server)
+            int _movement = 0; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server) !!!!!! jamais négatif !!!!!!
             int _shoot = 0; // 0 si rien 1 si quelque chose
             int _quit = 0; // 0 si rien 1 si le client veut quitter
             //etc...
@@ -62,8 +58,9 @@ namespace client {
             Game();
             ~Game();
             void run();
-            std::vector<Interaction> getInteractions() {return _interactions;}
-            void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
+            std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
+            void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
+            void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
             // à faire pour rajouter les frame à display
             // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
 
@@ -85,11 +82,12 @@ namespace client {
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
-            std::mutex _mutex;
+            std::mutex _mutex_interactions;
             std::vector<Interaction> _interactions;
             // à faire pour récup les frame du jeu à display
-            std::mutex _mutex_frame;
+            std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
+            void testInteraction();
     };
 
 }
