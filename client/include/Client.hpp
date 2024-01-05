@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Network.hpp"
+#include "Game.hpp"
 
 namespace client {
     class Client {

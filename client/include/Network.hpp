@@ -110,11 +110,42 @@ namespace client {
             std::string inputHandle(std::string input);
 
             // Commands Send to the server
-            int disconnectCommand();
-            int pingCommand();
             int inputCommand(std::string input);
 
             std::string handleCommands(std::string message);
     };
 
+    class Connection {
+        public:
+            Connection() {};
+            ~Connection() {};
+            int getConnected() const {return _connected;};
+            std::vector<char> serializeConnection() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Connection));
+            }
+            void deserializeConnection(const std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<const Connection*>(serializedData.data());
+            }
+        private:
+            int _connect = 1;
+            int _connected = 0;
+    };
+
+    namespace Errors {
+        class Error : public std::exception {
+            public:
+                Error(const std::string &message) {_message += message;};
+                ~Error() throw() {};
+                virtual const char *what() const throw() {return _message.c_str();};
+            protected:
+                std::string _message = "Error: ";
+        };
+
+        class WrongClass : public Error {
+            public:
+                WrongClass(const std::string &message) : Error(message) {};
+                ~WrongClass() {};
+        };
+    }
 }

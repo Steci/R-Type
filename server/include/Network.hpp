@@ -100,6 +100,25 @@ namespace server {
             const std::string _name;
     };
 
+    class Connection {
+        public:
+            Connection() {};
+            ~Connection() {};
+            int getConnect() const {return _connect;};
+            int getConnected() const {return _connected;};
+            int setConnected(int connected) {_connected = connected;};
+            std::vector<char> serializeConnection() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Connection));
+            }
+            void deserializeConnection(const std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<const Connection*>(serializedData.data());
+            }
+        private:
+            int _connect;
+            int _connected;
+    };
+
     class Network {
         public:
             Network(int port, int maxClients);
@@ -126,11 +145,12 @@ namespace server {
             int fillSocket();
             int fillAddr();
             int bindSocket();
-            int handleNewConnection();
-            int handleClient(std::string message);
+            int handleNewConnection(Connection Connect);
+            int handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
             void updateClients(int client_id, std::string message, Game *game);
+            void checkClass(std::vector<char> buffer);
 
             // Commands
             int commandKill(std::string data);
@@ -139,4 +159,21 @@ namespace server {
             int commandPing(std::string data, int client_id) const;
             int commandError(std::string data, int client_id) const;
     };
+
+    namespace Errors {
+        class Error : public std::exception {
+            public:
+                Error(const std::string &message) {_message += message;};
+                ~Error() throw() {};
+                virtual const char *what() const throw() {return _message.c_str();};
+            protected:
+                std::string _message = "Error: ";
+        };
+
+        class WrongClass : public Error {
+            public:
+                WrongClass(const std::string &message) : Error(message) {};
+                ~WrongClass() {};
+        };
+    }
 }

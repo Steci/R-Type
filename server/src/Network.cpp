@@ -77,23 +77,22 @@ void server::Network::run(Game *game)
     int id;
     std::string message;
     std::vector<char> buffer(1024);
-    server::Serialize convert;
 
     while(_isRunning) {
         client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         if (client < 0) {
             continue;
         }
-        std::string resData = convert.deserialize(buffer);
-        id = handleClient(resData);
-        if (id != 84) {
-            if (resData == "TICKRATE") {
-                std::vector<char> data = game->serialize();
-                commandSetTickrate(convert.deserialize(data));
-            } else
-                manageMessage(resData, id, game);
-        }
-        updateClients(id, resData, game);
+        // std::string resData = convert.deserialize(buffer);
+        id = handleClient(buffer);
+        // if (id != 84) {
+        //     if (resData == "TICKRATE") {
+        //         std::vector<char> data = game->serialize();
+        //         commandSetTickrate(convert.deserialize(data));
+        //     } else
+        //         manageMessage(resData, id, game);
+        // }
+        // updateClients(id, resData, game);
     }
 }
 
@@ -113,8 +112,8 @@ void server::Network::updateClients(int client_id, std::string message, Game *ga
 void server::Network::manageMessage(std::string message, int client_id, Game *game)
 {
     std::string messageParse = handleClientMessage(message, client_id);
-    if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
-        (*game).addFunction(messageParse);
+    // if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
+    //     (*game).addFunction(messageParse);
     std::cout << "Client message: " << message << " end " << std::endl;
 }
 
@@ -142,8 +141,10 @@ int server::Network::bindSocket()
     return 0;
 }
 
-int server::Network::handleNewConnection()
+int server::Network::handleNewConnection(Connection connect)
 {
+    if (connect.getConnect() != 1)
+        return 84;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;
@@ -152,9 +153,10 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
-    server::Serialize convert;
-    std::vector<char> dataTest = convert.serialize(std::to_string(_clients.size() + 1));
-    sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    connect.setConnected(1);
+    std::vector<char> data = connect.serializeConnection();
+    std::cout << "send back to client " << connect.getConnected() << std::endl;
+    sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;
@@ -162,8 +164,8 @@ int server::Network::handleNewConnection()
     return 0;
 }
 
-int server::Network::handleClient(std::string message) {
-    std::vector<Client> disconnectedClients;
+int server::Network::handleClient(std::vector<char> buffer) {
+    Connection connect;
 
     if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
         std::cerr << "Error: ip or port recuperation failed" << std::endl;
@@ -171,7 +173,11 @@ int server::Network::handleClient(std::string message) {
     }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
     // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
-    return handleNewConnection();
+    connect.deserializeConnection(buffer);
+    return handleNewConnection(connect);
+    // std::vector<Client> disconnectedClients;
+
+    // return handleNewConnection();
 }
 
 

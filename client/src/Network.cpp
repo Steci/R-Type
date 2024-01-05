@@ -107,39 +107,30 @@ int client::Network::connectCommand()
     int server;
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
-    client::Serialize convert;
-    std::vector<char> dataTest = convert.serialize("CONNECT");
+    client::Connection connect;
+    client::Connection receiveConnection;
+    std::vector<char> data = connect.serializeConnection();
+    std::vector<char> receiveData(1280);
 
+    std::cout << "Connecting to the server..." << std::endl;
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
-        sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        server = recvfrom(_fd, dataTest.data(), dataTest.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        std::cout << "Sending connection request..." << std::endl;
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        std::cout << "Waiting for server response..." << std::endl;
+        server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
-            std::string clientID = convert.deserialize(dataTest);
-            try {
-                _clientID = std::stoi(clientID);
-            } catch (const std::invalid_argument&) {
-                std::cerr << "CONNECTION ERROR" << std::endl;
-                std::cerr << clientID << std::endl;
+            std::cout << "Server response received." << std::endl;
+            receiveConnection.deserializeConnection(receiveData);
+            std::cout << "deserialiszation done with success" << std::endl;
+            if (receiveConnection.getConnected() == 1) {
+                std::cout << "Successfully connected with the server." << std::endl;
+                return 0;
             }
-            std::cout << "Successfully connected with the server." << std::endl;
-            std::cout << "ClientID : " << _clientID << std::endl;
-            return 0;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     std::cerr << "Error: Connection timeout" << std::endl;
     return 84;
-}
-
-int client::Network::disconnectCommand()
-{
-    client::Serialize convert;
-    std::vector<char> dataTest = convert.serialize("QUIT");
-    int bytesSent = sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-
-    if (bytesSent == -1)
-        return 84;
-    return 0;
 }
 
 std::string client::Network::inputHandle(std::string message)
@@ -161,22 +152,6 @@ int client::Network::inputCommand(std::string input)
 
     if (bytesSent == -1)
         return 84;
-    return 0;
-}
-
-int client::Network::pingCommand()
-{
-    client::Serialize convert;
-    std::vector<char> dataTest = convert.serialize("PING");
-    int bytesReturn = sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-
-    if (bytesReturn == -1)
-        return 84;
-    bytesReturn = recvfrom(_fd, dataTest.data(), dataTest.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-    std::string resData = convert.deserialize(dataTest);
-    if (bytesReturn == -1) {
-        return 84;
-    }
     return 0;
 }
 

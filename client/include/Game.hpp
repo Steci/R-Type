@@ -17,9 +17,11 @@
 
 #define TICK_SPEED 66
 
-namespace server
-{
-    class Interaction { // cette class va être envoyé au server pour lui dire ce qu'on fait donc toute interraction avec le jeu passe par ici
+namespace client {
+
+    // cette class va être envoyé au server pour lui dire ce qu'on fait donc toute interraction avec le jeu passe par ici
+    // cette class existe aussi dans le server donc fait gaffe si tu changes un truc faut aussi le changer côté serveur mais à terme elle existera qu'à un endroit (oui j'aurais pu le faire dès le début mais je suis crevé et si je change mtn ça va être un bordel sans nom)
+    class Interaction {
         public:
             Interaction() {};
             ~Interaction() {};
@@ -47,13 +49,12 @@ namespace server
             Game();
             ~Game();
             void run();
-            void addInteraction(Interaction interaction) {_mutex.lock();_interaction_client = interaction;_mutex.unlock();};
-            std::vector<std::string> getFunctions() {return _functions;}
-            std::pair<std::string, std::string> parseCommand(const std::string& input);
-            std::vector<std::string> getFunctionsClient();
-            std::vector<char> serialize();
+            std::vector<Interaction> getInteractions() {return _interactions;}
+            // à faire pour rajouter les frame à display
+            // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
 
-            // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
+            // il faut refaire toutes ses fonctions pour juste qu'elles récupère l'interraction et qu'elle l'envoi au serv via la class en dessous
+            // pour remplir _interaction il faut lock _mutex puis l'unlock !!!!! si tu oublie l'un des 2 c'est la merde
 
             // void actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
             // void actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
@@ -71,13 +72,9 @@ namespace server
             int _tickSpeed = TICK_SPEED;
             int _tick;
             std::mutex _mutex;
-            Interaction _interaction_client;
-            // std::vector<std::string> _functions_server;
-            // std::map<int, Key> m{{KEY_A, Key}, {KEY_RIGHT, Key}, {KEY_LEFT, Key}, {KEY_DOWN, Key}, {KEY_ESCAPE, Key}};
-            typedef void (*Key)(int button);
-            std::vector<std::string> _functions;
-            std::vector<std::string> _functions_client;
-            std::mutex _mutex_client;
-            std::map<std::string, functionsExecution> _fonctions_map;
+            std::vector<Interaction> _interactions;
+            // à faire pour récup les frame du jeu à display
+            std::mutex _mutex_frame;
+            // std::vector<Frame> _frames
     };
 }
