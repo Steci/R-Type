@@ -64,40 +64,36 @@ int server::Network::fillAddr()
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
     _addr.sin_addr.s_addr = INADDR_ANY;
+    std::cout << "Server IP: " << inet_ntoa(_addr.sin_addr) << std::endl;
+    std::cout << "Server port: " << ntohs(_addr.sin_port) << std::endl;
+    std::cout << "Server port: " << _addr.sin_port << std::endl;
     return 0;
 }
 
 void server::Network::run(Game *game)
 {
     int client;
-    char buffer[1024];
+    //char buffer[1024];
     int id;
     std::string message;
+    std::vector<char> buffer(1024);
+    server::Serialize convert;
 
-
-    // std::cout << "start loop" << std::endl;
     while(_isRunning) {
-        buffer[0] = '\0';
-        // std::cout << "wait for client" << std::endl;
-        client = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
-        if (client == -1) {
+        client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        if (client < 0) {
             continue;
         }
-        std::cout << "Client message before: " << buffer << " end " << std::endl;
-        if (std::find(buffer, buffer + std::strlen(buffer), '\n') != buffer + std::strlen(buffer))
-            buffer[std::find(buffer, buffer + std::strlen(buffer), '\n') - buffer] = '\0';
-        else
-            buffer[std::strlen(buffer)] = '\0';
-        std::cout << "Client message after: " << buffer << " end " << std::endl;
-        id = handleClient(buffer);
+        std::string resData = convert.deserialize(buffer);
+        id = handleClient(resData);
         if (id != 84) {
-            if  (std::strcmp(buffer, "TICKRATE") == 0) {
+            if (resData == "TICKRATE") {
                 std::vector<char> data = game->serialize();
-                commandSetTickrate(data);
+                commandSetTickrate(convert.deserialize(data));
             } else
-                manageMessage(buffer, id, game);            
+                manageMessage(resData, id, game);
         }
-        updateClients(id, buffer, game);
+        updateClients(id, resData, game);
     }
 }
 
@@ -124,11 +120,15 @@ void server::Network::manageMessage(std::string message, int client_id, Game *ga
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
 {
-    for (auto command : _commands)
+    for (auto command : _commands) {
         if (message == command) {
             message = message + " " + std::to_string(client_id);
             return message;
+        } else if (message.rfind(command, 0) == 0 && command == "UPDATE") {
+            message = message + " " + std::to_string(client_id);
+            return message;
         }
+    }
     std::cout << "Wrong command" << std::endl;
     return message;
 }
@@ -152,6 +152,9 @@ int server::Network::handleNewConnection()
     }
     _clients.push_back(Client(_clientAddr, _clients.size(), "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
+    server::Serialize convert;
+    std::vector<char> dataTest = convert.serialize(std::to_string(_clients.size() + 1));
+    sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;
@@ -172,51 +175,49 @@ int server::Network::handleClient(std::string message) {
 }
 
 
-int server::Network::commandKill()
+int server::Network::commandKill(std::string data)
 {
-    std::string kickMessage = "You've been kicked: Server Disconnection";
+    server::Serialize convert;
+    std::vector<char> dataTest = convert.serialize(data);
 
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, kickMessage.c_str(), kickMessage.size(), 0, (struct sockaddr *)&cli, sizeof(cli)); 
+        sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         // TODO: Error handling if it didn't send
     }
     _clients.clear();
     return 0;
 }
 
-int server::Network::commandKick(int client_id, std::string message)
+int server::Network::commandKick(std::string data, int client_id)
 {
-    std::string kickMessage = "You've been kicked: " + message;
+    server::Serialize convert;
+    std::vector<char> dataTest = convert.serialize(data);
 
-    // send(_fd, kickMessage.c_str(), kickMessage.size(), 0);
-    // TODO: Error handling if it didn't send
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (client->getId() == client_id) {
             struct sockaddr_in cli = client->getAddr();
-            sendto(_fd, kickMessage.c_str(), kickMessage.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+            sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
             _clients.erase(client);
            return 0;
-            // Return success
         }
     }
     return 1;
-    // Return client not found
 }
 
-int server::Network::commandSetTickrate(std::vector<char> data) const
+int server::Network::commandSetTickrate(std::string data) const
 {
-    server::Test test;
-    std::vector<char> dataTest = test.serialize();
+    server::Serialize convert;
+    std::vector<char> dataTest = convert.serialize(data);
+
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
         sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
-    // TODO: Error handling if it didn't send
     return 0;
 }
 
-int server::Network::commandPing(int client_id) const
+int server::Network::commandPing(std::string data, int client_id) const
 {
     auto start = std::chrono::high_resolution_clock::now();
     auto end = std::chrono::high_resolution_clock::now();
@@ -235,16 +236,16 @@ int server::Network::commandPing(int client_id) const
     return 0;
 }
 
-int server::Network::commandError(int client_id, std::string error) const
+int server::Network::commandError(std::string data, int client_id) const
 {
-    std::string errorMessage = "Error: " + error;
+    server::Serialize convert;
+    std::vector<char> dataTest = convert.serialize(data);
 
     for (auto client = _clients.begin(); client != _clients.end(); client++)
         if (client->getId() == client_id) {
             struct sockaddr_in cli = client->getAddr();
-            sendto(_fd, errorMessage.c_str(), errorMessage.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+            sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         }
-    // TODO: Error handling if it didn't send
     return 0;
 }
 

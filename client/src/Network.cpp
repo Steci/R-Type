@@ -79,30 +79,16 @@ void client::Network::run()
 {
     int server = 0;
     std::vector<char> buffer(1024);
-    std::string serverMessage;
-    int pass = 0;
-    client::Test test;
+    client::Serialize convert;
 
     while(_isRunning) {
-        if (pass < 10) {
-            std::cout << "ask tickrate" << std::endl;
-            sendto(_fd, "TICKRATE\n", 9, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        }
-        // std::memset(&buffer, 0, sizeof(buffer));
         server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server == -1) {
             std::cerr << "Error: recvfrom failed" << std::endl;
             return;
         } else {
-            std::cout << "pass 1" << std::endl;
-            // buffer[server - 1] = '\0';
-            pass += 1;
-            test.deserialize(buffer);
-            std::cout << "Tick: " << test.getTick() << std::endl;
-            std::cout << "Tickspeed: " << test.getTickspeed() << std::endl;
-            // std::cout << "Server: " << buffer << std::endl;
-            // if (handleCommands(buffer) == 84)
-            //     std::cerr << "Unknow Command From Server..." << std::endl;
+            std::string resData = convert.deserialize(buffer);
+            handleCommands(resData);
         }
     }
 }
@@ -119,17 +105,24 @@ int client::Network::bindSocket()
 int client::Network::connectCommand()
 {
     int server;
-    char buffer[1024];
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
-    std::string connectionMessage = "CONNECT";
+    client::Serialize convert;
+    std::vector<char> dataTest = convert.serialize("CONNECT");
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
-        sendto(_fd, connectionMessage.c_str(), connectionMessage.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        std::memset(&buffer, 0, sizeof(buffer));
-        server = recvfrom(_fd, (char *)buffer, 1024, MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        server = recvfrom(_fd, dataTest.data(), dataTest.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
+            std::string clientID = convert.deserialize(dataTest);
+            try {
+                _clientID = std::stoi(clientID);
+            } catch (const std::invalid_argument&) {
+                std::cerr << "CONNECTION ERROR" << std::endl;
+                std::cerr << clientID << std::endl;
+            }
             std::cout << "Successfully connected with the server." << std::endl;
+            std::cout << "ClientID : " << _clientID << std::endl;
             return 0;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -140,19 +133,32 @@ int client::Network::connectCommand()
 
 int client::Network::disconnectCommand()
 {
-    int bytesSent = sendto(_fd, "disconnect", 11, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+    client::Serialize convert;
+    std::vector<char> dataTest = convert.serialize("QUIT");
+    int bytesSent = sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
 
     if (bytesSent == -1)
         return 84;
     return 0;
 }
 
+std::string client::Network::inputHandle(std::string message)
+{
+    for (auto input : _inputs) {
+        if (message == input) {
+            return "UPDATE " + message;
+        }
+    }
+    std::cerr << "Wrong input" << std::endl;
+    return "";
+}
+
 int client::Network::inputCommand(std::string input)
 {
-    int bytesSent = 0;
+    client::Serialize convert;
+    std::vector<char> dataTest = convert.serialize(input);
+    int bytesSent = sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
 
-    input = "input " + input;
-    bytesSent = sendto(_fd, input.c_str(), input.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
     if (bytesSent == -1)
         return 84;
     return 0;
@@ -160,21 +166,27 @@ int client::Network::inputCommand(std::string input)
 
 int client::Network::pingCommand()
 {
-    char buffer[1024];
-    int bytesReturn = sendto(_fd, "ping", 5, 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+    client::Serialize convert;
+    std::vector<char> dataTest = convert.serialize("PING");
+    int bytesReturn = sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
 
     if (bytesReturn == -1)
         return 84;
-    bytesReturn = recvfrom(_fd, (char *)buffer, 1024, MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-    // TODO: Check if it's really the ping response from the server.
+    bytesReturn = recvfrom(_fd, dataTest.data(), dataTest.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+    std::string resData = convert.deserialize(dataTest);
     if (bytesReturn == -1) {
         return 84;
     }
     return 0;
 }
 
-int client::Network::handleCommands(const char *serverMessage)
+std::string client::Network::handleCommands(std::string message)
 {
-    // TODO: Add all function they are supposed to receive: kill, kick, set_tickrate, update, and error.
-    return (0);
+    for (auto command : _commands) {
+        if (message == command) {
+            return message;
+        }
+    }
+    std::cerr << "Wrong command" << std::endl;
+    return "";
 }

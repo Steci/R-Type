@@ -46,20 +46,38 @@ namespace client {
             int getTickspeed() const {return _Tickspeed;};
             void setTick(int tick) {_Tick = tick;};
             void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-            std::vector<char> serialize() {
+
+            std::vector<char> serializeTick() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Test));
             }
-            void deserialize(const std::vector<char>& serializedData) {
+            void deserializeTick(const std::vector<char>& serializedData) {
                 // if (serializedData.size() != sizeof(Test)) {
                 //     throw std::runtime_error("Invalid data size for deserialization");
                 // }
                 *this = *reinterpret_cast<const Test*>(serializedData.data());
             }
+
         private:
             int _Tick = 10;
             int _Tickspeed = 1000;
     };
+
+    class Serialize {
+        public:
+            Serialize() = default;
+            ~Serialize() = default;
+
+            std::string deserialize(const std::vector<char>& data) {
+                return std::string(data.begin(), data.end());
+            }
+
+            std::vector<char> serialize(const std::string& data) {
+                return std::vector<char>(data.begin(), data.end());
+            }
+
+    };
+
     class Network {
         public:
             Network(std::string serverIP, int serverPort);
@@ -80,18 +98,23 @@ namespace client {
                 SOCKADDR_IN _addr;
             #endif
             int _tickrate;
+            std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR"};
+            std::vector<std::string> _inputs = {"UP", "DOWN", "LEFT", "RIGHT", "SHOOT", "DAMAGE", "SCORE"};
+            int _clientID;
 
             int fillSocket();
             int fillAddr();
             int bindSocket();
             int getRandomPort();
 
+            std::string inputHandle(std::string input);
+
             // Commands Send to the server
             int disconnectCommand();
             int pingCommand();
             int inputCommand(std::string input);
 
-            int handleCommands(const char *serverMessage);
+            std::string handleCommands(std::string message);
     };
 
 }

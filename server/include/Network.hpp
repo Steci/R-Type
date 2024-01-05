@@ -45,20 +45,40 @@ namespace server {
             int getTickspeed() const {return _Tickspeed;};
             void setTick(int tick) {_Tick = tick;};
             void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-            std::vector<char> serialize() {
+
+            std::vector<char> serializeTick() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Test));
             }
-            void deserialize(const std::vector<char>& serializedData) {
+            void deserializeTick(const std::vector<char>& serializedData) {
                 // if (serializedData.size() != sizeof(Test)) {
                 //     throw std::runtime_error("Invalid data size for deserialization");
                 // }
                 *this = *reinterpret_cast<const Test*>(serializedData.data());
             }
+
+
+
         private:
             int _Tick = 10;
             int _Tickspeed = 1100;
     };
+
+    class Serialize {
+        public:
+            Serialize() = default;
+            ~Serialize() = default;
+
+            std::string deserialize(const std::vector<char>& data) {
+                return std::string(data.begin(), data.end());
+            }
+
+            std::vector<char> serialize(const std::string& data) {
+                return std::vector<char>(data.begin(), data.end());
+            }
+
+    };
+
     class Client {
         public:
             #ifdef linux
@@ -101,7 +121,7 @@ namespace server {
             int _tickrate;
             std::vector<Client> _clients;
             Game _game;
-            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
+            std::vector<std::string> _commands = {"CONNECT", "QUIT", "INPUT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
 
             int fillSocket();
             int fillAddr();
@@ -113,10 +133,10 @@ namespace server {
             void updateClients(int client_id, std::string message, Game *game);
 
             // Commands
-            int commandKill();
-            int commandKick(int client_id, std::string message);
-            int commandSetTickrate(std::vector<char> data) const;
-            int commandPing(int client_id) const;
-            int commandError(int client_id, std::string error) const;
+            int commandKill(std::string data);
+            int commandKick(std::string data, int client_id);
+            int commandSetTickrate(std::string data) const;
+            int commandPing(std::string data, int client_id) const;
+            int commandError(std::string data, int client_id) const;
     };
 }
