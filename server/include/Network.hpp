@@ -152,8 +152,12 @@ namespace server {
             int handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
+<<<<<<< HEAD
             void updateClients(int client_id, std::string message, Game *game);
 >>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
+=======
+            void updateClients(int client_id, Game *game);
+>>>>>>> 871ad90 ([FIX] send frame from server to client)
             void checkClass(std::vector<char> buffer);
 
             // Commands
@@ -164,21 +168,4 @@ namespace server {
             int commandError(std::string data, int client_id) const;
             void manageClient(std::vector<char> buffer, int client_id, Game *game);
     };
-
-    namespace Errors {
-        class Error : public std::exception {
-            public:
-                Error(const std::string &message) {_message += message;};
-                ~Error() throw() {};
-                virtual const char *what() const throw() {return _message.c_str();};
-            protected:
-                std::string _message = "Error: ";
-        };
-
-        class WrongClass : public Error {
-            public:
-                WrongClass(const std::string &message) : Error(message) {};
-                ~WrongClass() {};
-        };
-    }
 }
