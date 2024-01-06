@@ -322,16 +322,16 @@ void server::Game::run()
         // printf("tick = " << _tick);
 
         //remplir la frame ici
-        fillFrame(entities);
+        fillFrame();
         interaction_client.clear();
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
 }
 
-void server::Game::fillFrame(SparseArray<IEntity> entities)
+void server::Game::fillFrame()
 {
     //remplir la frame ici
-    Frame frame(entities);
+    Frame frame;
 
     frame.setTick(_tick);
     _mutex_frame.lock();
