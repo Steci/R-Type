@@ -67,9 +67,11 @@ class S_AudioManager : public System {
 
 class S_EnemyAI : public System {
     public:
-        S_EnemyAI();
+        S_EnemyAI(SparseArray<IEntity> &sparseEntities);
         ~S_EnemyAI();
         void update() override;
+    private:
+        SparseArray<IEntity> &_sparseEntities;
 };
 
 class S_Collision : public System {

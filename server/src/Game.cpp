@@ -274,20 +274,17 @@ void server::Game::run()
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     manager.addSystem<S_AudioManager>();
     manager.addSystem<S_Collision>(entities);
-    manager.addSystem<S_EnemyAI>();
+    manager.addSystem<S_EnemyAI>(entities);
 
     std::string path = "./assets/r-typesheet24.png";
 
     entities.add(std::make_unique<E_Enemy>(path, 700, 50, 65.2, 66), 2);
     auto& ennemyEntity = entities.get(2);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
-    manager.getSystem<S_EnemyAI>()->addEntity(&ennemyEntity);
 
     int id = entities.add(std::make_unique<E_Enemy>(path, 700, 350, 65.2, 66));
-    printf("\nid = %d\n\n", id);
     auto& ennemyEntity3 = entities.get(id);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity3);
-    manager.getSystem<S_EnemyAI>()->addEntity(&ennemyEntity3);
 
     int numClientID = 0;
 
