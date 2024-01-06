@@ -38,7 +38,7 @@ namespace server
 
     class Frame {
         public:
-            Frame(SparseArray<IEntity> entities) {_entities = entities;};
+            Frame() {};
             ~Frame() {}; // penser à remplir le destructeur si besoin
             void setTick(int tick) {_tick = tick;};
             std::vector<char> serializeFrame() {
@@ -52,7 +52,6 @@ namespace server
         private:
             int _tick;
             // ici mettre les infos de la frame à display
-            SparseArray<IEntity> _entities;
     };
 
     class Game
@@ -96,6 +95,6 @@ namespace server
             std::map<std::string, functionsExecution> _fonctions_map;
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
-            void fillFrame(SparseArray<IEntity> entities);
+            void fillFrame();
     };
 }

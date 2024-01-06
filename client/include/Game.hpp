@@ -11,6 +11,8 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <sstream>
+#include <algorithm>
 #include <map>
 #include "Entity.hpp"
 #include "System.hpp"
@@ -25,7 +27,12 @@ namespace client {
         public:
             Interaction() {};
             ~Interaction() {};
-            void setInteraction(int inter); //ici laetitia tu mettre l'interaction qui nous intéresse à la valeur qu'on veut et surtout hésite pas à le changer prck c'est que du fonctionel là
+            //ici laetitia tu mettre l'interaction qui nous intéresse à la valeur qu'on veut et surtout hésite pas à le changer prck c'est que du fonctionel là
+            void setInteraction(int mov = 0, int shoot = 0, int quit = 0) {
+                _movement = mov;
+                _shoot = shoot;
+                _quit = quit;
+            }
             std::vector<char> serializeInteraction() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Interaction));
@@ -34,7 +41,6 @@ namespace client {
             int _movement = 0; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server) !!!!!! jamais négatif !!!!!!
             int _shoot = 0; // 0 si rien 1 si quelque chose
             int _quit = 0; // 0 si rien 1 si le client veut quitter
-            //etc...
     };
 
     class Frame {
@@ -55,8 +61,11 @@ namespace client {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
 
         public:
-            Game();
-            ~Game();
+            Game() {
+                _tick = 0;
+                //faite tout ce que vous avez besoin avec la window ici
+            };
+            ~Game() = default;
             void run();
             std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
             void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
@@ -67,16 +76,15 @@ namespace client {
             // il faut refaire toutes ses fonctions pour juste qu'elles récupère l'interraction et qu'elle l'envoi au serv via la class en dessous
             // pour remplir _interaction il faut lock _mutex puis l'unlock !!!!! si tu oublie l'un des 2 c'est la merde
 
-            // void actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionLeftCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionRightCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionDebugCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
+            void actionUpCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionDownCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionLeftCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionRightCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionQuitCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionConnectCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionShootCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionDamageCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
+            void actionScoreCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
 
 
         private:
