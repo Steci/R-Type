@@ -90,7 +90,7 @@ void server::Network::run(Game *game)
         if (id != 0)
             manageClient(buffer, id, game);
         else
-            // créé et stock ton entity dans game via (*game).addEntity(entity);
+            // créé et stock ton entity dans game via (*game).addEntity(entity); et récupérez id pour son id
             continue;
         // if (id != 84) {
         //     if (resData == "TICKRATE") {
