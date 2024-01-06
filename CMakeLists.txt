@@ -66,23 +66,21 @@ set(CMAKE_PREFIX_PATH "vcpkg_installed/${VCPKG_TARGET_TRIPLET}" CACHE STRING "Vc
 
 
 
-
-project(engine)
-file(GLOB ENGINE_SOURCES "engine/src/*.cpp" "engine/main.cpp")
+project(lib_engine)
+file(GLOB ENGINE_SOURCES "engine/src/*.cpp")
 
 add_library(EngineLib STATIC ${ENGINE_SOURCES})
 
-
-add_executable(${PROJECT_NAME} ${ENGINE_SOURCES})
-
 include_directories(${PROJECT_SOURCE_DIR}/engine/include)
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/engine/include")
-target_include_directories(${PROJECT_NAME} PUBLIC ${EXTRA_INCLUDES})
+target_include_directories(EngineLib PUBLIC ${EXTRA_INCLUDES})
 
+# Vous ne devriez pas utiliser add_executable pour un projet lib_engine.
+# Si vous voulez créer un exécutable, utilisez un autre nom de projet.
 
 # Utiliser find_package pour trouver la bibliothèque raylib
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(engine PRIVATE raylib)
+target_link_libraries(EngineLib PRIVATE raylib)
 
 
 
@@ -145,6 +143,11 @@ target_link_libraries(server_build PRIVATE fmt::fmt)
 # Utiliser find_package pour trouver la bibliothèque raylib
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(server_build PRIVATE raylib)
+
+
+# Utiliser find_package pour trouver la bibliothèque raylib
+find_package(boost CONFIG REQUIRED)
+target_link_libraries(server_build PRIVATE boost::boost)
 
 add_custom_command(TARGET server_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
