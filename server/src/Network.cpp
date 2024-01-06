@@ -87,9 +87,7 @@ void server::Network::run(Game *game)
         std::cout << "receive new message" << std::endl;
         // std::string resData = convert.deserialize(buffer);
         id = handleClient(buffer);
-        if (id != 84 && id != 0) {
-            manageInteraction(buffer, id, game);
-        }
+        manageClient(buffer, id, game);
         // if (id != 84) {
         //     if (resData == "TICKRATE") {
         //         std::vector<char> data = game->serialize();
@@ -100,12 +98,18 @@ void server::Network::run(Game *game)
     }
 }
 
-void server::Network::manageInteraction(std::vector<char> buffer, int client_id, Game *game)
+void server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)
 {
     Interaction interaction;
+    Connection connect;
+    bool interaction_found = false;
 
     interaction.deserializeInteraction(buffer);
     std::cout << "Interaction: " << interaction.getMovement() << std::endl;
+    // si ce que vous faite marche pas laissez interaction_found a false sinon mettez le a true
+    if (!interaction_found) {
+        connect.deserializeConnection(buffer);
+    }
 }
 
 void server::Network::updateClients(int client_id, Game *game)

@@ -132,6 +132,6 @@ namespace server {
             int commandSetTickrate(std::string data) const;
             int commandPing(std::string data, int client_id) const;
             int commandError(std::string data, int client_id) const;
-            void manageInteraction(std::vector<char> buffer, int client_id, Game *game);
+            void manageClient(std::vector<char> buffer, int client_id, Game *game);
     };
 }

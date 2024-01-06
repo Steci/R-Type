@@ -260,6 +260,7 @@ void server::Game::run()
 
     SystemManager manager;
     SparseArray<IEntity> entities;
+    std::vector<Interaction> interaction_client;
 
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     manager.addSystem<S_AudioManager>();
@@ -290,6 +291,12 @@ void server::Game::run()
         // }
         // _mutex.unlock();
         // To Remove
+        _mutex.lock();
+        if (_interaction_client.size() > 0) {
+            interaction_client = _interaction_client;
+            _interaction_client.clear();
+        }
+        _mutex.unlock();
         UpdateMusicStream(backgroundMusic->second);
 
         for (auto& function : _functions) {
@@ -323,6 +330,7 @@ void server::Game::run()
 
         //remplir la frame ici
         fillFrame();
+        interaction_client.clear();
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
 }
