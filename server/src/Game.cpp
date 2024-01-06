@@ -277,13 +277,18 @@ void server::Game::run()
     manager.addSystem<S_EnemyAI>();
 
     std::string path = "./assets/r-typesheet24.png";
-    entities.add(std::make_unique<E_Enemy>(path, 700, 200, 65.2, 66), 10);
-    auto& ennemyEntity = entities.get(10);
+
+    entities.add(std::make_unique<E_Enemy>(path, 700, 50, 65.2, 66), 2);
+    auto& ennemyEntity = entities.get(2);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     manager.getSystem<S_EnemyAI>()->addEntity(&ennemyEntity);
-    // entities.add(std::make_unique<E_Enemy>(path, 700, 200, 65.2, 66), 11);
-    // auto& ennemyEntity2 = entities.get(11);
-    // manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity2);
+
+    int id = entities.add(std::make_unique<E_Enemy>(path, 700, 350, 65.2, 66));
+    printf("\nid = %d\n\n", id);
+    auto& ennemyEntity3 = entities.get(id);
+    manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity3);
+    manager.getSystem<S_EnemyAI>()->addEntity(&ennemyEntity3);
+
     int numClientID = 0;
 
     // parse the entities in the sparse array and add them to the collision system

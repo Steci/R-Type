@@ -212,12 +212,20 @@ void S_EnemyAI::update()
         if (enemyInfo->_type == 2) {
             // the enemy will move in a sinusoid pattern
             transform->_position.x -= 5;
-            transform->_position.y = 200 * sin(transform->_position.x / 50) + 300;
+            transform->_position.y = 50 * sin(transform->_position.x / 50) + transform->_position.y;
         }
         if (enemyInfo->_type == 3) {
             // the enemy will move in a sinusoid pattern but smaller and faster
-            transform->_position.x -= 5;
-            transform->_position.y = 100 * sin(transform->_position.x / 50) + 300;
+            transform->_position.x -= 7;
+            transform->_position.y = 100 * sin(transform->_position.x / 50) + transform->_position.y;
+        }
+        if (enemyInfo->_type == 4) {
+            // the enemy will slide 5 times on its y axis then launch itself towards the player
+            transform->_position.y -= 5;
+            if (transform->_position.y < 0) {
+                transform->_position.y = 0;
+                enemyInfo->_type = 5;
+            }
         }
     }
 }

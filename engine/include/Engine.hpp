@@ -37,17 +37,14 @@ class SparseArray {
          * @param id The optional ID of the element.
          */
         int add(std::unique_ptr<T> element, int id = -1) {
+            if (id == -1) {
+                // Generate a new ID if none is specified
+                id = sparse.size();
+            }
             if (id >= sparse.size()) {
                 sparse.resize(id + 1, -1);
             }
-            if (id == -1) {
-                // Push back if no ID specified
-                dense.push_back(std::move(element));
-                indices.push_back(dense.size() - 1);
-                return dense.size() - 1;
-            }
             if (sparse[id] == -1) {
-                sparse.push_back(dense.size());
                 sparse[id] = dense.size();
                 dense.push_back(std::move(element));
                 indices.push_back(id);
@@ -55,7 +52,7 @@ class SparseArray {
                 // Replace if already exists
                 dense[sparse[id]] = std::move(element);
             }
-            return -1;
+            return id;
         }
 
         /**
