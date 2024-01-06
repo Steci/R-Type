@@ -166,11 +166,8 @@ server::Game::~Game()
 //         return;
 //     }
 //     // create entity
-//     std::string path = "./assets/r-typesheet42.png";
-//     entities.add(std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2), clientID);
+//     entities.add(std::make_unique<E_Player>(50, 50, 33.2, 17.2), clientID);
 //     auto& playerEntity = entities.get(clientID);
-//     // add entity to entities
-//     manager.getSystem<S_Renderer>()->addEntity(&playerEntity);
 // }
 
 // void server::Game::actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
@@ -261,8 +258,6 @@ void server::Game::run()
     SystemManager manager;
     SparseArray<IEntity> entities;
 
-    manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
-    manager.addSystem<S_AudioManager>();
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
 
@@ -270,17 +265,11 @@ void server::Game::run()
 
     entities.add(std::make_unique<E_Enemy>(path, 700, 50, 65.2, 66), 2);
     auto& ennemyEntity = entities.get(2);
-    manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
 
     int id = entities.add(std::make_unique<E_Enemy>(path, 700, 350, 65.2, 66));
     auto& ennemyEntity3 = entities.get(id);
-    manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity3);
 
     int numClientID = 0;
-
-    // To Remove
-    auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
-    PlayMusicStream(backgroundMusic->second);
 
     while (true) {
         // _mutex.lock();
@@ -289,8 +278,6 @@ void server::Game::run()
         //     _functions_server.clear();
         // }
         // _mutex.unlock();
-        // To Remove
-        UpdateMusicStream(backgroundMusic->second);
 
         for (auto& function : _functions) {
             auto [command, clientID] = parseCommand(function);
@@ -322,15 +309,15 @@ void server::Game::run()
         // printf("tick = " << _tick);
 
         //remplir la frame ici
-        fillFrame();
+        fillFrame(entities);
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
 }
 
-void server::Game::fillFrame()
+void server::Game::fillFrame(SparseArray<IEntity> entities)
 {
     //remplir la frame ici
-    Frame frame;
+    Frame frame(entities);
 
     frame.setTick(_tick);
     _mutex_frame.lock();
