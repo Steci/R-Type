@@ -7,8 +7,8 @@
 
 #include <sstream>
 #include <algorithm>
+#include <cmath>
 #include "Game.hpp"
-
 
 S_Renderer::S_Renderer(int w, int h, int fps, std::string wName, const std::string& imagePath) {
     _screenWidth = w;
@@ -102,7 +102,8 @@ S_AudioManager::~S_AudioManager()
     CloseAudioDevice();
 }
 
-S_Collision::S_Collision()
+S_Collision::S_Collision(SparseArray<IEntity> &sparseEntities)
+    : _sparseEntities(sparseEntities)
 {
 }
 
@@ -131,12 +132,18 @@ bool S_Collision::checkCollision(IEntity* entity1, IEntity* entity2)
 
 void S_Collision::update()
 {
-    for (auto& entity1 : _entities) {
-        for (auto& entity2 : _entities) {
+    for (auto& entity1 : _sparseEntities.getAll()) {
+        for (auto& entity2 : _sparseEntities.getAll()) {
             if (entity1 != entity2) {
-                if (checkCollision(entity1, entity2)) {
-                    C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-                    C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
+                C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
+                C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
+                C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+                C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
+
+                if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
+                    transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
+                    transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
+                    transform1->_position.y + hitbox1->_size.y > transform2->_position.y && (hitbox1->_status != 0 && hitbox2->_status != 0) ) {
 
                     if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
                         C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
@@ -180,6 +187,48 @@ void S_Collision::update()
             //     if (transform1->_position.x > screenWidth)
             //         entity1->removeComponent(entity1->getComponentOfType(typeid(C_Hitbox)));
             // }
+        }
+    }
+}
+
+S_EnemyAI::S_EnemyAI(SparseArray<IEntity> &sparseEntities )
+    : _sparseEntities(sparseEntities)
+{
+}
+
+S_EnemyAI::~S_EnemyAI()
+{
+}
+
+void S_EnemyAI::update()
+{
+    for (auto& entity : _sparseEntities.getAll()) {
+        if (typeid(*entity) == typeid(E_Enemy)) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+            C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity);
+
+            if (enemyInfo->_type == 1) {
+                // straight line
+                transform->_position.x -= 5;
+            }
+            if (enemyInfo->_type == 2) {
+                // the enemy will move in a sinusoid pattern
+                transform->_position.x -= 5;
+                transform->_position.y = 50 * sin(transform->_position.x / 50) + transform->_position.y;
+            }
+            if (enemyInfo->_type == 3) {
+                // the enemy will move in a sinusoid pattern but smaller and faster
+                transform->_position.x -= 7;
+                transform->_position.y = 100 * sin(transform->_position.x / 50) + transform->_position.y;
+            }
+            if (enemyInfo->_type == 4) {
+                // the enemy will slide 5 times on its y axis then launch itself towards the player
+                transform->_position.y -= 5;
+                if (transform->_position.y < 0) {
+                    transform->_position.y = 0;
+                    enemyInfo->_type = 5;
+                }
+            }
         }
     }
 }

@@ -116,3 +116,11 @@ struct C_Score : public Component {
     }
     ~C_Score() = default;
 };
+
+struct C_EnemyInfo : public Component {
+    int _type;
+    C_EnemyInfo(int type) {
+        _type = type;
+    }
+    ~C_EnemyInfo() = default;
+};

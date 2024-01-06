@@ -115,6 +115,7 @@ namespace Engine {
     void setHitboxTime(IEntity& entity, int newTime);
     void setHitboxStatus(IEntity& entity, int newStatus);
     void setScore(IEntity& entity, int newScore);
+    void setEnemyInfoType(IEntity& entity, int newType);
 
     template<typename T>
     T* getComponentRef(IEntity& entity)
