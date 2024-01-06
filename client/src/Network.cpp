@@ -43,7 +43,7 @@ int client::Network::fillSocket()
             std::cerr << "Error: socket creation failed" << std::endl;
             return(84);
         }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
             return(84);
         }
