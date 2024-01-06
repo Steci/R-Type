@@ -31,11 +31,10 @@ void E_Bullet::render()
     }
 }
 
-E_Player::E_Player(std::string path, int position_x, int position_y, float size_x, float size_y)
+E_Player::E_Player(int position_x, int position_y, float size_x, float size_y)
 {
     addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
     addComponent(std::make_unique<C_Health>(100));
-    addComponent(std::make_unique<C_Sprite>(path));
     addComponent(std::make_unique<C_Hitbox>(33, 17));
     addComponent(std::make_unique<C_Score>());
 }
