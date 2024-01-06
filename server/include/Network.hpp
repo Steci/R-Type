@@ -37,28 +37,21 @@
 #include <sstream>
 
 namespace server {
-    class Test {
+    class Serialize {
         public:
-            Test() = default;
-            ~Test() = default;
-            int getTick() const {return _Tick;};
-            int getTickspeed() const {return _Tickspeed;};
-            void setTick(int tick) {_Tick = tick;};
-            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-            std::vector<char> serialize() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Test));
+            Serialize() = default;
+            ~Serialize() = default;
+
+            std::string deserialize(const std::vector<char>& data) {
+                return std::string(data.begin(), data.end());
             }
-            void deserialize(const std::vector<char>& serializedData) {
-                // if (serializedData.size() != sizeof(Test)) {
-                //     throw std::runtime_error("Invalid data size for deserialization");
-                // }
-                *this = *reinterpret_cast<const Test*>(serializedData.data());
+
+            std::vector<char> serialize(const std::string& data) {
+                return std::vector<char>(data.begin(), data.end());
             }
-        private:
-            int _Tick = 10;
-            int _Tickspeed = 1100;
+
     };
+
     class Client {
         public:
             #ifdef linux
@@ -80,6 +73,25 @@ namespace server {
             const std::string _name;
     };
 
+    class Connection {
+        public:
+            Connection() {};
+            ~Connection() {};
+            int getConnect() const {return _connect;};
+            int getConnected() const {return _connected;};
+            int setConnected(int connected) {_connected = connected;};
+            std::vector<char> serializeConnection() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Connection));
+            }
+            void deserializeConnection(const std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<const Connection*>(serializedData.data());
+            }
+        private:
+            int _connect;
+            int _connected;
+    };
+
     class Network {
         public:
             Network(int port, int maxClients);
@@ -99,24 +111,27 @@ namespace server {
                 SOCKADDR_IN _addr;
             #endif
             int _tickrate;
+            int _last_tick_send = 0;
             std::vector<Client> _clients;
             Game _game;
-            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
+            std::vector<std::string> _commands = {"CONNECT", "QUIT", "INPUT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
 
             int fillSocket();
             int fillAddr();
             int bindSocket();
-            int handleNewConnection();
-            int handleClient(std::string message);
+            int handleNewConnection(Connection Connect);
+            int handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
-            void updateClients(int client_id, std::string message, Game *game);
+            void updateClients(int client_id, Game *game);
+            void checkClass(std::vector<char> buffer);
 
             // Commands
-            int commandKill();
-            int commandKick(int client_id, std::string message);
-            int commandSetTickrate(std::vector<char> data) const;
-            int commandPing(int client_id) const;
-            int commandError(int client_id, std::string error) const;
+            int commandKill(std::string data);
+            int commandKick(std::string data, int client_id);
+            int commandSetTickrate(std::string data) const;
+            int commandPing(std::string data, int client_id) const;
+            int commandError(std::string data, int client_id) const;
+            void manageInteraction(std::vector<char> buffer, int client_id, Game *game);
     };
 }
