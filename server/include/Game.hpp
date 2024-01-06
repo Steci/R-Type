@@ -65,6 +65,7 @@ namespace server
             ~Game();
             void run();
             void addInteraction(Interaction interaction) {_mutex.lock();_interaction_client.push_back(interaction);_mutex.unlock();};
+            void addEntity(IEntity* entity) {_mutex_entities.lock();_entities.add(std::unique_ptr<IEntity>(entity));_mutex_entities.unlock();};
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
@@ -98,5 +99,7 @@ namespace server
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
             void fillFrame(SparseArray<IEntity> entities);
+            std::mutex _mutex_entities;
+            SparseArray<IEntity> _entities;
     };
 }
