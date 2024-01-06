@@ -97,6 +97,8 @@ namespace server
             std::map<std::string, functionsExecution> _fonctions_map;
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
+            std::mutex _mutex_entities;
+            SparseArray<IEntity> _entities;
             void fillFrame();
     };
 }
