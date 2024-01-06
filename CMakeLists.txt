@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(Rtype)
 
+
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_STANDARD 20)
+set(GRAPHICS GRAPHICS_API_OPENGL_43)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(OpenGL_GL_PREFERENCE GLVND)
+
 # Définit le fichier de chaîne d'outils de vcpkg
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
@@ -50,22 +57,86 @@ set(CMAKE_PREFIX_PATH "vcpkg_installed/${VCPKG_TARGET_TRIPLET}" CACHE STRING "Vc
 
 
 
-project(server_build)
 
+
+
+
+
+
+
+
+
+
+project(engine)
+file(GLOB ENGINE_SOURCES "engine/src/*.cpp" "engine/main.cpp")
+
+add_library(EngineLib STATIC ${ENGINE_SOURCES})
+
+
+add_executable(${PROJECT_NAME} ${ENGINE_SOURCES})
+
+include_directories(${PROJECT_SOURCE_DIR}/engine/include)
+list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/engine/include")
+target_include_directories(${PROJECT_NAME} PUBLIC ${EXTRA_INCLUDES})
+
+
+# Utiliser find_package pour trouver la bibliothèque raylib
+find_package(raylib CONFIG REQUIRED)
+target_link_libraries(engine PRIVATE raylib)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+project(server_build)
 
 # Ajouter le répertoire d'installation de Vcpkg
 
-file(GLOB SOURCES "server/main.cpp" "server/src/*.cpp" "engine/src/*.cpp" "engine/include/*.hpp")
+file(GLOB SOURCES "server/main.cpp" "server/src/*.cpp")# "engine/src/*.cpp" "engine/include/*.hpp")
 
 add_executable(server_build ${SOURCES})
 
-list(APPEND EXTRA_INCLUDES "server/include" "engine/include")
+list(APPEND EXTRA_INCLUDES "server/include")# "engine/include")
 target_include_directories(server_build PUBLIC ${EXTRA_INCLUDES})
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 target_link_libraries(server_build PRIVATE pthread)
+target_link_libraries(server_build PRIVATE engineLib raylib)
 
 # Utiliser find_package pour trouver la bibliothèque fmt
 find_package(fmt CONFIG REQUIRED)
@@ -85,6 +156,40 @@ add_custom_command(TARGET server_build POST_BUILD
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 project(client_build)
 
 file(GLOB SOURCES "client/main.cpp" "client/src/*.cpp")
@@ -93,10 +198,8 @@ add_executable(client_build ${SOURCES})
 
 list(APPEND EXTRA_INCLUDES "client/include")
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
+target_link_libraries(client_build PRIVATE engineLib raylib)
 
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(client_build PRIVATE raylib)
@@ -115,3 +218,5 @@ add_custom_command(TARGET client_build POST_BUILD
 #add_subdirectory(client)
 #add_subdirectory(server)
 #add_subdirectory(engine)
+
+
