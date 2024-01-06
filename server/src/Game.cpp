@@ -288,14 +288,6 @@ void server::Game::run()
 
     int numClientID = 0;
 
-    // parse the entities in the sparse array and add them to the collision system
-    const auto& sparseIds = entities.getAllIndices();
-    for (auto id : sparseIds) {
-        if (id != -1) {
-            auto& tmpEntity = entities.get(id);
-        }
-    }
-
     // To Remove
     auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
     PlayMusicStream(backgroundMusic->second);
