@@ -7,7 +7,7 @@
 
 #include "Network.hpp"
 
-client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort)
+client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort), _isRunning(true)
 {
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
         throw std::invalid_argument("Error: Network creation failed");
