@@ -291,7 +291,7 @@ void server::Game::run()
         // récupérer les entity qu'il y a dans _entities et les stocker dans entities puis clear _entities
         _mutex_entities.unlock();
 
-        UpdateMusicStream(backgroundMusic->second);
+        // UpdateMusicStream(backgroundMusic->second);
         for (auto& function : _functions) {
             auto [command, clientID] = parseCommand(function);
             printf("\nCommand : %s\n", command.c_str());
