@@ -71,6 +71,8 @@ namespace client {
             #endif
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
+                SOCKADDR_IN _serverAddr;
+                int _serverAddrLen;
             #endif
             bool _isRunning;
 
