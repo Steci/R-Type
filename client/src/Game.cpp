@@ -58,59 +58,59 @@ namespace client {
         }
     }
 
-    //void Game::actionLeftCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    //{
-    //    if (entities.exists(clientID) == false) {
-    //        printf("player not connected");
-    //        return;
-    //    }
-    //    auto& playerEntity = entities.get(clientID);
-    //    interaction->setInteraction(4);
-    //    C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-    //    if (transform) {
-    //        Engine::setTransformPos(playerEntity, {transform->_position.x - 10, transform->_position.y});
-    //        if (transform->_animation == 2) {
-    //            Engine::setTransformAni(playerEntity, 1);
-    //        } else if (transform->_animation == 4) {
-    //            Engine::setTransformAni(playerEntity, 3);
-    //        } else {
-    //            Engine::setTransformAni(playerEntity, 0);
-    //        }
-    //    }
-    //}
-//
-    //void Game::actionRightCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    //{
-    //    if (entities.exists(clientID) == false) {
-    //        printf("player not connected");
-    //        return;
-    //    }
-    //    auto& playerEntity = entities.get(clientID);
-    //    interaction->setInteraction(2);
-    //    C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-    //    if (transform) {
-    //        Engine::setTransformPos(playerEntity, {transform->_position.x + 10, transform->_position.y});
-    //        if (transform->_animation == 2) {
-    //            Engine::setTransformAni(playerEntity, 1);
-    //        } else if (transform->_animation == 4) {
-    //            Engine::setTransformAni(playerEntity, 3);
-    //        } else {
-    //            Engine::setTransformAni(playerEntity, 0);
-    //        }
-    //    }
-    //}
-//
-    //void Game::actionQuitCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    //{
-    //    if (entities.exists(clientID) == false) {
-    //        printf("player not connected");
-    //        return;
-    //    }
-    //    auto& playerEntity = entities.get(clientID);
-    //    interaction->setInteraction(0, 0, 1);
-    //    entities.remove(clientID);
-    //}
-//
+    void Game::actionLeftCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
+    {
+        if (entities.exists(clientID) == false) {
+            printf("player not connected");
+            return;
+        }
+        auto& playerEntity = entities.get(clientID);
+        interaction->setInteraction(4);
+        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
+        if (transform) {
+            Engine::setTransformPos(playerEntity, {transform->_position.x - 10, transform->_position.y});
+            if (transform->_animation == 2) {
+                Engine::setTransformAni(playerEntity, 1);
+            } else if (transform->_animation == 4) {
+                Engine::setTransformAni(playerEntity, 3);
+            } else {
+                Engine::setTransformAni(playerEntity, 0);
+            }
+        }
+    }
+
+    void Game::actionRightCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
+    {
+        if (entities.exists(clientID) == false) {
+            printf("player not connected");
+            return;
+        }
+        auto& playerEntity = entities.get(clientID);
+        interaction->setInteraction(2);
+        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
+        if (transform) {
+            Engine::setTransformPos(playerEntity, {transform->_position.x + 10, transform->_position.y});
+            if (transform->_animation == 2) {
+                Engine::setTransformAni(playerEntity, 1);
+            } else if (transform->_animation == 4) {
+                Engine::setTransformAni(playerEntity, 3);
+            } else {
+                Engine::setTransformAni(playerEntity, 0);
+            }
+        }
+    }
+
+    void Game::actionQuitCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
+    {
+        if (entities.exists(clientID) == false) {
+            printf("player not connected");
+            return;
+        }
+        auto& playerEntity = entities.get(clientID);
+        interaction->setInteraction(0, 0, 1);
+        entities.remove(clientID);
+    }
+
     //void Game::actionConnectCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
     //{
     //    int nbrPlayer = 0;
