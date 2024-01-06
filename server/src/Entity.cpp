@@ -11,9 +11,9 @@
 
 E_Bullet::E_Bullet(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
-    addComponent(std::make_unique<C_Sprite>(path));
-    addComponent(std::make_unique<C_Damage>(damage));
+    addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
+    addComponent(std::make_shared<C_Sprite>(path));
+    addComponent(std::make_shared<C_Damage>(damage));
 }
 
 void E_Bullet::render()
@@ -33,10 +33,10 @@ void E_Bullet::render()
 
 E_Player::E_Player(int position_x, int position_y, float size_x, float size_y)
 {
-    addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
-    addComponent(std::make_unique<C_Health>(100));
-    addComponent(std::make_unique<C_Hitbox>(33, 17));
-    addComponent(std::make_unique<C_Score>());
+    addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
+    addComponent(std::make_shared<C_Health>(100));
+    addComponent(std::make_shared<C_Hitbox>(33, 17));
+    addComponent(std::make_shared<C_Score>());
 }
 
 void E_Player::update()
@@ -111,17 +111,17 @@ void E_Player::render()
 
 void E_Player::newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    auto newBullet = std::make_unique<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+    auto newBullet = std::make_shared<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
 }
 
 E_Enemy::E_Enemy(std::string path, int position_x, int position_y, float size_x, float size_y)
 {
-    addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
-    addComponent(std::make_unique<C_Health>(20));
-    addComponent(std::make_unique<C_Sprite>(path));
-    addComponent(std::make_unique<C_Hitbox>(65, 66));
-    addComponent(std::make_unique<C_EnemyInfo>(2));
+    addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
+    addComponent(std::make_shared<C_Health>(20));
+    addComponent(std::make_shared<C_Sprite>(path));
+    addComponent(std::make_shared<C_Hitbox>(65, 66));
+    addComponent(std::make_shared<C_EnemyInfo>(2));
 }
 
 void E_Enemy::update()
@@ -193,6 +193,6 @@ void E_Enemy::render()
 
 void E_Enemy::newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    auto newBullet = std::make_unique<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+    auto newBullet = std::make_shared<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
 }

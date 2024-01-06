@@ -50,9 +50,11 @@ namespace server
             bool operator!=(const Frame& other) const {return !(*this == other);}
             Frame& operator=(const Frame& other);
             int getTick() const {return _tick;};
+            void setArray(SparseArray<IEntity> entities) {_entities = entities;};
         private:
             int _tick;
             // ici mettre les infos de la frame à display
+            SparseArray<IEntity> _entities;
     };
 
     class Game
@@ -64,7 +66,7 @@ namespace server
             ~Game();
             void run();
             void addInteraction(Interaction interaction) {_mutex.lock();_interaction_client.push_back(interaction);_mutex.unlock();};
-            void addEntity(IEntity* entity) {_mutex_entities.lock();_entities.add(std::unique_ptr<IEntity>(entity));_mutex_entities.unlock();};
+            void addEntity(IEntity* entity) {_mutex_entities.lock();_entities.add(std::shared_ptr<IEntity>(entity));_mutex_entities.unlock();};
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
@@ -99,6 +101,6 @@ namespace server
             std::vector<Frame> _frames; // ici mettre les frames à display
             std::mutex _mutex_entities;
             SparseArray<IEntity> _entities;
-            void fillFrame();
+            void fillFrame(SparseArray<IEntity> entities);
     };
 }

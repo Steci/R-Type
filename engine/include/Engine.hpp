@@ -36,7 +36,7 @@ class SparseArray {
          * @param element The element to be added.
          * @param id The optional ID of the element.
          */
-        int add(std::unique_ptr<T> element, int id = -1) {
+        int add(std::shared_ptr<T> element, int id = -1) {
             if (id == -1) {
                 // Generate a new ID if none is specified
                 id = sparse.size();
@@ -109,7 +109,7 @@ class SparseArray {
          *
          * @return The arrary of actual elements
          */
-        std::vector<std::unique_ptr<T>>& getAll() {
+        std::vector<std::shared_ptr<T>>& getAll() {
             return dense;
         }
 
@@ -118,7 +118,7 @@ class SparseArray {
         }
 
     private:
-        std::vector<std::unique_ptr<T>> dense; // Stores actual elements
+        std::vector<std::shared_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'
         std::vector<int> indices; // Stores original IDs
 };
