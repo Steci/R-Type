@@ -17,6 +17,6 @@ class ErrorHandling {
         ~ErrorHandling() {};
         std::vector<int> errorHandling(int argc, char **argv);
     private:
-        int checkPort(char *port);
+        int checkPort(const char *port);
         void help();
 };

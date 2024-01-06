@@ -13,6 +13,7 @@
     #include <sys/types.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>
+    #include <netdb.h>
     #define OS "linux"
 #endif
 
@@ -25,12 +26,10 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <unistd.h>
 #include <bitset>
 #include <fstream>
 #include <algorithm>
 #include <cstring>
-#include <netdb.h>
 #include <chrono>
 #include <thread>
 #include <cstdlib>
@@ -63,8 +62,8 @@ namespace client {
         private:
             std::string _serverIP;
             int _serverPort;
-            bool _isRunning = true;
             int _fd;
+            int _tickrate;
             #ifdef linux
                 struct sockaddr_in _addr;
                 struct sockaddr_in _serverAddr;
@@ -73,10 +72,7 @@ namespace client {
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
             #endif
-            int _tickrate;
-            std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR"};
-            std::vector<std::string> _inputs = {"UP", "DOWN", "LEFT", "RIGHT", "SHOOT", "DAMAGE", "SCORE"};
-            int _clientID;
+            bool _isRunning;
 
             int fillSocket();
             int fillAddr();
