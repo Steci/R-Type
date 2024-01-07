@@ -116,6 +116,7 @@ int client::Network::connectCommand()
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
+            std::cout << "Info received" << std::endl;
             receiveConnection.deserializeConnection(receiveData);
             if (receiveConnection.getConnected() == 1) {
                 std::cout << "Successfully connected with the server." << std::endl;

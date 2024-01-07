@@ -97,9 +97,9 @@ namespace server {
                 return *this;
             }
         private:
-            int _id;
             int _connect;
             int _connected;
+            int _id;
     };
 
     class Network {

@@ -86,7 +86,6 @@ void server::Network::run(Game *game)
         if (client < 0) {
             continue;
         }
-        std::cout << "receive new message" << std::endl;
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
         if (id != 0 && id != -1)
@@ -109,12 +108,12 @@ void server::Network::run(Game *game)
 void server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)
 {
     Interaction interaction;
-    bool interaction_found = false;
 
     interaction.deserializeInteraction(buffer);
     interaction.setClientID(client_id);
     std::cout << "Interaction: " << interaction.getMovement() << std::endl;
-    (*game).addInteraction(interaction);
+    if (interaction.getMovement() != -1)
+        (*game).addInteraction(interaction);
 }
 
 void server::Network::updateClients(int client_id, Game *game)
