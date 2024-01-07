@@ -49,8 +49,8 @@ namespace client {
             Frame() {}; // penser à remplir le constructeur si besoin
             ~Frame() {}; // penser à remplir le destructeur si besoin
             int getTick() const {return _tick;};
-            void deserializeFrame(const std::vector<char>& serializedData) {
-                *this = *reinterpret_cast<const Frame*>(serializedData.data());
+            void deserializeFrame(std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<Frame*>(serializedData.data());
             }
             SparseArray<IEntity> &getEntities() { return _entities; }
         private:

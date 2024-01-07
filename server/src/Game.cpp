@@ -110,7 +110,6 @@ void server::Game::run()
         }
         _mutex.unlock();
         if (interaction_client.size() > 0) {
-            std::cout << "new interaction received = " << interaction_client.size() << std::endl;
             for (auto interaction : interaction_client) {
                 if (interaction.getConnect() == 1) {
                     printf("New Player with ID : %d\n", interaction.getClientID());
@@ -161,8 +160,9 @@ std::vector<std::string> server::Game::getFunctionsClient()
     return functions;
 }
 
-server::Frame& server::Frame::operator=(const Frame& other)
-{
-    _tick = other._tick;
-    return *this;
-}
+// server::Frame& server::Frame::operator=(const Frame& other)
+// {
+//     _tick = other._tick;
+
+//     return *this;
+// }

@@ -48,14 +48,15 @@ namespace server
             ~Frame() {}; // penser à remplir le destructeur si besoin
             void setTick(int tick) {_tick = tick;};
             std::vector<char> serializeFrame() {
-                const char* data = reinterpret_cast<const char*>(this);
+                char* data = reinterpret_cast<char*>(this);
                 return std::vector<char>(data, data + sizeof(Frame));
             }
             bool operator==(const Frame& other) const {return *this == other;}
             bool operator!=(const Frame& other) const {return !(*this == other);}
-            Frame& operator=(const Frame& other);
+            // Frame& operator=(const Frame& other);
             int getTick() const {return _tick;};
             void setArray(SparseArray<IEntity> entities) {_entities = entities;};
+            SparseArray<IEntity> &getEntities() {return _entities;};
         private:
             int _tick;
             // ici mettre les infos de la frame à display
