@@ -74,6 +74,15 @@ class S_EnemyAI : public System {
         SparseArray<IEntity> &_sparseEntities;
 };
 
+class S_Spawner : public System {
+    public:
+        S_Spawner(SparseArray<IEntity> &sparseEntities);
+        ~S_Spawner();
+        void update() override;
+    private:
+        SparseArray<IEntity> &_sparseEntities;
+};
+
 class S_Collision : public System {
     public:
         S_Collision(SparseArray<IEntity> &sparseEntities);
@@ -92,4 +101,14 @@ class S_EventManager : public System {
         ~S_EventManager() = default;
         void update() override;
         int EventKeyPressed(std::list<int> keys);
+};
+
+class S_Weapon : public System {
+    public:
+        S_Weapon(SparseArray<IEntity> &sparseEntities);
+        ~S_Weapon() = default;
+        void update() override {};
+
+    private:
+        SparseArray<IEntity> &_sparseEntities;
 };

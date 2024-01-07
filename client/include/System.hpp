@@ -13,23 +13,33 @@ class S_Parallax : public System {
         S_Parallax() = default;
         ~S_Parallax();
 
-        void initialize(const std::string &imagePath, int screenWidth, int screenHeight);
-        Texture2D getBackground() const { return _background; }
-        Vec2 getScaleFactor() const { return _scaleFactor; }
-        Image getImage() const { return _image; }
-        void setBackground(Image newTexture) { _background = LoadTextureFromImage(newTexture); }
-        void setScaleFactor(Vec2 newVec2) { _scaleFactor = newVec2; }
-        void setImage(std::string newImage)
+        std::vector<Texture2D> getBackgrounds() const { return _backgrounds; }
+        std::vector<Image> getImages() const { return _images; }
+
+        std::vector<float> getScrolling() const { return _scrolling; }
+
+        void setBackground(Image newImage)
         {
-            _image = LoadImage(newImage.c_str());
-            setBackground(_image);
+            Texture2D background = LoadTextureFromImage(newImage);
+            _backgrounds.push_back(background);
         }
-        void update() override {};
+
+        void add(std::string path, float force)
+        {
+            Image image = LoadImage(path.c_str());
+            _images.push_back(image);
+            _scrolling.push_back(0.0f);
+            _scrollingForces.push_back(force);
+            setBackground(image);
+        }
+
+        void update();
 
     private:
-        Image _image;
-        Texture2D _background;
-        Vec2 _scaleFactor;
+        std::vector<Image> _images;
+        std::vector<Texture2D> _backgrounds;
+        std::vector<float> _scrolling;
+        std::vector<float> _scrollingForces;
 };
 
 class S_Renderer : public System {

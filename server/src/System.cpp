@@ -228,3 +228,39 @@ void S_EnemyAI::update()
         }
     }
 }
+
+S_Spawner::S_Spawner(SparseArray<IEntity> &sparseEntities)
+    : _sparseEntities(sparseEntities)
+{
+}
+
+S_Spawner::~S_Spawner()
+{
+}
+
+void S_Spawner::update()
+{
+    int random = rand() % 1000;
+
+    if (random == 1) {
+        int random2 = rand() % 3;
+        int random3 = rand() % 600;
+        int random4 = rand() % 600;
+        int random5 = rand() % 3 + 1;
+
+        _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
+    }
+}
+
+S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities)
+    : _sparseEntities(sparseEntities)
+{
+}
+
+S_Weapon::~S_Weapon()
+{
+}
+
+void S_Weapon::update()
+{
+}

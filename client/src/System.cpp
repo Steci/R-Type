@@ -19,15 +19,23 @@ S_Renderer::S_Renderer(int w, int h, int fps, std::string wName, const std::stri
     InitAudioDevice();
     SetTargetFPS(_targetFps);
     _parallax = S_Parallax();
-    _parallax.initialize(imagePath, w, h);
+    _parallax.add(imagePath+"1.png", 0.1f);
+    _parallax.add(imagePath+"2.png", 0.3f);
+    _parallax.add(imagePath+"3.png", 0.5f);
+    _parallax.add(imagePath+"4.png", 0.8f);
 };
 
 void S_Renderer::render()
 {
     BeginDrawing();
         ClearBackground(RAYWHITE);
-        float maxScale = std::max(_parallax.getScaleFactor().x, _parallax.getScaleFactor().y);
-        DrawTextureEx(_parallax.getBackground(), (Vector2){ 0, 0 }, 0.0f, maxScale, WHITE);
+
+        // Parallax Draw
+        for (int i = 0; i < _parallax.getBackgrounds().size(); i++) {
+            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getScrolling()[i], 0 }, 0.0f, 2.0f, WHITE);
+            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getBackgrounds()[i].width * 2 + _parallax.getScrolling()[i], 0 }, 0.0f, 2.0f, WHITE);
+        }
+
         for (auto& entity : _entities) {
             entity->render();
         }
@@ -57,28 +65,24 @@ int S_EventManager::EventKeyPressed(std::list<int> keys)
     return -1;
 }
 
-void S_Parallax::initialize(const std::string& imagePath, int screenWidth, int screenHeight)
-{
-    _image = LoadImage(imagePath.c_str());
-    if (_image.data == nullptr) {
-        std::cerr << "Erreur de chargement de l'image : " << imagePath << std::endl;
-        return;
-    } else {
-        _background = LoadTextureFromImage(_image);
-    }
-    if (_background.id == 0) {
-        std::cerr << "Erreur de chargement de la texture de l'image." << std::endl;
-        return;
-    }
-    float scaleX = (float)screenWidth / ((float)_background.width);
-    float scaleY = (float)screenHeight / ((float)_background.height);
-    _scaleFactor = {scaleX, scaleY};
-}
-
 S_Parallax::~S_Parallax()
 {
-    UnloadTexture(_background);
-    UnloadImage(_image);
+    for (auto& background : _backgrounds) {
+        UnloadTexture(background);
+    }
+    for (auto& image : _images) {
+        UnloadImage(image);
+    }
+}
+
+void S_Parallax::update()
+{
+    for (int i = 0; i < _backgrounds.size(); i++) {
+        _scrolling[i] -= _scrollingForces[i];
+        if (_scrolling[i] <= -_backgrounds[i].width * 2) {
+            _scrolling[i] = 0;
+        }
+    }
 }
 
 S_AudioManager::S_AudioManager()

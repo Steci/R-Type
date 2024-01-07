@@ -96,6 +96,7 @@ class Entity : public IEntity {
             }
             return nullptr;
         }
+
     private:
         std::vector<std::shared_ptr<Component>> components;
 };
