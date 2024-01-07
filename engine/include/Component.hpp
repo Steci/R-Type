@@ -13,6 +13,7 @@
 #include <iostream>
 #include <raylib.h>
 #include <list>
+#include <cstring>
 
 #include "Utils.hpp"
 
@@ -55,6 +56,12 @@ struct C_Transform : public Component {
         data.insert(data.end(), reinterpret_cast<const char*>(&_animation), reinterpret_cast<const char*>(&_animation) + sizeof(_animation));
         return data;
     }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_position, data.data(), sizeof(_position));
+        std::memcpy(&_size, data.data() + sizeof(_position), sizeof(_size));
+        std::memcpy(&_velocity, data.data() + sizeof(_position) + sizeof(_size), sizeof(_velocity));
+        std::memcpy(&_animation, data.data() + sizeof(_position) + sizeof(_size) + sizeof(_velocity), sizeof(_animation));
+    }
 };
 
 /**
@@ -69,6 +76,9 @@ struct C_Damage : public Component {
     std::vector<char> serializeToVector() const {
         return std::vector<char>(reinterpret_cast<const char*>(&_damage), reinterpret_cast<const char*>(&_damage) + sizeof(_damage));
     }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_damage, data.data(), sizeof(_damage));
+    }
 };
 
 /**
@@ -82,6 +92,9 @@ struct C_Health : public Component {
     ~C_Health() = default;
     std::vector<char> serializeToVector() const {
         return std::vector<char>(reinterpret_cast<const char*>(&_health), reinterpret_cast<const char*>(&_health) + sizeof(_health));
+    }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_health, data.data(), sizeof(_health));
     }
 };
 
@@ -110,6 +123,9 @@ struct C_Sprite : public Component {
         std::vector<char> data(_name.begin(), _name.end());
         return data;
     }
+    void deserializeFromVector(const std::vector<char>& data) {
+        _name = std::string(data.begin(), data.end());
+    }
 };
 
 /**
@@ -132,6 +148,11 @@ struct C_Hitbox : public Component {
         data.insert(data.end(), reinterpret_cast<const char*>(&_status), reinterpret_cast<const char*>(&_status) + sizeof(_status));
         return data;
     }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_size, data.data(), sizeof(_size));
+        std::memcpy(&_time, data.data() + sizeof(_size), sizeof(_time));
+        std::memcpy(&_status, data.data() + sizeof(_size) + sizeof(_time), sizeof(_status));
+    }
 };
 
 struct C_Score : public Component {
@@ -143,6 +164,9 @@ struct C_Score : public Component {
     std::vector<char> serializeToVector() const {
         return std::vector<char>(reinterpret_cast<const char*>(&_score), reinterpret_cast<const char*>(&_score) + sizeof(_score));
     }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_score, data.data(), sizeof(_score));
+    }
 };
 
 struct C_EnemyInfo : public Component {
@@ -153,5 +177,8 @@ struct C_EnemyInfo : public Component {
     ~C_EnemyInfo() = default;
     std::vector<char> serializeToVector() const {
         return std::vector<char>(reinterpret_cast<const char*>(&_type), reinterpret_cast<const char*>(&_type) + sizeof(_type));
+    }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_type, data.data(), sizeof(_type));
     }
 };

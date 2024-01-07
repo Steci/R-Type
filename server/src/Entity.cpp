@@ -48,6 +48,26 @@ std::vector<char> E_Bullet::serializeToVector()
     return data;
 }
 
+void E_Bullet::deserializeFromVector(std::vector<char> data) {
+    auto it = data.begin();
+
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    if (transformComponent) {
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        std::vector<char> transformData(it, it + transformSize);
+        transformComponent->deserializeFromVector(transformData);
+        it += transformSize;
+    }
+
+    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
+    if (damageComponent) {
+        size_t damageSize = sizeof(damageComponent->_damage);
+        std::vector<char> damageData(it, it + damageSize);
+        damageComponent->deserializeFromVector(damageData);
+        it += damageSize;
+    }
+}
+
 E_Player::E_Player(int position_x, int position_y, float size_x, float size_y)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
@@ -164,6 +184,52 @@ std::vector<char> E_Player::serializeToVector()
     return data;
 }
 
+void E_Player::deserializeFromVector(std::vector<char> data) {
+    auto it = data.begin();
+
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    if (transformComponent) {
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        std::vector<char> transformData(it, it + transformSize);
+        transformComponent->deserializeFromVector(transformData);
+        it += transformSize;
+    }
+
+    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
+    if (healthComponent) {
+        size_t healthSize = sizeof(healthComponent->_health);
+        std::vector<char> healthData(it, it + healthSize);
+        healthComponent->deserializeFromVector(healthData);
+        it += healthSize;
+    }
+
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        std::vector<char> hitboxData(it, it + hitboxSize);
+        hitboxComponent->deserializeFromVector(hitboxData);
+        it += hitboxSize;
+    }
+
+    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
+    if (scoreComponent) {
+        size_t scoreSize = sizeof(scoreComponent->_score);
+        std::vector<char> scoreData(it, it + scoreSize);
+        scoreComponent->deserializeFromVector(scoreData);
+        it += scoreSize;
+    }
+
+    _bullets.clear();
+    while (it < data.end()) {
+        size_t bulletSize = sizeof(C_Transform) + sizeof(C_Damage);
+        std::vector<char> bulletData(it, it + bulletSize);
+        auto bullet = std::make_shared<E_Bullet> ();
+        bullet->deserializeFromVector(bulletData);
+        _bullets.push_back(bullet);
+        it += bulletSize;
+    }
+}
+
 E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
@@ -274,4 +340,50 @@ std::vector<char> E_Enemy::serializeToVector() {
         data.insert(data.end(), bulletData.begin(), bulletData.end());
     }
     return data;
+}
+
+void E_Enemy::deserializeFromVector(std::vector<char> data) {
+    auto it = data.begin();
+
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    if (transformComponent) {
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        std::vector<char> transformData(it, it + transformSize);
+        transformComponent->deserializeFromVector(transformData);
+        it += transformSize;
+    }
+
+    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
+    if (healthComponent) {
+        size_t healthSize = sizeof(healthComponent->_health);
+        std::vector<char> healthData(it, it + healthSize);
+        healthComponent->deserializeFromVector(healthData);
+        it += healthSize;
+    }
+
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        std::vector<char> hitboxData(it, it + hitboxSize);
+        hitboxComponent->deserializeFromVector(hitboxData);
+        it += hitboxSize;
+    }
+
+    C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
+    if (enemyInfoComponent) {
+        size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
+        std::vector<char> enemyInfoData(it, it + enemyInfoSize);
+        enemyInfoComponent->deserializeFromVector(enemyInfoData);
+        it += enemyInfoSize;
+    }
+
+    _bullets.clear();
+    while (it < data.end()) {
+        size_t bulletSize = sizeof(C_Transform) + sizeof(C_Damage);
+        std::vector<char> bulletData(it, it + bulletSize);
+        auto bullet = std::make_shared<E_Bullet>();
+        bullet->deserializeFromVector(bulletData);
+        _bullets.push_back(bullet);
+        it += bulletSize;
+    }
 }

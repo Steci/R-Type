@@ -16,6 +16,7 @@ class E_Bullet : public Entity {
         void update() override {};
         void render() override;
         std::vector<char> serializeToVector() override;
+        void deserializeFromVector(std::vector<char> data) override;
 };
 
 class E_Player : public Entity {
@@ -25,6 +26,7 @@ class E_Player : public Entity {
         void render() override;
         void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
         std::vector<char> serializeToVector() override;
+        void deserializeFromVector(std::vector<char> data) override;
     private:
         std::vector<std::shared_ptr<E_Bullet>> _bullets;
 };
@@ -36,6 +38,7 @@ class E_Enemy : public Entity {
         void render() override;
         void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
         std::vector<char> serializeToVector() override;
+        void deserializeFromVector(std::vector<char> data) override;
     private:
         std::vector<std::shared_ptr<E_Bullet>> _bullets;
 };
