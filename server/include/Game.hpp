@@ -34,12 +34,12 @@ namespace server
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
         private:
-            int _client_id;
             int _movement = -1; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server)
             int _shoot = -1; // 0 si rien 1 si quelque chose
             int _quit = -1; // 0 si rien 1 si le client veut quitter
+            //etc... rajouter les variables communes au dessus de se commentaire
             int _connect = -1; // 0 si rien 1 si le client veut se connecter
-            //etc...
+            int _client_id;
     };
 
     class Frame {
