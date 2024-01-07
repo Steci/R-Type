@@ -166,7 +166,7 @@ server::Game::~Game()
 //         return;
 //     }
 //     // create entity
-//     entities.add(std::make_unique<E_Player>(50, 50, 33.2, 17.2), clientID);
+//     entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), clientID);
 //     auto& playerEntity = entities.get(clientID);
 // }
 
@@ -264,10 +264,10 @@ void server::Game::run()
 
     std::string path = "./assets/r-typesheet24.png";
 
-    entities.add(std::make_unique<E_Enemy>(path, 700, 50, 65.2, 66), 2);
+    entities.add(std::make_shared<E_Enemy>(path, 700, 50, 65.2, 66), 2);
     auto& ennemyEntity = entities.get(2);
 
-    int id = entities.add(std::make_unique<E_Enemy>(path, 700, 350, 65.2, 66));
+    int id = entities.add(std::make_shared<E_Enemy>(path, 700, 350, 65.2, 66));
     auto& ennemyEntity3 = entities.get(id);
 
     int numClientID = 0;
@@ -325,16 +325,18 @@ void server::Game::run()
         // printf("tick = " << _tick);
 
         //remplir la frame ici
-        fillFrame();
+        fillFrame(_entities);
         interaction_client.clear();
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
 }
 
-void server::Game::fillFrame()
+void server::Game::fillFrame(SparseArray<IEntity> entities)
 {
     //remplir la frame ici
     Frame frame;
+
+    frame.setArray(entities);
 
     frame.setTick(_tick);
     _mutex_frame.lock();

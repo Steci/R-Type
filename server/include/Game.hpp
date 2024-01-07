@@ -55,9 +55,11 @@ namespace server
             bool operator!=(const Frame& other) const {return !(*this == other);}
             Frame& operator=(const Frame& other);
             int getTick() const {return _tick;};
+            void setArray(SparseArray<IEntity> entities) {_entities = entities;};
         private:
             int _tick;
             // ici mettre les infos de la frame à display
+            SparseArray<IEntity> _entities;
     };
 
     class Game
@@ -101,6 +103,6 @@ namespace server
             std::map<std::string, functionsExecution> _fonctions_map;
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
-            void fillFrame();
+            void fillFrame(SparseArray<IEntity> entities);
     };
 }

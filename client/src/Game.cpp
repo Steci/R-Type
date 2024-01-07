@@ -131,27 +131,27 @@ namespace client {
     //    }
     //    // create entity
     //    std::string path = "./assets/r-typesheet42.png";
-    //    entities.add(std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2), clientID);
+    //    entities.add(std::make_shared<E_Player>(path, 50, 50, 33.2, 17.2), clientID);
     //    auto& playerEntity = entities.get(clientID);
     //    // add entity to entities
     //}
-//
-    //void Game::actionShootCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    //{
-    //    if (entities.exists(clientID) == false) {
-    //        printf("player not connected");
-    //        return;
-    //    }
-    //    interaction->setInteraction(0, 1, 0);
-    //    //cote server -> a voir pour le system de music
-    //    //E_Player& playerEntity = static_cast<E_Player&>(entities.get(clientID));
-    //    //if (typeid(playerEntity) == typeid(E_Player)) {
-    //    //    C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-    //    //    playerEntity.newShoot("./assets/r-typesheet24.png", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
-    //    //}
-    //    //auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-    //    //PlaySound(effect->second);
-    //}
+
+    void Game::actionShootCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
+    {
+        if (entities.exists(clientID) == false) {
+            printf("player not connected");
+            return;
+        }
+        interaction->setInteraction(0, 1, 0);
+        //cote server -> a voir pour le system de music
+        //E_Player& playerEntity = static_cast<E_Player&>(entities.get(clientID));
+        //if (typeid(playerEntity) == typeid(E_Player)) {
+        //    C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
+        //    playerEntity.newShoot("./assets/r-typesheet24.png", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
+        //}
+        //auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
+        //PlaySound(effect->second);
+    }
 
     // void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
     // {

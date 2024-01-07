@@ -39,7 +39,7 @@ class IEntity {
          *
          * @param component The component to add.
          */
-        virtual void addComponent(std::unique_ptr<Component> component) = 0;
+        virtual void addComponent(std::shared_ptr<Component> component) = 0;
 
         /**
          * @brief Removes a component from the entity.
@@ -53,7 +53,7 @@ class IEntity {
          *
          * @return A reference to the vector of components.
          */
-        virtual std::vector<std::unique_ptr<Component>>& getComponents() = 0;
+        virtual std::vector<std::shared_ptr<Component>>& getComponents() = 0;
 
         /**
          * @brief Gets a component of a specific type attached to the entity.
@@ -69,7 +69,7 @@ class Entity : public IEntity {
         void update() override = 0;
         void render() override = 0;
 
-        void addComponent(std::unique_ptr<Component> component) override {
+        void addComponent(std::shared_ptr<Component> component) override {
             components.push_back(std::move(component));
         }
         void removeComponent(Component* component) override {
@@ -80,7 +80,7 @@ class Entity : public IEntity {
                 }
             }
         }
-        std::vector<std::unique_ptr<Component>>& getComponents() override {
+        std::vector<std::shared_ptr<Component>>& getComponents() override {
             return components;
         }
         Component* getComponentOfType(const std::type_info& ti) override {
@@ -92,16 +92,16 @@ class Entity : public IEntity {
             return nullptr;
         }
     private:
-        std::vector<std::unique_ptr<Component>> components;
+        std::vector<std::shared_ptr<Component>> components;
 };
 
 namespace Engine {
-    C_Transform* getTransform(std::unique_ptr<IEntity> entity);
-    C_Damage* getDamage(std::unique_ptr<IEntity> entity);
-    C_Health* getHealth(std::unique_ptr<IEntity> entity);
-    C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
-    C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
-    C_Score* getScore(std::unique_ptr<IEntity> entity);
+    C_Transform* getTransform(std::shared_ptr<IEntity> entity);
+    C_Damage* getDamage(std::shared_ptr<IEntity> entity);
+    C_Health* getHealth(std::shared_ptr<IEntity> entity);
+    C_Sprite* getSprite(std::shared_ptr<IEntity> entity);
+    C_Hitbox* getHitbox(std::shared_ptr<IEntity> entity);
+    C_Score* getScore(std::shared_ptr<IEntity> entity);
     void setTransformPos(IEntity& entity, Vec2 newPos);
     void setTransformSize(IEntity& entity, Vec2 newSize);
     void setTransformVel(IEntity& entity, Vec2 newVel);

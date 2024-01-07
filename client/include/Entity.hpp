@@ -22,7 +22,7 @@ class E_Player : public Entity {
         void render() override;
         void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
     private:
-        std::vector<std::unique_ptr<E_Bullet>> _bullets;
+        std::vector<std::shared_ptr<E_Bullet>> _bullets;
 };
 
 class E_Enemy : public Entity {
@@ -32,5 +32,5 @@ class E_Enemy : public Entity {
         void render() override;
         void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
     private:
-        std::vector<std::unique_ptr<E_Bullet>> _bullets;
+        std::vector<std::shared_ptr<E_Bullet>> _bullets;
 };
