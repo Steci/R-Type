@@ -22,7 +22,6 @@ else()
     set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
 endif()
 
-
 list(APPEND CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_DIR}")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -47,33 +46,29 @@ set(CMAKE_PREFIX_PATH "vcpkg_installed/${VCPKG_TARGET_TRIPLET}" CACHE STRING "Vc
 
 
 # Engine
-project(engine)
 file(GLOB ENGINE_SOURCES "engine/src/*.cpp" "engine/main.cpp")
 
 add_library(EngineLib STATIC ${ENGINE_SOURCES})
+add_executable(engine ${ENGINE_SOURCES})
 
-add_executable(${PROJECT_NAME} ${ENGINE_SOURCES})
+list(APPEND EXTRA_INCLUDES "engine/include")
+target_include_directories(engine PUBLIC ${EXTRA_INCLUDES})
 
-include_directories(${PROJECT_SOURCE_DIR}/engine/include)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/engine/include")
-target_include_directories(${PROJECT_NAME} PUBLIC ${EXTRA_INCLUDES})
-
-# Utiliser find_package pour trouver la bibliothèque raylib
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(engine PRIVATE raylib)
+target_include_directories(engine PRIVATE raylib::raylib)
+
+target_link_libraries(engine raylib)
 
 
 
 # Server
 project(server_build)
-
-# Ajouter le répertoire d'installation de Vcpkg
-file(GLOB SOURCES "server/main.cpp" "server/src/*.cpp")# "engine/src/*.cpp" "engine/include/*.hpp")
+file(GLOB SOURCES "server/main.cpp" "server/src/*.cpp")
 
 add_executable(server_build ${SOURCES})
 
-list(APPEND SERVER_EXTRA_INCLUDES "server/include")# "engine/include")
-target_include_directories(server_build PUBLIC ${EXTRA_INCLUDES} ${SERVER_EXTRA_INCLUDES})
+list(APPEND SERVER_EXTRA_INCLUDES "server/include")
+target_include_directories(server_build PUBLIC ${SERVER_EXTRA_INCLUDES})
 
 
 target_link_libraries(server_build PRIVATE pthread)
@@ -87,10 +82,6 @@ target_link_libraries(server_build PRIVATE fmt::fmt)
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(server_build PRIVATE raylib)
 
-add_custom_command(TARGET server_build POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
-)
-
 
 
 
@@ -103,11 +94,9 @@ add_executable(client_build ${SOURCES})
 
 list(APPEND CLIENT_EXTRA_INCLUDES "client/include")
 
-target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES} ${CLIENT_EXTRA_INCLUDES})
-target_link_libraries(client_build PRIVATE engineLib raylib)
-
+target_include_directories(client_build PUBLIC ${CLIENT_EXTRA_INCLUDES})
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(client_build PRIVATE raylib)
+target_link_libraries(client_build PRIVATE engineLib raylib)
 
 add_custom_command(TARGET client_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
