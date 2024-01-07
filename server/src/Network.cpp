@@ -75,6 +75,8 @@ void server::Network::run(Game *game)
     int client;
     //char buffer[1024];
     int id;
+    Connection connect;
+    Interaction interaction;
     std::string message;
     std::vector<char> buffer(1024);
 
@@ -86,12 +88,14 @@ void server::Network::run(Game *game)
         }
         std::cout << "receive new message" << std::endl;
         // std::string resData = convert.deserialize(buffer);
-        id = handleClient(buffer);
-        if (id != 0)
+        auto[id, connect] = handleClient(buffer);
+        if (id != 0 && id != -1)
             manageClient(buffer, id, game);
-        else
-            // créé et stock ton entity dans game via (*game).addEntity(entity); et récupérez id pour son id
-            continue;
+        else if (id == 0) {
+            interaction.setClientID(connect.getId());
+            interaction.setConnect(1);
+            (*game).addInteraction(interaction);
+        }
         // if (id != 84) {
         //     if (resData == "TICKRATE") {
         //         std::vector<char> data = game->serialize();
@@ -175,14 +179,15 @@ int server::Network::bindSocket()
     return 0;
 }
 
-int server::Network::handleNewConnection(Connection connect)
+std::tuple<int, server::Connection> server::Network::handleNewConnection(Connection connect)
 {
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;
-            return client->getId();
+            return std::make_tuple(client->getId(), connect);
         }
     }
+    connect.setId(_clients.size() + 1);
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
@@ -192,15 +197,15 @@ int server::Network::handleNewConnection(Connection connect)
     // if (bytesSent == -1)
     //     return 84;
     std::cout << "New client connected" << std::endl;
-    return 0;
+    return std::make_tuple(0, connect);
 }
 
-int server::Network::handleClient(std::vector<char> buffer) {
+std::tuple<int, server::Connection> server::Network::handleClient(std::vector<char> buffer) {
     Connection connect;
 
     if (_clientAddr.sin_addr.s_addr == INADDR_ANY) {
         std::cerr << "Error: ip or port recuperation failed" << std::endl;
-        return 84;
+        return std::make_tuple(-1, connect);
     }
     std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
     // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;

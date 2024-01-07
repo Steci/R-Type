@@ -26,6 +26,10 @@ namespace server
             int getMovement() const {return _movement;};
             int getShoot() const {return _shoot;};
             int getQuit() const {return _quit;};
+            int getClientID() const {return _client_id;};
+            int getConnect() const {return _connect;};
+            void setClientID(int clientID) {_client_id = clientID;};
+            void setConnect(int connect) {_connect = connect;};
             void deserializeInteraction(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
@@ -34,6 +38,7 @@ namespace server
             int _movement = -1; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server)
             int _shoot = -1; // 0 si rien 1 si quelque chose
             int _quit = -1; // 0 si rien 1 si le client veut quitter
+            int _connect = -1; // 0 si rien 1 si le client veut se connecter
             //etc...
     };
 
@@ -64,7 +69,6 @@ namespace server
             ~Game();
             void run();
             void addInteraction(Interaction interaction) {_mutex.lock();_interaction_client.push_back(interaction);_mutex.unlock();};
-            void addEntity(IEntity* entity) {_mutex_entities.lock();_entities.add(std::unique_ptr<IEntity>(entity));_mutex_entities.unlock();};
             std::vector<std::string> getFunctions() {return _functions;}
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
@@ -97,8 +101,6 @@ namespace server
             std::map<std::string, functionsExecution> _fonctions_map;
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
-            std::mutex _mutex_entities;
-            SparseArray<IEntity> _entities;
             void fillFrame();
     };
 }

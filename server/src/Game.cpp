@@ -286,11 +286,14 @@ void server::Game::run()
             _interaction_client.clear();
         }
         _mutex.unlock();
-
-        _mutex_entities.lock();
-        // récupérer les entity qu'il y a dans _entities et les stocker dans entities puis clear _entities
-        _mutex_entities.unlock();
-
+        if (interaction_client.size() > 0) {
+            std::cout << "new interaction received = " << interaction_client.size() << std::endl;
+            for (auto interaction : interaction_client) {
+                if (interaction.getConnect() == 1) {
+                    std::cout << "new client connected with id = " << interaction.getClientID() << std::endl;
+                }
+            }
+        }
         // UpdateMusicStream(backgroundMusic->second);
         for (auto& function : _functions) {
             auto [command, clientID] = parseCommand(function);

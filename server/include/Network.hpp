@@ -35,6 +35,7 @@
 #include <netdb.h>
 #include <chrono>
 #include <sstream>
+#include <tuple>
 
 namespace server {
     class Serialize {
@@ -79,7 +80,9 @@ namespace server {
             ~Connection() {};
             int getConnect() const {return _connect;};
             int getConnected() const {return _connected;};
-            int setConnected(int connected) {_connected = connected;};
+            void setConnected(int connected) {_connected = connected;};
+            void setId(int id) {_id = id;};
+            int getId() const {return _id;};
             std::vector<char> serializeConnection() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Connection));
@@ -87,7 +90,14 @@ namespace server {
             void deserializeConnection(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Connection*>(serializedData.data());
             }
+            Connection& operator=(const Connection& other) {
+                _connect = other._connect;
+                _connected = other._connected;
+                _id = other._id;
+                return *this;
+            }
         private:
+            int _id;
             int _connect;
             int _connected;
     };
@@ -119,8 +129,8 @@ namespace server {
             int fillSocket();
             int fillAddr();
             int bindSocket();
-            int handleNewConnection(Connection Connect);
-            int handleClient(std::vector<char> buffer);
+            std::tuple<int, server::Connection> handleNewConnection(Connection Connect);
+            std::tuple<int, server::Connection> handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
             void updateClients(int client_id, Game *game);
