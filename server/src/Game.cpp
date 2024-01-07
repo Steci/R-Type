@@ -18,120 +18,6 @@ server::Game::~Game()
 {
 }
 
-// void server::Game::actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("up");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-//         if (transform) {
-//             Engine::setTransformPos(playerEntity, {transform->_position.x, transform->_position.y - 10});
-//             if (transform->_animation == 3) {
-//                 Engine::setTransformAni(playerEntity, 4);
-//             } else if (transform->_animation == 2) {
-//                 Engine::setTransformAni(playerEntity, 1);
-//             } else if (transform->_animation == 1) {
-//                 Engine::setTransformAni(playerEntity, 0);
-//             } else if (transform->_animation == 0) {
-//                 Engine::setTransformAni(playerEntity, 3);
-//             } else {
-//                 Engine::setTransformAni(playerEntity, 4);
-//             }
-//         }
-//     }
-// }
-
-// void server::Game::actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("down");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-//         if (transform) {
-//             Engine::setTransformPos(playerEntity, {transform->_position.x, transform->_position.y + 10});
-//             if (transform->_animation == 1) {
-//                 Engine::setTransformAni(playerEntity, 2);
-//             } else if (transform->_animation == 4) {
-//                 Engine::setTransformAni(playerEntity, 3);
-//             } else if (transform->_animation == 3) {
-//                 Engine::setTransformAni(playerEntity, 0);
-//             } else if (transform->_animation == 0) {
-//                 Engine::setTransformAni(playerEntity, 1);
-//             } else {
-//                 Engine::setTransformAni(playerEntity, 2);
-//             }
-//         }
-//     }
-// }
-
-// void server::Game::actionLeftCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("left");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-//         if (transform) {
-//             Engine::setTransformPos(playerEntity, {transform->_position.x - 10, transform->_position.y});
-//             if (transform->_animation == 2) {
-//                 Engine::setTransformAni(playerEntity, 1);
-//             } else if (transform->_animation == 4) {
-//                 Engine::setTransformAni(playerEntity, 3);
-//             } else {
-//                 Engine::setTransformAni(playerEntity, 0);
-//             }
-//         }
-//     }
-// }
-
-// void server::Game::actionRightCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("right");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-//         if (transform) {
-//             Engine::setTransformPos(playerEntity, {transform->_position.x + 10, transform->_position.y});
-//             if (transform->_animation == 2) {
-//                 Engine::setTransformAni(playerEntity, 1);
-//             } else if (transform->_animation == 4) {
-//                 Engine::setTransformAni(playerEntity, 3);
-//             } else {
-//                 Engine::setTransformAni(playerEntity, 0);
-//             }
-//         }
-//     }
-// }
-
-// void server::Game::actionDebugCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("debug\n");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         printf("Player ID : %d\n", clientID);
-//         printf("Player Position : %f, %f\n", Engine::getComponentRef<C_Transform>(playerEntity)->_position.x, Engine::getComponentRef<C_Transform>(playerEntity)->_position.y);
-//     }
-// }
-
 // void server::Game::actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
 // {
 //     printf("quit\n");
@@ -144,46 +30,6 @@ server::Game::~Game()
 //         manager.getSystem<S_Renderer>()->removeEntity(&playerEntity);
 //         entities.remove(clientID);
 //     }
-// }
-
-// void server::Game::actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("connection\n");
-//     int nbrPlayer = 0;
-//     const auto& sparseIds = entities.getAllIndices();
-//     for (auto id : sparseIds) {
-//         if (id != -1) {
-//             auto& tmpEntity = entities.get(id);
-//             if (typeid(tmpEntity) == typeid(E_Player)) {
-//                 nbrPlayer++;
-//             }
-//         }
-//     }
-//     if (nbrPlayer >= 4)
-//         return;
-//     if (entities.exists(clientID) == true) {
-//         printf("player already connected");
-//         return;
-//     }
-//     // create entity
-//     entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), clientID);
-//     auto& playerEntity = entities.get(clientID);
-// }
-
-// void server::Game::actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("shoot");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     E_Player& playerEntity = static_cast<E_Player&>(entities.get(clientID));
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-//         playerEntity.newShoot("./assets/r-typesheet24.png", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
-//     }
-//     auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-//     PlaySound(effect->second);
 // }
 
 // void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
@@ -212,20 +58,6 @@ server::Game::~Game()
 //     } else {
 //         Engine::setHealth(entity, health->_health - 10);
 //         Engine::setHitboxStatus(entity, 1);
-//     }
-// }
-
-// void server::Game::actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("score");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         C_Score *score = Engine::getComponentRef<C_Score>(playerEntity);
-//         Engine::setScore(playerEntity, score->_score + 10);
 //     }
 // }
 
@@ -281,35 +113,12 @@ void server::Game::run()
             std::cout << "new interaction received = " << interaction_client.size() << std::endl;
             for (auto interaction : interaction_client) {
                 if (interaction.getConnect() == 1) {
-                    std::cout << "new client connected with id = " << interaction.getClientID() << std::endl;
+                    printf("New Player with ID : %d\n", interaction.getClientID());
                     entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
                 }
             }
         }
-        // UpdateMusicStream(backgroundMusic->second);
-        for (auto& function : _functions) {
-            auto [command, clientID] = parseCommand(function);
-            printf("\nCommand : %s\n", command.c_str());
-            printf("\nClient ID : %s\n", clientID.c_str());
 
-            numClientID = std::stoi(clientID);
-            //boucle sur mon tableau de pointeur sur fonctions
-            auto it = _fonctions_map.find(command);
-            if (it != _fonctions_map.end()) {
-                auto fptr = it->second;
-                (this->*fptr)(numClientID, manager, entities);
-            } else {
-                std::cout << "Commande not found." << std::endl;
-            }
-
-            if (entities.exists(numClientID) == false) {
-                printf("Player not connected");
-                continue;
-            }
-            auto& playerEntity = entities.get(numClientID);
-            _functions_client.push_back("POS " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.x) + " " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.y) + " " + clientID);
-            _mutex_client.unlock();
-        }
         _functions.clear();
         manager.update();
         // printf("tick++");
