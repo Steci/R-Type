@@ -131,39 +131,20 @@ class SparseArray {
             return indices;
         }
 
-        std::vector<char> serializeToVector() {
+        std::vector<char> serializeToVector(std::string type) {
             std::vector<char> data;
 
-            int denseSize = dense.size();
-            char* sizePtr = reinterpret_cast<char*>(&denseSize);
-            data.insert(data.end(), sizePtr, sizePtr + sizeof(denseSize));
-
             for (auto& element : dense) {
-                auto elementData = element->serializeToVector();
-                data.insert(data.end(), elementData.begin(), elementData.end());
-            }
+                if (element->getType() == type) {
+                    std::string entityType = type;
+                    data.insert(data.end(), entityType.begin(), entityType.end());
+                    data.push_back('\0');
 
-            return data;
-        }
-
-        void deserializeFromVector(const std::vector<char>& serializedData) {
-            auto it = serializedData.begin();
-            int denseSize;
-
-            std::memcpy(&denseSize, &*it, sizeof(denseSize));
-            it += sizeof(denseSize);
-            if (denseSize < 0 || serializedData.size() < sizeof(denseSize)) {
-                return;
-            }
-            dense.clear();
-            for (int i = 0; i < denseSize; ++i) {
-                if (it == serializedData.end()) {
-                    break;
+                    auto elementData = element->serializeToVector();
+                    data.insert(data.end(), elementData.begin(), elementData.end());
                 }
-                auto element = std::make_shared<T>();
-                element->deserializeFromVector(std::vector<char>(it, serializedData.end()));
-                dense.push_back(element);
             }
+            return data;
         }
 
         

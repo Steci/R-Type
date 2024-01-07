@@ -12,12 +12,16 @@
 
 class E_Bullet : public Entity {
     public:
-        E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
+        E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y, int idCreator);
         E_Bullet() = default;
         void update() override {};
         void render() override;
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
+        int getIdCreator() const { return _idCreator; };
+    
+    private:
+        int _idCreator;
 };
 
 class E_Player : public Entity {
@@ -25,11 +29,8 @@ class E_Player : public Entity {
         E_Player(int position_x, int position_y, float size_x, float size_y);
         void update() override;
         void render() override;
-        void newShoot(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
-    private:
-        std::vector<std::shared_ptr<E_Bullet>> _bullets;
 };
 
 class E_Enemy : public Entity {
@@ -37,9 +38,6 @@ class E_Enemy : public Entity {
         E_Enemy(int position_x, int position_y, float size_x, float size_y);
         void update() override;
         void render() override;
-        void newShoot(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
-    private:
-        std::vector<std::shared_ptr<E_Bullet>> _bullets;
 };

@@ -9,10 +9,11 @@
 #include <algorithm>
 #include "Game.hpp"
 
-E_Bullet::E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+E_Bullet::E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y, int idCreator)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
     addComponent(std::make_shared<C_Damage>(damage));
+    _idCreator = idCreator;
 }
 
 void E_Bullet::render()
@@ -105,9 +106,6 @@ void E_Player::render()
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            for (auto& bullet : _bullets) {
-                bullet->render();
-            }
             hitbox->_time -= 1;
         } else {
             hitbox->_time -= 1;
@@ -131,9 +129,6 @@ void E_Player::render()
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
             transform->_animation += 1;
         }
-        for (auto& bullet : _bullets) {
-            bullet->render();
-        }
     } else {
         int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
         int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
@@ -145,16 +140,7 @@ void E_Player::render()
         Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
         Vector2 origin = { 0.0f, 0.0f };
         DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-        for (auto& bullet : _bullets) {
-            bullet->render();
-        }
     }
-}
-
-void E_Player::newShoot(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
-{
-    auto newBullet = std::make_shared<E_Bullet>(damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
-    _bullets.push_back(std::move(newBullet));
 }
 
 std::vector<char> E_Player::serializeToVector()
@@ -180,11 +166,6 @@ std::vector<char> E_Player::serializeToVector()
     if (scoreComponent) {
         auto scoreData = scoreComponent->serializeToVector();
         data.insert(data.end(), scoreData.begin(), scoreData.end());
-    }
-
-    for (auto& bullet : _bullets) {
-        auto bulletData = bullet->serializeToVector();
-        data.insert(data.end(), bulletData.begin(), bulletData.end());
     }
     return data;
 }
@@ -223,23 +204,6 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
         scoreComponent->deserializeFromVector(scoreData);
         it += scoreSize;
     }
-
-    _bullets.clear();
-
-    while (it < data.end()) {
-        size_t bulletDataSize;
-        std::copy(it, it + sizeof(bulletDataSize), reinterpret_cast<char*>(&bulletDataSize));
-        it += sizeof(bulletDataSize);
-        if (std::distance(it, data.end()) < bulletDataSize) {
-            printf("taille insuffisante\n");
-            break;
-        }
-        std::vector<char> bulletData(it, it + bulletDataSize);
-        auto bullet = std::make_shared<E_Bullet>();
-        bullet->deserializeFromVector(bulletData);
-        _bullets.push_back(bullet);
-        it += bulletDataSize;
-    }
 }
 
 E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y, int type)
@@ -271,9 +235,6 @@ void E_Enemy::render()
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            for (auto& bullet : _bullets) {
-                bullet->render();
-            }
             hitbox->_time -= 1;
         } else {
             hitbox->_time -= 1;
@@ -297,9 +258,6 @@ void E_Enemy::render()
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
             transform->_animation += 1;
         }
-        for (auto& bullet : _bullets) {
-            bullet->render();
-        }
     } else {
         int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
         int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
@@ -311,16 +269,7 @@ void E_Enemy::render()
         Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
         Vector2 origin = { 0.0f, 0.0f };
         DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-        for (auto& bullet : _bullets) {
-            bullet->render();
-        }
     }
-}
-
-void E_Enemy::newShoot(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
-{
-    auto newBullet = std::make_shared<E_Bullet>(damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
-    _bullets.push_back(std::move(newBullet));
 }
 
 std::vector<char> E_Enemy::serializeToVector() {
@@ -345,11 +294,6 @@ std::vector<char> E_Enemy::serializeToVector() {
     if (enemyInfoComponent) {
         auto enemyInfoData = enemyInfoComponent->serializeToVector();
         data.insert(data.end(), enemyInfoData.begin(), enemyInfoData.end());
-    }
-
-    for (auto& bullet : _bullets) {
-        auto bulletData = bullet->serializeToVector();
-        data.insert(data.end(), bulletData.begin(), bulletData.end());
     }
     return data;
 }
@@ -387,22 +331,5 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         std::vector<char> scoreData(it, it + scoreSize);
         scoreComponent->deserializeFromVector(scoreData);
         it += scoreSize;
-    }
-
-    _bullets.clear();
-
-    while (it < data.end()) {
-        size_t bulletDataSize;
-        std::copy(it, it + sizeof(bulletDataSize), reinterpret_cast<char*>(&bulletDataSize));
-        it += sizeof(bulletDataSize);
-        if (std::distance(it, data.end()) < bulletDataSize) {
-            printf("taille insuffisante\n");
-            break;
-        }
-        std::vector<char> bulletData(it, it + bulletDataSize);
-        auto bullet = std::make_shared<E_Bullet>();
-        bullet->deserializeFromVector(bulletData);
-        _bullets.push_back(bullet);
-        it += bulletDataSize;
     }
 }
