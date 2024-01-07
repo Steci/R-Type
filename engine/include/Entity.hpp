@@ -64,6 +64,7 @@ class IEntity {
         virtual Component* getComponentOfType(const std::type_info& ti) = 0;
 
         virtual std::vector<char> serializeToVector() = 0;
+        virtual void deserializeFromVector(std::vector<char> data) = 0;
 };
 
 class Entity : public IEntity {
@@ -71,6 +72,7 @@ class Entity : public IEntity {
         void update() override = 0;
         void render() override = 0;
         std::vector<char> serializeToVector() override = 0;
+        void deserializeFromVector(std::vector<char> data) override = 0;
 
         void addComponent(std::shared_ptr<Component> component) override {
             components.push_back(std::move(component));
@@ -130,7 +132,6 @@ namespace Engine {
         }
         return (nullptr);
     }
-    
     //template<typename T>
     //const T* getComponentRef(const IEntity& entity) {
     //    T* component = dynamic_cast<const T*>(entity.getComponentOfType(typeid(T)));

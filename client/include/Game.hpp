@@ -50,7 +50,9 @@ namespace client {
             ~Frame() {}; // penser à remplir le destructeur si besoin
             int getTick() const {return _tick;};
             void deserializeFrame(std::vector<char>& serializedData) {
-                *this = *reinterpret_cast<Frame*>(serializedData.data());
+                _tick = *reinterpret_cast<int*>(serializedData.data());
+                serializedData.erase(serializedData.begin(), serializedData.begin() + sizeof(_tick));
+                _entities.deserializeFromVector(serializedData);
             }
             SparseArray<IEntity> &getEntities() { return _entities; }
         private:

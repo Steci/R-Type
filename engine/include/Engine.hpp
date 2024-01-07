@@ -145,6 +145,19 @@ class SparseArray {
 
             return data;
         }
+        void deserializeFromVector(std::vector<char> data) {
+            int denseSize = *reinterpret_cast<int*>(data.data());
+            data.erase(data.begin(), data.begin() + sizeof(denseSize));
+
+            for (int i = 0; i < denseSize; i++) {
+                auto elementData = std::vector<char>(data.begin(), data.begin() + sizeof(T));
+                data.erase(data.begin(), data.begin() + sizeof(T));
+
+                auto element = std::make_shared<T>();
+                element->deserializeFromVector(elementData);
+                add(element);
+            }
+        }
 
     private:
         std::vector<std::shared_ptr<T>> dense; // Stores actual elements
