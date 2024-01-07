@@ -215,6 +215,7 @@ namespace client {
             _mutex_frames.unlock();
             auto &entities = current_frame.getEntities();
             const auto& sparseIds = entities.getAllIndices();
+            printf("%d\n", sparseIds.size());
             for (auto id : sparseIds) {
                 printf("%d\n", id);
                 if (id != -1) {

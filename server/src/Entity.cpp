@@ -9,10 +9,9 @@
 #include <algorithm>
 #include "Game.hpp"
 
-E_Bullet::E_Bullet(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+E_Bullet::E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
-    addComponent(std::make_shared<C_Sprite>(path));
     addComponent(std::make_shared<C_Damage>(damage));
 }
 
@@ -34,18 +33,24 @@ void E_Bullet::render()
 std::vector<char> E_Bullet::serializeToVector()
 {
     std::vector<char> data;
+    
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
-
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();
         data.insert(data.end(), transformData.begin(), transformData.end());
     }
+
+    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
     if (damageComponent) {
         auto damageData = damageComponent->serializeToVector();
         data.insert(data.end(), damageData.begin(), damageData.end());
     }
-    return data;
+
+    size_t dataSize = data.size();
+    char* sizePtr = reinterpret_cast<char*>(&dataSize);
+    std::vector<char> sizeData(sizePtr, sizePtr + sizeof(dataSize));
+    sizeData.insert(sizeData.end(), data.begin(), data.end());
+    return sizeData;
 }
 
 void E_Bullet::deserializeFromVector(std::vector<char> data) {
@@ -146,9 +151,9 @@ void E_Player::render()
     }
 }
 
-void E_Player::newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+void E_Player::newShoot(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    auto newBullet = std::make_shared<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+    auto newBullet = std::make_shared<E_Bullet>(damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
 }
 
@@ -220,13 +225,20 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
     }
 
     _bullets.clear();
+
     while (it < data.end()) {
-        size_t bulletSize = sizeof(C_Transform) + sizeof(C_Damage);
-        std::vector<char> bulletData(it, it + bulletSize);
-        auto bullet = std::make_shared<E_Bullet> ();
+        size_t bulletDataSize;
+        std::copy(it, it + sizeof(bulletDataSize), reinterpret_cast<char*>(&bulletDataSize));
+        it += sizeof(bulletDataSize);
+        if (std::distance(it, data.end()) < bulletDataSize) {
+            printf("taille insuffisante\n");
+            break;
+        }
+        std::vector<char> bulletData(it, it + bulletDataSize);
+        auto bullet = std::make_shared<E_Bullet>();
         bullet->deserializeFromVector(bulletData);
         _bullets.push_back(bullet);
-        it += bulletSize;
+        it += bulletDataSize;
     }
 }
 
@@ -305,9 +317,9 @@ void E_Enemy::render()
     }
 }
 
-void E_Enemy::newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+void E_Enemy::newShoot(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    auto newBullet = std::make_shared<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+    auto newBullet = std::make_shared<E_Bullet>(damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
 }
 
@@ -361,14 +373,6 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         it += healthSize;
     }
 
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    if (hitboxComponent) {
-        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
-        std::vector<char> hitboxData(it, it + hitboxSize);
-        hitboxComponent->deserializeFromVector(hitboxData);
-        it += hitboxSize;
-    }
-
     C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
     if (enemyInfoComponent) {
         size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
@@ -377,13 +381,28 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         it += enemyInfoSize;
     }
 
+    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
+    if (scoreComponent) {
+        size_t scoreSize = sizeof(scoreComponent->_score);
+        std::vector<char> scoreData(it, it + scoreSize);
+        scoreComponent->deserializeFromVector(scoreData);
+        it += scoreSize;
+    }
+
     _bullets.clear();
+
     while (it < data.end()) {
-        size_t bulletSize = sizeof(C_Transform) + sizeof(C_Damage);
-        std::vector<char> bulletData(it, it + bulletSize);
+        size_t bulletDataSize;
+        std::copy(it, it + sizeof(bulletDataSize), reinterpret_cast<char*>(&bulletDataSize));
+        it += sizeof(bulletDataSize);
+        if (std::distance(it, data.end()) < bulletDataSize) {
+            printf("taille insuffisante\n");
+            break;
+        }
+        std::vector<char> bulletData(it, it + bulletDataSize);
         auto bullet = std::make_shared<E_Bullet>();
         bullet->deserializeFromVector(bulletData);
         _bullets.push_back(bullet);
-        it += bulletSize;
+        it += bulletDataSize;
     }
 }

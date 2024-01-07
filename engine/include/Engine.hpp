@@ -145,24 +145,30 @@ class SparseArray {
 
             return data;
         }
-        void deserializeFromVector(std::vector<char> data) {
-            int denseSize = *reinterpret_cast<int*>(data.data());
-            data.erase(data.begin(), data.begin() + sizeof(denseSize));
 
-            for (int i = 0; i < denseSize; i++) {
-                auto elementData = std::vector<char>(data.begin(), data.begin() + sizeof(T));
-                data.erase(data.begin(), data.begin() + sizeof(T));
+        void deserializeFromVector(const std::vector<char>& serializedData) {
+            auto it = serializedData.begin();
+            int denseSize;
 
+            std::memcpy(&denseSize, &*it, sizeof(denseSize));
+            it += sizeof(denseSize);
+            if (denseSize < 0 || serializedData.size() < sizeof(denseSize)) {
+                return;
+            }
+            dense.clear();
+            for (int i = 0; i < denseSize; ++i) {
+                if (it == serializedData.end()) {
+                    break;
+                }
                 auto element = std::make_shared<T>();
-                element->deserializeFromVector(elementData);
-                add(element);
+                element->deserializeFromVector(std::vector<char>(it, serializedData.end()));
+                dense.push_back(element);
             }
         }
 
+        
     private:
         std::vector<std::shared_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'
         std::vector<int> indices; // Stores original IDs
 };
-
-// TODO : IMPLEMENT RESSOURCE MANAGER
