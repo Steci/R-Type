@@ -33,7 +33,7 @@ class E_Player : public Entity {
 
 class E_Enemy : public Entity {
     public:
-        E_Enemy(int position_x, int position_y, float size_x, float size_y);
+        E_Enemy(int position_x, int position_y, float size_x, float size_y, int type);
         void update() override;
         void render() override;
         void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);

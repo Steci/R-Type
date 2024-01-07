@@ -94,10 +94,10 @@ void server::Game::run()
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
 
-    entities.add(std::make_shared<E_Enemy>(700, 50, 65.2, 66), 2);
+    entities.add(std::make_shared<E_Enemy>(700, 50, 65.2, 66, 2), 2);
     auto& ennemyEntity = entities.get(2);
 
-    int id = entities.add(std::make_shared<E_Enemy>(700, 350, 65.2, 66));
+    int id = entities.add(std::make_shared<E_Enemy>(700, 350, 65.2, 66, 3));
     auto& ennemyEntity3 = entities.get(id);
 
     int numClientID = 0;
