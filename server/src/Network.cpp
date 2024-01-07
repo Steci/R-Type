@@ -112,6 +112,7 @@ void server::Network::manageClient(std::vector<char> buffer, int client_id, Game
     bool interaction_found = false;
 
     interaction.deserializeInteraction(buffer);
+    interaction.setClientID(client_id);
     std::cout << "Interaction: " << interaction.getMovement() << std::endl;
     (*game).addInteraction(interaction);
 }

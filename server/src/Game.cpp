@@ -325,7 +325,7 @@ void server::Game::run()
         // printf("tick = " << _tick);
 
         //remplir la frame ici
-        fillFrame(_entities);
+        fillFrame(entities);
         interaction_client.clear();
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
     }
