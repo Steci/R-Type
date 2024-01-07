@@ -54,6 +54,7 @@ namespace client {
         private:
             int _tick = -1;
             // ici mettre les infos de la frame à display
+            SparseArray<IEntity> _entities;
     };
 
     class Game

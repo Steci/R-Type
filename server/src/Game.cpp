@@ -271,13 +271,6 @@ void server::Game::run()
     int numClientID = 0;
 
     while (true) {
-        // _mutex.lock();
-        // if (_functions_server.size() > 0) {
-        //     _functions = _functions_server;
-        //     _functions_server.clear();
-        // }
-        // _mutex.unlock();
-        // To Remove
         _mutex.lock();
         if (_interaction_client.size() > 0) {
             interaction_client = _interaction_client;

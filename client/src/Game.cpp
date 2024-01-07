@@ -199,12 +199,20 @@ namespace client {
 
     void Game::run()
     {
+        SystemManager manager;
+        Frame current_frame;
+
+        // manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/background.png");
+
         while (1) {
             testInteraction();
-            // _mutex_frames.lock();
-            // if (_frames.size() != 0)
-            //     std::cout << "frame tick : " << _frames.back().getTick() << std::endl;
-            // _mutex_frames.unlock();
+            _mutex_frames.lock();
+            if (_frames.size() != 0) {
+                // std::cout << "frame tick : " << _frames.back().getTick() << std::endl;
+                current_frame = _frames.back();
+                _frames.pop_back();
+            }
+            _mutex_frames.unlock();
             //tout le bordel d'affichage + détection de touches
         }
     }
