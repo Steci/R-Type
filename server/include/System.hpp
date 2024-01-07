@@ -79,7 +79,7 @@ class S_Collision : public System {
         S_Collision(SparseArray<IEntity> &sparseEntities);
         ~S_Collision();
         void update() override;
-        bool checkCollision(IEntity* entity1, IEntity* entity2);
+        bool checkCollision(C_Transform *transform1, C_Transform *transform2, C_Hitbox *hitbox1, C_Hitbox *hitbox2);
         int screenWidth = 800;
         int screenHeight = 600;
     private:

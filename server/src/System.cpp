@@ -111,22 +111,14 @@ S_Collision::~S_Collision()
 {
 }
 
-bool S_Collision::checkCollision(IEntity* entity1, IEntity* entity2)
+bool S_Collision::checkCollision(C_Transform *transform1, C_Transform *transform2, C_Hitbox *hitbox1, C_Hitbox *hitbox2)
 {
-    C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
-    C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
-
-    if (hitbox1->_status == 0 || hitbox2->_status == 0)
-        return false;
-
-    C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-    C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
-
     if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
         transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
         transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
-        transform1->_position.y + hitbox1->_size.y > transform2->_position.y)
+        transform1->_position.y + hitbox1->_size.y > transform2->_position.y && (hitbox1->_status != 0 && hitbox2->_status != 0) ) {
         return true;
+    }
     return false;
 }
 
@@ -144,10 +136,7 @@ void S_Collision::update()
                 C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
                 C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
 
-                if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
-                    transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
-                    transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
-                    transform1->_position.y + hitbox1->_size.y > transform2->_position.y && (hitbox1->_status != 0 && hitbox2->_status != 0) ) {
+                if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
 
                     if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
                         C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
@@ -169,22 +158,23 @@ void S_Collision::update()
                     }
                 }
             }
-            if (typeid(*entity1) == typeid(E_Player)) {
-                // check if player is leaving screenWidth or screenHeight
-                C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-
-                if (transform1->_position.x < 0)
-                    transform1->_position.x = 0;
-                if (transform1->_position.x > screenWidth)
-                    transform1->_position.x = screenWidth;
-                if (transform1->_position.y < 0)
-                    transform1->_position.y = 0;
-                if (transform1->_position.y > screenHeight)
-                    transform1->_position.y = screenHeight;
-            }
             index2++;
         }
+        if (typeid(*entity1) == typeid(E_Player)) {
+            // check if player is leaving screenWidth or screenHeight
+            C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+
+            if (transform1->_position.x < 0)
+                transform1->_position.x = 0;
+            if (transform1->_position.x > screenWidth)
+                transform1->_position.x = screenWidth;
+            if (transform1->_position.y < 0)
+                transform1->_position.y = 0;
+            if (transform1->_position.y > screenHeight)
+                transform1->_position.y = screenHeight;
+        }
         if (typeid(*entity1) == typeid(E_Enemy)) {
+            // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
             if (transform->_position.x <= -10.0) {
@@ -193,6 +183,7 @@ void S_Collision::update()
             }
         }
         if (typeid(*entity1) == typeid(E_Bullet)) {
+            // Destroy bullet if it leaves the screen
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
