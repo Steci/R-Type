@@ -57,101 +57,13 @@ set(CMAKE_PREFIX_PATH "vcpkg_installed/${VCPKG_TARGET_TRIPLET}" CACHE STRING "Vc
 
 
 
-
-
-
-
-
-
-
-
-
-project(lib_engine)
-file(GLOB ENGINE_SOURCES "engine/src/*.cpp")
-
-add_library(EngineLib STATIC ${ENGINE_SOURCES})
-
-include_directories(${PROJECT_SOURCE_DIR}/engine/include)
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/engine/include")
-target_include_directories(EngineLib PUBLIC ${EXTRA_INCLUDES})
-
-# Vous ne devriez pas utiliser add_executable pour un projet lib_engine.
-# Si vous voulez créer un exécutable, utilisez un autre nom de projet.
-
-# Utiliser find_package pour trouver la bibliothèque raylib
 find_package(raylib CONFIG REQUIRED)
-target_link_libraries(EngineLib PRIVATE raylib)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-project(server_build)
-
-# Ajouter le répertoire d'installation de Vcpkg
-
-file(GLOB SOURCES "server/main.cpp" "server/src/*.cpp")# "engine/src/*.cpp" "engine/include/*.hpp")
-
-add_executable(server_build ${SOURCES})
-
-list(APPEND EXTRA_INCLUDES "server/include")# "engine/include")
-target_include_directories(server_build PUBLIC ${EXTRA_INCLUDES})
-
-
-target_link_libraries(server_build PRIVATE pthread)
-target_link_libraries(server_build PRIVATE engineLib raylib)
-
-# Utiliser find_package pour trouver la bibliothèque fmt
 find_package(fmt CONFIG REQUIRED)
-target_link_libraries(server_build PRIVATE fmt::fmt)
-
-# Utiliser find_package pour trouver la bibliothèque raylib
-find_package(raylib CONFIG REQUIRED)
-target_link_libraries(server_build PRIVATE raylib)
 
 
-# Utiliser find_package pour trouver la bibliothèque raylib
-find_package(boost CONFIG REQUIRED)
-target_link_libraries(server_build PRIVATE boost::boost)
-
-add_custom_command(TARGET server_build POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
-)
+add_subdirectory(engine)
+add_subdirectory(client)
+add_subdirectory(server)
 
 
 
@@ -193,23 +105,39 @@ add_custom_command(TARGET server_build POST_BUILD
 
 
 
-project(client_build)
 
-file(GLOB SOURCES "client/main.cpp" "client/src/*.cpp")
 
-add_executable(client_build ${SOURCES})
 
-list(APPEND EXTRA_INCLUDES "client/include")
 
-target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
-target_link_libraries(client_build PRIVATE engineLib raylib)
 
-find_package(raylib CONFIG REQUIRED)
-target_link_libraries(client_build PRIVATE raylib)
 
-add_custom_command(TARGET client_build POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
-)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Configuration des tests
 #enable_testing()
@@ -220,6 +148,5 @@ add_custom_command(TARGET client_build POST_BUILD
 # Sous-projets
 #add_subdirectory(client)
 #add_subdirectory(server)
-#add_subdirectory(engine)
 
 
