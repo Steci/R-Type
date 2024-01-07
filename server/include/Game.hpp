@@ -48,8 +48,15 @@ namespace server
             ~Frame() {}; // penser à remplir le destructeur si besoin
             void setTick(int tick) {_tick = tick;};
             std::vector<char> serializeFrame() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Frame));
+                std::vector<char> data;
+
+                char* tickPtr = reinterpret_cast<char*>(&_tick);
+                data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
+
+                auto entitiesData = _entities.serializeToVector();
+                data.insert(data.end(), entitiesData.begin(), entitiesData.end());
+
+                return data;
             }
             bool operator==(const Frame& other) const {return *this == other;}
             bool operator!=(const Frame& other) const {return !(*this == other);}

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <algorithm>
 #include "Game.hpp"
+#include "Entity.hpp"
 
 E_Bullet::E_Bullet(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
@@ -29,6 +30,23 @@ void E_Bullet::render()
         Vector2 origin = { 0.0f, 0.0f };
         DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
     }
+}
+
+std::vector<char> E_Bullet::serializeToVector()
+{
+    std::vector<char> data;
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
+
+    if (transformComponent) {
+        auto transformData = transformComponent->serializeToVector();
+        data.insert(data.end(), transformData.begin(), transformData.end());
+    }
+    if (damageComponent) {
+        auto damageData = damageComponent->serializeToVector();
+        data.insert(data.end(), damageData.begin(), damageData.end());
+    }
+    return data;
 }
 
 E_Player::E_Player(int position_x, int position_y, float size_x, float size_y)
@@ -115,6 +133,38 @@ void E_Player::newShoot(std::string path, int damage, int position_x, int positi
     _bullets.push_back(std::move(newBullet));
 }
 
+std::vector<char> E_Player::serializeToVector()
+{
+    std::vector<char> data;
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
+
+    if (transformComponent) {
+        auto transformData = transformComponent->serializeToVector();
+        data.insert(data.end(), transformData.begin(), transformData.end());
+    }
+    if (healthComponent) {
+        auto healthData = healthComponent->serializeToVector();
+        data.insert(data.end(), healthData.begin(), healthData.end());
+    }
+    if (hitboxComponent) {
+        auto hitboxData = hitboxComponent->serializeToVector();
+        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
+    }
+    if (scoreComponent) {
+        auto scoreData = scoreComponent->serializeToVector();
+        data.insert(data.end(), scoreData.begin(), scoreData.end());
+    }
+
+    for (auto& bullet : _bullets) {
+        auto bulletData = bullet->serializeToVector();
+        data.insert(data.end(), bulletData.begin(), bulletData.end());
+    }
+    return data;
+}
+
 E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
@@ -194,4 +244,35 @@ void E_Enemy::newShoot(std::string path, int damage, int position_x, int positio
 {
     auto newBullet = std::make_shared<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
+}
+
+std::vector<char> E_Enemy::serializeToVector() {
+    std::vector<char> data;
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
+
+    if (transformComponent) {
+        auto transformData = transformComponent->serializeToVector();
+        data.insert(data.end(), transformData.begin(), transformData.end());
+    }
+    if (healthComponent) {
+        auto healthData = healthComponent->serializeToVector();
+        data.insert(data.end(), healthData.begin(), healthData.end());
+    }
+    if (hitboxComponent) {
+        auto hitboxData = hitboxComponent->serializeToVector();
+        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
+    }
+    if (enemyInfoComponent) {
+        auto enemyInfoData = enemyInfoComponent->serializeToVector();
+        data.insert(data.end(), enemyInfoData.begin(), enemyInfoData.end());
+    }
+
+    for (auto& bullet : _bullets) {
+        auto bulletData = bullet->serializeToVector();
+        data.insert(data.end(), bulletData.begin(), bulletData.end());
+    }
+    return data;
 }

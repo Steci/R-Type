@@ -131,6 +131,21 @@ class SparseArray {
             return indices;
         }
 
+        std::vector<char> serializeToVector() {
+            std::vector<char> data;
+
+            int denseSize = dense.size();
+            char* sizePtr = reinterpret_cast<char*>(&denseSize);
+            data.insert(data.end(), sizePtr, sizePtr + sizeof(denseSize));
+
+            for (auto& element : dense) {
+                auto elementData = element->serializeToVector();
+                data.insert(data.end(), elementData.begin(), elementData.end());
+            }
+
+            return data;
+        }
+
     private:
         std::vector<std::shared_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'

@@ -47,6 +47,14 @@ struct C_Transform : public Component {
         _velocity.y = velocity_y;
     }
     ~C_Transform() = default;
+    std::vector<char> serializeToVector() const {
+        std::vector<char> data;
+        data.insert(data.end(), reinterpret_cast<const char*>(&_position), reinterpret_cast<const char*>(&_position) + sizeof(_position));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_size), reinterpret_cast<const char*>(&_size) + sizeof(_size));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_velocity), reinterpret_cast<const char*>(&_velocity) + sizeof(_velocity));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_animation), reinterpret_cast<const char*>(&_animation) + sizeof(_animation));
+        return data;
+    }
 };
 
 /**
@@ -58,6 +66,9 @@ struct C_Damage : public Component {
         _damage = damage;
     }
     ~C_Damage() = default;
+    std::vector<char> serializeToVector() const {
+        return std::vector<char>(reinterpret_cast<const char*>(&_damage), reinterpret_cast<const char*>(&_damage) + sizeof(_damage));
+    }
 };
 
 /**
@@ -69,6 +80,9 @@ struct C_Health : public Component {
         _health = health;
     }
     ~C_Health() = default;
+    std::vector<char> serializeToVector() const {
+        return std::vector<char>(reinterpret_cast<const char*>(&_health), reinterpret_cast<const char*>(&_health) + sizeof(_health));
+    }
 };
 
 /**
@@ -92,6 +106,10 @@ struct C_Sprite : public Component {
     }
     C_Sprite(const C_Sprite&) = delete;
     C_Sprite& operator=(const C_Sprite&) = delete;
+    std::vector<char> serializeToVector() const {
+        std::vector<char> data(_name.begin(), _name.end());
+        return data;
+    }
 };
 
 /**
@@ -107,6 +125,13 @@ struct C_Hitbox : public Component {
         _status = 0;
     }
     ~C_Hitbox() = default;
+    std::vector<char> serializeToVector() const {
+        std::vector<char> data;
+        data.insert(data.end(), reinterpret_cast<const char*>(&_size), reinterpret_cast<const char*>(&_size) + sizeof(_size));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_time), reinterpret_cast<const char*>(&_time) + sizeof(_time));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_status), reinterpret_cast<const char*>(&_status) + sizeof(_status));
+        return data;
+    }
 };
 
 struct C_Score : public Component {
@@ -115,6 +140,9 @@ struct C_Score : public Component {
         _score = 0;
     }
     ~C_Score() = default;
+    std::vector<char> serializeToVector() const {
+        return std::vector<char>(reinterpret_cast<const char*>(&_score), reinterpret_cast<const char*>(&_score) + sizeof(_score));
+    }
 };
 
 struct C_EnemyInfo : public Component {
@@ -123,4 +151,7 @@ struct C_EnemyInfo : public Component {
         _type = type;
     }
     ~C_EnemyInfo() = default;
+    std::vector<char> serializeToVector() const {
+        return std::vector<char>(reinterpret_cast<const char*>(&_type), reinterpret_cast<const char*>(&_type) + sizeof(_type));
+    }
 };
