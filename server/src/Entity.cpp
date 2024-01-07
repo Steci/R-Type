@@ -31,6 +31,10 @@ void E_Bullet::render()
     }
 }
 
+std::string E_Bullet::getType() const {
+    return "E_Bullet";
+}
+
 std::vector<char> E_Bullet::serializeToVector()
 {
     std::vector<char> data;
@@ -86,6 +90,10 @@ void E_Player::update()
 {
     auto& transform = getComponents()[0];
     auto& health = getComponents()[1];
+}
+
+std::string E_Player::getType() const {
+    return "E_Player";
 }
 
 void E_Player::render()
@@ -270,6 +278,10 @@ void E_Enemy::render()
         Vector2 origin = { 0.0f, 0.0f };
         DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
     }
+}
+
+std::string E_Enemy::getType() const {
+    return "E_Enemy";
 }
 
 std::vector<char> E_Enemy::serializeToVector() {

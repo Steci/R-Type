@@ -252,15 +252,15 @@ void S_Spawner::update()
     }
 }
 
-S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities)
-    : _sparseEntities(sparseEntities)
-{
-}
-
-S_Weapon::~S_Weapon()
-{
-}
-
-void S_Weapon::update()
-{
-}
+//S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities)
+//    : _sparseEntities(sparseEntities)
+//{
+//}
+//
+//S_Weapon::~S_Weapon()
+//{
+//}
+//
+//void S_Weapon::update()
+//{
+//}

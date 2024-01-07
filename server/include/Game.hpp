@@ -53,8 +53,27 @@ namespace server
                 char* tickPtr = reinterpret_cast<char*>(&_tick);
                 data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
 
-                auto entitiesData = _entities.serializeToVector();
-                data.insert(data.end(), entitiesData.begin(), entitiesData.end());
+                std::string playerHeader = "E_Player";
+                data.insert(data.end(), playerHeader.begin(), playerHeader.end());
+                data.push_back('\0');
+                auto playerData = _entities.serializeToVector("E_Player");
+                data.insert(data.end(), playerData.begin(), playerData.end());
+
+                std::string enemyHeader = "E_Enemy";
+                data.insert(data.end(), enemyHeader.begin(), enemyHeader.end());
+                data.push_back('\0');
+                auto enemyData = _entities.serializeToVector("E_Enemy");
+                data.insert(data.end(), enemyData.begin(), enemyData.end());
+
+                std::string bulletHeader = "E_Bullet";
+                data.insert(data.end(), bulletHeader.begin(), bulletHeader.end());
+                data.push_back('\0');
+                auto bulletData = _entities.serializeToVector("E_Bullet");
+                data.insert(data.end(), bulletData.begin(), bulletData.end());
+
+                std::string endMarker = "END";
+                data.insert(data.end(), endMarker.begin(), endMarker.end());
+                data.push_back('\0');
 
                 return data;
             }

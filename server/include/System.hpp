@@ -103,12 +103,12 @@ class S_EventManager : public System {
         int EventKeyPressed(std::list<int> keys);
 };
 
-class S_Weapon : public System {
-    public:
-        S_Weapon(SparseArray<IEntity> &sparseEntities);
-        ~S_Weapon() = default;
-        void update() override {};
-
-    private:
-        SparseArray<IEntity> &_sparseEntities;
-};
+//class S_Weapon : public System {
+//    public:
+//        S_Weapon(SparseArray<IEntity> &sparseEntities);
+//        ~S_Weapon() = default;
+//        void update() override {};
+//
+//    private:
+//        SparseArray<IEntity> &_sparseEntities;
+//};

@@ -16,6 +16,7 @@ class E_Bullet : public Entity {
         E_Bullet() = default;
         void update() override {};
         void render() override;
+        std::string getType() const override;
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
         int getIdCreator() const { return _idCreator; };
@@ -29,6 +30,7 @@ class E_Player : public Entity {
         E_Player(int position_x, int position_y, float size_x, float size_y);
         void update() override;
         void render() override;
+        std::string getType() const override;
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
 };
@@ -38,6 +40,7 @@ class E_Enemy : public Entity {
         E_Enemy(int position_x, int position_y, float size_x, float size_y);
         void update() override;
         void render() override;
+        std::string getType() const override;
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
 };

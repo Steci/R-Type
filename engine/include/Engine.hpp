@@ -131,15 +131,14 @@ class SparseArray {
             return indices;
         }
 
-        std::vector<char> serializeToVector(std::string type) {
+        std::vector<char> serializeToVector(const std::string& entityType) {
             std::vector<char> data;
 
             for (auto& element : dense) {
-                if (element->getType() == type) {
-                    std::string entityType = type;
-                    data.insert(data.end(), entityType.begin(), entityType.end());
+                if (element->getType() == entityType) {
+                    std::string typeHeader = entityType;
+                    data.insert(data.end(), typeHeader.begin(), typeHeader.end());
                     data.push_back('\0');
-
                     auto elementData = element->serializeToVector();
                     data.insert(data.end(), elementData.begin(), elementData.end());
                 }

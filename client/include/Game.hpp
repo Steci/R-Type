@@ -49,10 +49,80 @@ namespace client {
             Frame() {}; // penser à remplir le constructeur si besoin
             ~Frame() {}; // penser à remplir le destructeur si besoin
             int getTick() const {return _tick;};
-            void deserializeFrame(std::vector<char>& serializedData) {
-                _tick = *reinterpret_cast<int*>(serializedData.data());
-                serializedData.erase(serializedData.begin(), serializedData.begin() + sizeof(_tick));
-                _entities.deserializeFromVector(serializedData);
+            bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
+                const std::string endMarker = "END";
+                return std::distance(it, data.end()) >= endMarker.size() &&
+                std::equal(endMarker.begin(), endMarker.end(), it);
+            }
+            void deserializeFrame(const std::vector<char>& serializedData) {
+                auto it = serializedData.begin();
+
+                if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
+                    std::memcpy(&_tick, &it, sizeof(_tick));
+                    it += sizeof(_tick);
+                }
+                while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
+                    std::string entityType;
+                    while (it != serializedData.end() && *it != '\0') {
+                        entityType.push_back(*it);
+                        ++it;
+                    }
+                    ++it;
+                    if (entityType == "E_Player") {
+                        int position_x, position_y;
+                        float size_x, size_y;
+                        std::memcpy(&position_x, &*it, sizeof(position_x));
+                        it += sizeof(position_x);
+                        std::memcpy(&position_y, &*it, sizeof(position_y));
+                        it += sizeof(position_y);
+                        std::memcpy(&size_x, &*it, sizeof(size_x));
+                        it += sizeof(size_x);
+                        std::memcpy(&size_y, &*it, sizeof(size_y));
+                        it += sizeof(size_y);
+
+                        auto player = std::make_shared<E_Player>(position_x, position_y, size_x, size_y);
+                        _entities.add(player);
+                    } else if (entityType == "E_Enemy") {
+                        int position_x, position_y;
+                        float size_x, size_y;
+                        std::memcpy(&position_x, &*it, sizeof(position_x));
+                        it += sizeof(position_x);
+                        std::memcpy(&position_y, &*it, sizeof(position_y));
+                        it += sizeof(position_y);
+                        std::memcpy(&size_x, &*it, sizeof(size_x));
+                        it += sizeof(size_x);
+                        std::memcpy(&size_y, &*it, sizeof(size_y));
+                        it += sizeof(size_y);
+
+                        auto enemy = std::make_shared<E_Enemy>(position_x, position_y, size_x, size_y);
+                        _entities.add(enemy);
+                    } else if (entityType == "E_Bullet") {
+                        int damage, position_x, position_y, idCreator;
+                        float size_x, size_y, velocity_x, velocity_y;
+                        std::memcpy(&damage, &it, sizeof(damage));
+                        it += sizeof(damage);
+                        std::memcpy(&position_x, &it, sizeof(position_x));
+                        it += sizeof(position_x);
+                        std::memcpy(&position_y, &it, sizeof(position_y));
+                        it += sizeof(position_y);
+                        std::memcpy(&size_x, &it, sizeof(size_x));
+                        it += sizeof(size_x);
+                        std::memcpy(&size_y, &it, sizeof(size_y));
+                        it += sizeof(size_y);
+                        std::memcpy(&velocity_x, &it, sizeof(velocity_x));
+                        it += sizeof(velocity_x);
+                        std::memcpy(&velocity_y, &it, sizeof(velocity_y));
+                        it += sizeof(velocity_y);
+                        std::memcpy(&idCreator, &it, sizeof(idCreator));
+                        it += sizeof(idCreator);
+
+                        auto bullet = std::make_shared<E_Bullet>(damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y, idCreator);
+                        _entities.add(bullet);
+                    }
+                    if (isEndMarker(it, serializedData)) {
+                        break;
+                    }
+                }
             }
             SparseArray<IEntity> &getEntities() { return _entities; }
         private:
