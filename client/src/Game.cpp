@@ -202,7 +202,7 @@ namespace client {
         SystemManager manager;
         Frame current_frame;
 
-        // manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/background.png");
+        manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/background.png");
 
         while (1) {
             testInteraction();

@@ -65,22 +65,6 @@ class S_AudioManager : public System {
         std::map<std::string, Music> _background_music_game;
 };
 
-class S_EnemyAI : public System {
-    public:
-        S_EnemyAI() = default;
-        ~S_EnemyAI() = default;
-};
-
-class S_Collision : public System {
-    public:
-        S_Collision();
-        ~S_Collision();
-        void update() override;
-        bool checkCollision(IEntity* entity1, IEntity* entity2);
-        int screenWidth = 800;
-        int screenHeight = 600;
-};
-
 class S_EventManager : public System {
     public:
         S_EventManager() = default;
