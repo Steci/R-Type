@@ -282,6 +282,7 @@ void server::Game::run()
             for (auto interaction : interaction_client) {
                 if (interaction.getConnect() == 1) {
                     std::cout << "new client connected with id = " << interaction.getClientID() << std::endl;
+                    entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
                 }
             }
         }

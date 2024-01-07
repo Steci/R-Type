@@ -113,6 +113,20 @@ class SparseArray {
             return dense;
         }
 
+        /**
+         * @brief Gets the all the elements in the dense array.
+         *
+         * @return The arrary of indexes
+         */
+        const std::vector<int>& getSparse() const {
+            return sparse;
+        }
+
+        /**
+         * @brief Gets the all the elements in the dense array.
+         *
+         * @return The arrary of indices
+         */
         const std::vector<int>& getAllIndices() const {
             return indices;
         }

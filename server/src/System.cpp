@@ -132,6 +132,10 @@ bool S_Collision::checkCollision(IEntity* entity1, IEntity* entity2)
 
 void S_Collision::update()
 {
+    int index1 = 0;
+    int index2 = 0;
+    std::vector<int> denseIndex = _sparseEntities.getAllIndices();
+
     for (auto& entity1 : _sparseEntities.getAll()) {
         for (auto& entity2 : _sparseEntities.getAll()) {
             if (entity1 != entity2) {
@@ -159,10 +163,10 @@ void S_Collision::update()
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
 
-                        health2->_health -= damage1->_damage;
-                        transform1->_position.x += 1000;
+                        // health2->_health -= damage1->_damage;
+                        _sparseEntities.remove(denseIndex[index1]);
+                        _sparseEntities.remove(denseIndex[index2]);
                     }
-
                 }
             }
             if (typeid(*entity1) == typeid(E_Player)) {
@@ -178,16 +182,25 @@ void S_Collision::update()
                 if (transform1->_position.y > screenHeight)
                     transform1->_position.y = screenHeight;
             }
-            // if (typeid(*entity1) == typeid(E_Bullet)) {
-            //     // check if a bullet is leaving screenWidth, delete it if so
-            //     C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-
-            //     if (transform1->_position.x < 0)
-            //         entity1->removeComponent(entity1->getComponentOfType(typeid(C_Hitbox)));
-            //     if (transform1->_position.x > screenWidth)
-            //         entity1->removeComponent(entity1->getComponentOfType(typeid(C_Hitbox)));
-            // }
+            index2++;
         }
+        if (typeid(*entity1) == typeid(E_Enemy)) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
+
+            if (transform->_position.x <= -10.0) {
+                printf("Enemy %d destroyed\n", denseIndex[index1]);
+                _sparseEntities.remove(denseIndex[index1]);
+            }
+        }
+        if (typeid(*entity1) == typeid(E_Bullet)) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
+
+            if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
+                printf("Bullet %d destroyed\n", denseIndex[index1]);
+                _sparseEntities.remove(denseIndex[index1]);
+            }
+        }
+        index1++;
     }
 }
 
@@ -220,14 +233,6 @@ void S_EnemyAI::update()
                 // the enemy will move in a sinusoid pattern but smaller and faster
                 transform->_position.x -= 7;
                 transform->_position.y = 100 * sin(transform->_position.x / 50) + transform->_position.y;
-            }
-            if (enemyInfo->_type == 4) {
-                // the enemy will slide 5 times on its y axis then launch itself towards the player
-                transform->_position.y -= 5;
-                if (transform->_position.y < 0) {
-                    transform->_position.y = 0;
-                    enemyInfo->_type = 5;
-                }
             }
         }
     }
