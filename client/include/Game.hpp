@@ -16,6 +16,7 @@
 #include <map>
 #include "Entity.hpp"
 #include "System.hpp"
+#include "Infos.hpp"
 
 #define TICK_SPEED 66
 
@@ -51,6 +52,7 @@ namespace client {
             void deserializeFrame(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Frame*>(serializedData.data());
             }
+            SparseArray<IEntity> &getEntities() { return _entities; }
         private:
             int _tick = -1;
             // ici mettre les infos de la frame à display
@@ -64,6 +66,8 @@ namespace client {
         public:
             Game() {
                 _tick = 0;
+                _ennemy_sprites[1] = Infos(65.2, 66, "./assets/r-typesheet24.png");
+                _player_sprites[1] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
                 //faite tout ce que vous avez besoin avec la window ici
             };
             ~Game() = default;
@@ -93,6 +97,8 @@ namespace client {
             int _tick;
             std::mutex _mutex_interactions;
             std::vector<Interaction> _interactions;
+            std::map<int, Infos> _ennemy_sprites;
+            std::map<int, Infos> _player_sprites;
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display

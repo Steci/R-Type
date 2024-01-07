@@ -213,6 +213,34 @@ namespace client {
                 _frames.pop_back();
             }
             _mutex_frames.unlock();
+            auto &entities = current_frame.getEntities();
+            const auto& sparseIds = entities.getAllIndices();
+            for (auto id : sparseIds) {
+                printf("%d\n", id);
+                if (id != -1) {
+                    auto& tmpEntity = entities.get(id);
+                    if (typeid(tmpEntity) == typeid(E_Player)) {
+                        printf("PLAYERRRRR\n");
+                        auto it = _player_sprites.find(id);
+                        if (it != _player_sprites.end()) {
+                            auto infos = it->second;
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>(infos._name));
+                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        }
+                    } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
+                        printf("ENEMY\n");
+                        C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
+                        auto it = _ennemy_sprites.find(ennemyInfo->_type);
+                        if (it != _ennemy_sprites.end()) {
+                            auto infos = it->second;
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>(infos._name));
+                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        }
+                    }
+                    manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
+                }
+            }
+            manager.update();
             //tout le bordel d'affichage + détection de touches
         }
     }

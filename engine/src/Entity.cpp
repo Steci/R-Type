@@ -53,6 +53,15 @@ namespace Engine {
         return (nullptr);
     }
 
+    C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity)
+    {
+        C_EnemyInfo* ennemyInfo = dynamic_cast<C_EnemyInfo*>(entity->getComponentOfType(typeid(C_EnemyInfo)));
+        if (ennemyInfo) {
+            return (ennemyInfo);
+        }
+        return (nullptr);
+    }
+
     // Set Components
 
     void setTransformPos(IEntity& entity, Vec2 newPos)

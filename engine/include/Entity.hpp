@@ -102,6 +102,7 @@ namespace Engine {
     C_Sprite* getSprite(std::shared_ptr<IEntity> entity);
     C_Hitbox* getHitbox(std::shared_ptr<IEntity> entity);
     C_Score* getScore(std::shared_ptr<IEntity> entity);
+    C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity);
     void setTransformPos(IEntity& entity, Vec2 newPos);
     void setTransformSize(IEntity& entity, Vec2 newSize);
     void setTransformVel(IEntity& entity, Vec2 newVel);

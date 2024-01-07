@@ -101,4 +101,3 @@ S_AudioManager::~S_AudioManager()
     }
     CloseAudioDevice();
 }
-
