@@ -253,7 +253,7 @@ bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerI
 
 void server::Game::run()
 {
-    printf("Game started");
+    printf("Game started\n");
 
     SystemManager manager;
     SparseArray<IEntity> entities;
@@ -262,12 +262,10 @@ void server::Game::run()
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
 
-    std::string path = "./assets/r-typesheet24.png";
-
-    entities.add(std::make_shared<E_Enemy>(path, 700, 50, 65.2, 66), 2);
+    entities.add(std::make_shared<E_Enemy>(700, 50, 65.2, 66), 2);
     auto& ennemyEntity = entities.get(2);
 
-    int id = entities.add(std::make_shared<E_Enemy>(path, 700, 350, 65.2, 66));
+    int id = entities.add(std::make_shared<E_Enemy>(700, 350, 65.2, 66));
     auto& ennemyEntity3 = entities.get(id);
 
     int numClientID = 0;

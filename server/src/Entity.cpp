@@ -115,11 +115,10 @@ void E_Player::newShoot(std::string path, int damage, int position_x, int positi
     _bullets.push_back(std::move(newBullet));
 }
 
-E_Enemy::E_Enemy(std::string path, int position_x, int position_y, float size_x, float size_y)
+E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
     addComponent(std::make_shared<C_Health>(20));
-    addComponent(std::make_shared<C_Sprite>(path));
     addComponent(std::make_shared<C_Hitbox>(65, 66));
     addComponent(std::make_shared<C_EnemyInfo>(2));
 }
