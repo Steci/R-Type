@@ -203,9 +203,11 @@ namespace client {
         Frame current_frame;
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
+        manager.addSystem<S_EventManager>();
 
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
+            printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
             testInteraction();
             _mutex_frames.lock();
             if (_frames.size() != 0) {
