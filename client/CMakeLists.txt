@@ -1,6 +1,15 @@
 project(client)
 
-file(GLOB SOURCES "src/*.cpp" "main.cpp")
+file(GLOB SOURCES
+    "src/Client.cpp"
+    "src/Entity.cpp"
+    "src/ErrorHandling.cpp"
+    "src/Game.cpp"
+    "src/Interaction.cpp"
+    "src/Network.cpp"
+    "src/System.cpp"
+    "main.cpp"
+)
 
 add_executable(client_build ${SOURCES})
 
