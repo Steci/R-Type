@@ -107,7 +107,8 @@ struct C_Sprite : public Component {
     std::string _name;
     Image _image;
     Texture2D _texture;
-    C_Sprite(const std::string& imagePath) {
+    C_Sprite() = default;
+    void setupByPath(const std::string& imagePath) {
         _image = LoadImage(imagePath.c_str());
         if (_image.data == nullptr) {
             std::cerr << "Erreur de chargement de l'image : " << imagePath << std::endl;
@@ -115,10 +116,11 @@ struct C_Sprite : public Component {
             _texture = LoadTextureFromImage(_image);
         }
     }
-    ~C_Sprite() {
-        UnloadTexture(_texture);
-        UnloadImage(_image);
+    void setupByTexture(Texture2D texture)
+    {
+        _texture = texture;
     }
+    ~C_Sprite() = default;
     C_Sprite(const C_Sprite&) = delete;
     C_Sprite& operator=(const C_Sprite&) = delete;
     std::vector<char> serializeToVector() const {

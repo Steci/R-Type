@@ -9,15 +9,22 @@
 
 #include <string>
 #include <iostream>
+#include <raylib.h>
 
 #include "../../engine/include/Utils.hpp"
 
 struct Infos {
     Vec2 _size;
-    std::string _name;
+    Texture2D _texture;
+    Image _image;
     Infos(float size_x, float size_y, std::string name) {
         _size = {size_x, size_y};
-        _name = name;
+        Image _image = LoadImage(name.c_str());
+        if (_image.data == nullptr) {
+            std::cerr << "Erreur de chargement de l'image : " << name << std::endl;
+        } else {
+            _texture = LoadTextureFromImage(_image);
+        }
     }
     Infos() = default;
     ~Infos() = default;

@@ -196,6 +196,18 @@ namespace client {
     //     }
     // }
 
+    void Game::createTextures()
+    {
+        _ennemy_sprites[1] = Infos(65.25, 132, "./assets/r-enemy-1.png");
+        _ennemy_sprites[2] = Infos(33.25, 36, "./assets/r-enemy-2.png");
+        _ennemy_sprites[3] = Infos(65.2, 66, "./assets/r-enemy-3.png");
+        _player_sprites[0] = Infos(33.2, 18, "./assets/r-player-1.png");
+        _player_sprites[1] = Infos(33.2, 18, "./assets/r-player-2.png");
+        _player_sprites[2] = Infos(33.2, 18, "./assets/r-player-3.png");
+        _player_sprites[3] = Infos(33.2, 18, "./assets/r-player-4.png");
+        _utils_sprites[0] = Infos(33.5, 35, "./assets/r-boom.png");
+        _utils_sprites[1] = Infos(33, 18, "./assets/r-shoot.png");
+    }
 
     void Game::run()
     {
@@ -204,7 +216,8 @@ namespace client {
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
-
+        createTextures();
+        //detruire toutes les texture à la fin du jeu
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
             printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
@@ -226,7 +239,9 @@ namespace client {
                         auto it = _player_sprites.find(id);
                         if (it != _player_sprites.end()) {
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>(infos._name));
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
+                            sprite->setupByTexture(infos._texture);
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                         }
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
@@ -234,8 +249,9 @@ namespace client {
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
                         if (it != _ennemy_sprites.end()) {
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>(infos._name));
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                            Engine::setSpriteTexture(tmpEntity, infos._texture);
                         }
                     }
                     // std::cout << "entity pos x: " << tmpEntity.getComponentOfType(typeid(C_Transform))._position.x << " y: " << tmpEntity.getComponentOfType(typeid(C_Transform))->position_y << std::endl;
@@ -261,6 +277,21 @@ namespace client {
         }
         _mutex_interactions.unlock();
         _mutex_frames.unlock();
+    }
+    
+    Game::~Game() {
+        for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
+            UnloadTexture(it->second._texture);
+            UnloadImage(it->second._image);
+        }
+        for (auto it = _player_sprites.begin(); it != _player_sprites.end(); ++it) {
+            UnloadTexture(it->second._texture);
+            UnloadImage(it->second._image);
+        }
+        for (auto it = _utils_sprites.begin(); it != _utils_sprites.end(); ++it) {
+            UnloadTexture(it->second._texture);
+            UnloadImage(it->second._image);
+        }
     }
 }
 

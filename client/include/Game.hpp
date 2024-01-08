@@ -66,20 +66,13 @@ namespace client {
         public:
             Game() {
                 _tick = 0;
-                _ennemy_sprites[1] = Infos(65.2, 66, "./assets/r-typesheet24.png");
-                _ennemy_sprites[2] = Infos(65.2, 66, "./assets/r-typesheet24.png");
-                _ennemy_sprites[3] = Infos(65.2, 66, "./assets/r-typesheet24.png");
-                _player_sprites[0] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
-                _player_sprites[1] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
-                _player_sprites[2] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
-                _player_sprites[3] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
-                //faite tout ce que vous avez besoin avec la window ici
             };
-            ~Game() = default;
+            ~Game();
             void run();
             std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
             void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
             void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
+            void createTextures();
             // à faire pour rajouter les frame à display
             // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
 
@@ -104,6 +97,7 @@ namespace client {
             std::vector<Interaction> _interactions;
             std::map<int, Infos> _ennemy_sprites;
             std::map<int, Infos> _player_sprites;
+            std::map<int, Infos> _utils_sprites;
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
