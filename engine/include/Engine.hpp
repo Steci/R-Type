@@ -38,8 +38,16 @@ class SparseArray {
          */
         int add(std::shared_ptr<T> element, int id = -1) {
             if (id == -1) {
-                // Generate a new ID if none is specified
-                id = sparse.size();
+                // Find the first available ID after the first 5
+                for (int i = 5; i < sparse.size(); i++) {
+                    if (sparse[i] == -1) {
+                        id = i;
+                        break;
+                    }
+                }
+                if (id == -1) {
+                    id = sparse.size();
+                }
             }
             if (id >= sparse.size()) {
                 sparse.resize(id + 1, -1);
