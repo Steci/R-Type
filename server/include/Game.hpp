@@ -8,6 +8,7 @@
 #pragma once
 
 #include "../../engine/include/Engine.hpp"
+#include "../../engine/include/Network.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -42,51 +43,11 @@ namespace server
             int _client_id;
     };
 
-    class Frame {
+    class Frame : public AFrame{
         public:
-            Frame() {};
-            ~Frame() {}; // penser à remplir le destructeur si besoin
-            void setTick(int tick) {_tick = tick;};
-            std::vector<char> serializeFrame() {
-                std::vector<char> data;
-
-                char* tickPtr = reinterpret_cast<char*>(&_tick);
-                data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
-
-                std::string playerHeader = "E_Player";
-                data.insert(data.end(), playerHeader.begin(), playerHeader.end());
-                data.push_back('\0');
-                auto playerData = _entities.serializeToVector("E_Player");
-                data.insert(data.end(), playerData.begin(), playerData.end());
-
-                std::string enemyHeader = "E_Enemy";
-                data.insert(data.end(), enemyHeader.begin(), enemyHeader.end());
-                data.push_back('\0');
-                auto enemyData = _entities.serializeToVector("E_Enemy");
-                data.insert(data.end(), enemyData.begin(), enemyData.end());
-
-                std::string bulletHeader = "E_Bullet";
-                data.insert(data.end(), bulletHeader.begin(), bulletHeader.end());
-                data.push_back('\0');
-                auto bulletData = _entities.serializeToVector("E_Bullet");
-                data.insert(data.end(), bulletData.begin(), bulletData.end());
-
-                std::string endMarker = "END";
-                data.insert(data.end(), endMarker.begin(), endMarker.end());
-                data.push_back('\0');
-
-                return data;
-            }
-            bool operator==(const Frame& other) const {return *this == other;}
-            bool operator!=(const Frame& other) const {return !(*this == other);}
-            // Frame& operator=(const Frame& other);
-            int getTick() const {return _tick;};
-            void setArray(SparseArray<IEntity> entities) {_entities = entities;};
-            SparseArray<IEntity> &getEntities() {return _entities;};
-        private:
-            int _tick;
-            // ici mettre les infos de la frame à display
-            SparseArray<IEntity> _entities;
+            Frame() = default;
+            ~Frame() = default;
+            std::vector<char> serializeFrame();
     };
 
     class Game

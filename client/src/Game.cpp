@@ -261,3 +261,73 @@ namespace client {
         _mutex_frames.unlock();
     }
 }
+
+void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
+    auto it = serializedData.begin();
+
+    if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
+        std::memcpy(&_tick, &it, sizeof(_tick));
+        it += sizeof(_tick);
+    }
+    while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
+        std::string entityType;
+        while (it != serializedData.end() && *it != '\0') {
+            entityType.push_back(*it);
+            ++it;
+        }
+        ++it;
+        if (entityType == "E_Player") {
+            int position_x, position_y;
+            float size_x, size_y;
+            std::memcpy(&position_x, &*it, sizeof(position_x));
+            it += sizeof(position_x);
+            std::memcpy(&position_y, &*it, sizeof(position_y));
+            it += sizeof(position_y);
+            std::memcpy(&size_x, &*it, sizeof(size_x));
+            it += sizeof(size_x);
+            std::memcpy(&size_y, &*it, sizeof(size_y));
+            it += sizeof(size_y);
+            auto player = std::make_shared<E_Player>(position_x, position_y, size_x, size_y);
+            _entities.add(player);
+        } else if (entityType == "E_Enemy") {
+            int position_x, position_y;
+            float size_x, size_y;
+            std::memcpy(&position_x, &*it, sizeof(position_x));
+            it += sizeof(position_x);
+            std::memcpy(&position_y, &*it, sizeof(position_y));
+            it += sizeof(position_y);
+            std::memcpy(&size_x, &*it, sizeof(size_x));
+            it += sizeof(size_x);
+            std::memcpy(&size_y, &*it, sizeof(size_y));
+            it += sizeof(size_y);
+
+            auto enemy = std::make_shared<E_Enemy>(position_x, position_y, size_x, size_y);
+            _entities.add(enemy);
+        } else if (entityType == "E_Bullet") {
+            int damage, position_x, position_y, idCreator;
+            float size_x, size_y, velocity_x, velocity_y;
+            std::memcpy(&damage, &it, sizeof(damage));
+            it += sizeof(damage);
+            std::memcpy(&position_x, &it, sizeof(position_x));
+            it += sizeof(position_x);
+            std::memcpy(&position_y, &it, sizeof(position_y));
+            it += sizeof(position_y);
+            std::memcpy(&size_x, &it, sizeof(size_x));
+            it += sizeof(size_x);
+            std::memcpy(&size_y, &it, sizeof(size_y));
+            it += sizeof(size_y);
+            std::memcpy(&velocity_x, &it, sizeof(velocity_x));
+            it += sizeof(velocity_x);
+            std::memcpy(&velocity_y, &it, sizeof(velocity_y));
+            it += sizeof(velocity_y);
+            std::memcpy(&idCreator, &it, sizeof(idCreator));
+            it += sizeof(idCreator);
+
+            auto bullet = std::make_shared<E_Bullet>(damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y, idCreator);
+            _entities.add(bullet);
+        }
+        if (isEndMarker(it, serializedData)) {
+            break;
+        }
+    }
+}
