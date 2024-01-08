@@ -113,6 +113,16 @@ class SparseArray {
         }
 
         /**
+         * @brief Clears the array of all elements.
+         *
+         */
+        void clearEntities() {
+            dense.clear();
+            sparse.clear();
+            indices.clear();
+        }
+
+        /**
          * @brief Gets the all the elements in the dense array.
          *
          * @return The arrary of actual elements

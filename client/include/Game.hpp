@@ -49,6 +49,7 @@ namespace client {
             Frame() {}; // penser à remplir le constructeur si besoin
             ~Frame() {}; // penser à remplir le destructeur si besoin
             int getTick() const {return _tick;};
+            void clearEntities() {_entities.clearEntities();};
             bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
                 const std::string endMarker = "END";
                 return std::distance(it, data.end()) >= endMarker.size() &&
