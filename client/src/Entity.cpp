@@ -40,7 +40,7 @@ void E_Bullet::render()
 
 std::vector<char> E_Bullet::serializeToVector() {
     std::vector<char> data;
-    
+
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();
@@ -236,7 +236,7 @@ void E_Enemy::update()
 
 void E_Enemy::render()
 {
-    printf("Ennemy\n");
+    printf("Enemy\n");
     if (IsWindowReady() == true) {
         C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
         if (hitbox->_status == 1) {

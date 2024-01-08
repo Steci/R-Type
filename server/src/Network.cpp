@@ -130,7 +130,7 @@ void server::Network::updateClients(int client_id, Game *game)
         frame = frames[_last_tick_send + 1];
     } else {
         for (auto frame_tmp : frames) {
-            if (frame_tmp.getTick() == _last_tick_send + 1) {
+            if (frame_tmp.getTick() == _last_tick_send + 1 || frame_tmp.getTick() > _last_tick_send + 1) {
                 frame = frame_tmp;
                 frame_found = true;
                 break;

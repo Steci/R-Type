@@ -177,7 +177,7 @@ void S_Collision::update()
             // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
-            if (transform->_position.x <= -10.0) {
+            if (transform->_position.x <= -100.0) {
                 printf("Enemy %d destroyed\n", denseIndex[index1]);
                 _sparseEntities.remove(denseIndex[index1]);
             }
@@ -223,7 +223,7 @@ void S_EnemyAI::update()
             if (enemyInfo->_type == 3) {
                 // the enemy will move in a sinusoid pattern but smaller and faster
                 transform->_position.x -= 7;
-                transform->_position.y = 100 * sin(transform->_position.x / 50) + transform->_position.y;
+                transform->_position.y = 20 * sin(transform->_position.x / 50) + transform->_position.y;
             }
         }
     }
@@ -240,28 +240,64 @@ S_Spawner::~S_Spawner()
 
 void S_Spawner::update()
 {
-    int random = rand() % 100;
+    int random = rand() % 50;
 
-    if (random == 1) {
+    if (random == 1 || random == 50) {
         int random2 = rand() % 3;
-        int random3 = rand() % 600;
+        int random3 = rand() % (random2 == 1 ? 400 : 600);
         int random4 = rand() % 600;
         int random5 = rand() % 3 + 1;
         printf("Creating Enemy with type %d\n", random2);
 
+        printf("pos enemy x: %d, y: %d\n", 800, random3);
         _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
     }
 }
 
-//S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities)
-//    : _sparseEntities(sparseEntities)
-//{
-//}
-//
-//S_Weapon::~S_Weapon()
-//{
-//}
-//
-//void S_Weapon::update()
-//{
-//}
+S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities)
+   : _sparseEntities(sparseEntities)
+{
+}
+
+void S_Weapon::shoot(int idCreator)
+{
+    int i = 0;
+    std::vector<int> denseIndex = _sparseEntities.getAllIndices();
+
+    for (auto& entity : _sparseEntities.getAll()) {
+        if (typeid(*entity) == typeid(E_Player)) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+            C_Sprite* sprite = Engine::getComponentRef<C_Sprite>(*entity);
+
+            if (idCreator == denseIndex[i]) {
+                // create bullet with player position info
+                float xpos = transform->_position.x;
+                float ypos = transform->_position.y;
+                float size_x = transform->_size.x;
+                float size_y = transform->_size.y;
+                float velocity_x = 10;
+                float velocity_y = 0;
+                _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, size_x, size_y, velocity_x, velocity_y, idCreator));
+            }
+        }
+        i++;
+    }
+}
+
+void S_Weapon::update()
+{
+    // Update all bullets
+    int i = 0;
+    std::vector<int> denseIndex = _sparseEntities.getAllIndices();
+
+    for (auto& entity : _sparseEntities.getAll()) {
+        if (typeid(*entity) == typeid(E_Bullet)) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+            C_Sprite* sprite = Engine::getComponentRef<C_Sprite>(*entity);
+
+            transform->_position.x += transform->_velocity.x;
+            transform->_position.y += transform->_velocity.y;
+        }
+        i++;
+    }
+}

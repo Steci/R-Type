@@ -94,12 +94,7 @@ void server::Game::run()
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
     manager.addSystem<S_Spawner>(entities);
-
-    // entities.add(std::make_shared<E_Enemy>(700, 50, 65.2, 66, 2), 2);
-    // auto& ennemyEntity = entities.get(2);
-
-    // int id = entities.add(std::make_shared<E_Enemy>(700, 350, 65.2, 66, 3));
-    // auto& ennemyEntity3 = entities.get(id);
+    manager.addSystem<S_Weapon>(entities);
 
     int numClientID = 0;
 
@@ -116,6 +111,8 @@ void server::Game::run()
                     printf("New Player with ID : %d\n", interaction.getClientID());
                     entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
                 }
+                // if the interaction is to fire
+                // shoot a bullet
             }
         }
 
@@ -167,3 +164,26 @@ std::vector<std::string> server::Game::getFunctionsClient()
 
 //     return *this;
 // }
+
+std::vector<char> server::Frame::serializeFrame()
+{
+    std::vector<char> data;
+
+    char* tickPtr = reinterpret_cast<char*>(&_tick);
+    data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
+
+    auto playerData = _entities.serializeToVector("E_Player");
+    data.insert(data.end(), playerData.begin(), playerData.end());
+
+    auto enemyData = _entities.serializeToVector("E_Enemy");
+    data.insert(data.end(), enemyData.begin(), enemyData.end());
+
+    auto bulletData = _entities.serializeToVector("E_Bullet");
+    data.insert(data.end(), bulletData.begin(), bulletData.end());
+
+    std::string endMarker = "END";
+    data.insert(data.end(), endMarker.begin(), endMarker.end());
+    data.push_back('\0');
+
+    return data;
+}

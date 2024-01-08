@@ -203,9 +203,11 @@ namespace client {
         Frame current_frame;
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
+        manager.addSystem<S_EventManager>();
 
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
+            printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
             testInteraction();
             _mutex_frames.lock();
             if (_frames.size() != 0) {
@@ -236,6 +238,8 @@ namespace client {
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                         }
                     }
+                    // std::cout << "entity pos x: " << tmpEntity.getComponentOfType(typeid(C_Transform))._position.x << " y: " << tmpEntity.getComponentOfType(typeid(C_Transform))->position_y << std::endl;
+                    // printf("pos x = %f, pos y = %f\n", Engine::getComponentRef<C_Transform>(tmpEntity)->_position.x, Engine::getComponentRef<C_Transform>(tmpEntity)->_position.y);
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                 }
             }
@@ -257,5 +261,60 @@ namespace client {
         }
         _mutex_interactions.unlock();
         _mutex_frames.unlock();
+    }
+}
+
+void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
+    auto it = serializedData.begin();
+    Vec2 pos;
+    Vec2 size;
+    Vec2 velocity;
+
+    if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
+        std::memcpy(&_tick, &it, sizeof(_tick));
+        it += sizeof(_tick);
+    }
+    while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
+        std::string entityType;
+        while (it != serializedData.end() && *it != '\0') {
+            entityType.push_back(*it);
+            ++it;
+        }
+        ++it;
+        if (entityType == "E_Player") {
+            pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
+            it += sizeof(pos);
+            size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
+            it += sizeof(size);
+            auto player = std::make_shared<E_Player>(pos.x, pos.y, size.x, size.y);
+            _entities.add(player);
+        } else if (entityType == "E_Enemy") {
+            pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
+            it += sizeof(pos);
+            size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
+            it += sizeof(size);
+
+            auto enemy = std::make_shared<E_Enemy>(pos.x, pos.y, size.x, size.y);
+            _entities.add(enemy);
+        } else if (entityType == "E_Bullet") {
+            int damage;
+            std::memcpy(&damage, &it, sizeof(damage));
+            it += sizeof(damage);
+            pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
+            it += sizeof(pos);
+            size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
+            it += sizeof(size);
+            velocity.deserializeFromVector(std::vector<char>(it, it + sizeof(velocity)));
+            it += sizeof(velocity);
+            int idCreator;
+            std::memcpy(&idCreator, &it, sizeof(idCreator));
+            it += sizeof(idCreator);
+
+            auto bullet = std::make_shared<E_Bullet>(damage, pos.x, pos.y, size.x, size.y, velocity.x, velocity.y, idCreator);
+            _entities.add(bullet);
+        }
+        if (isEndMarker(it, serializedData)) {
+            break;
+        }
     }
 }
