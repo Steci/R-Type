@@ -205,6 +205,7 @@ namespace client {
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
 
         while (1) {
+            manager.getSystem<S_Renderer>()->clearEntities();
             testInteraction();
             _mutex_frames.lock();
             if (_frames.size() != 0) {
