@@ -240,13 +240,14 @@ S_Spawner::~S_Spawner()
 
 void S_Spawner::update()
 {
-    int random = rand() % 1000;
+    int random = rand() % 100;
 
     if (random == 1) {
         int random2 = rand() % 3;
         int random3 = rand() % 600;
         int random4 = rand() % 600;
         int random5 = rand() % 3 + 1;
+        printf("Creating Enemy with type %d\n", random2);
 
         _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
     }
