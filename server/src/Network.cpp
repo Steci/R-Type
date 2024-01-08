@@ -83,16 +83,16 @@ void server::Network::run(Game *game)
         if (client == -1) {
             continue;
         }
-        if (buffer[std::strlen(buffer) - 1] == '\n')
-            buffer[std::strlen(buffer) - 1] = '\0';
+        std::cout << "Client message before: " << buffer << " end " << std::endl;
+        if (std::find(buffer, buffer + std::strlen(buffer), '\n') != buffer + std::strlen(buffer))
+            buffer[std::find(buffer, buffer + std::strlen(buffer), '\n') - buffer] = '\0';
+        else
+            buffer[std::strlen(buffer)] = '\0';
+        std::cout << "Client message after: " << buffer << " end " << std::endl;
         id = handleClient(buffer);
         if (id != 84) {
             if  (std::strcmp(buffer, "TICKRATE") == 0) {
-                // std::vector<char> data = game->serialize();
-                std::ostringstream archive_stream;
-                boost::archive::binary_oarchive archive(archive_stream);
-                archive << game;
-                std::string data = archive_stream.str();
+                std::vector<char> data = game->serialize();
                 commandSetTickrate(data);
             } else
                 manageMessage(buffer, id, game);            
@@ -119,7 +119,7 @@ void server::Network::manageMessage(std::string message, int client_id, Game *ga
     std::string messageParse = handleClientMessage(message, client_id);
     if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
         (*game).addFunction(messageParse);
-    std::cout << "Client message: " << message << std::endl;
+    std::cout << "Client message: " << message << " end " << std::endl;
 }
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
@@ -204,19 +204,13 @@ int server::Network::commandKick(int client_id, std::string message)
     // Return client not found
 }
 
-int server::Network::commandSetTickrate(std::string data) const
+int server::Network::commandSetTickrate(std::vector<char> data) const
 {
     server::Test test;
-
-    test.setTick(10);
-    test.setTickspeed(100);
-    std::ostringstream archive_stream;
-    boost::archive::binary_oarchive archive(archive_stream);
-    archive << test;
-    std::string test2 = archive_stream.str();
+    std::vector<char> dataTest = test.serialize();
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, test2.data(), test2.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
     // TODO: Error handling if it didn't send
     return 0;

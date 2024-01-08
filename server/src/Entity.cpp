@@ -9,11 +9,11 @@
 #include <algorithm>
 #include "Game.hpp"
 
-E_Bullet::E_Bullet(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+E_Bullet::E_Bullet(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
     addComponent(std::make_unique<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
     addComponent(std::make_unique<C_Sprite>(path));
-    addComponent(std::make_unique<C_Damage>(name, damage));
+    addComponent(std::make_unique<C_Damage>(damage));
 }
 
 void E_Bullet::render()
@@ -110,9 +110,9 @@ void E_Player::render()
     }
 }
 
-void E_Player::newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+void E_Player::newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    auto newBullet = std::make_unique<E_Bullet>(path, name, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+    auto newBullet = std::make_unique<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
 }
 
@@ -191,8 +191,8 @@ void E_Enemy::render()
     }
 }
 
-void E_Enemy::newShoot(std::string path, std::string name, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
+void E_Enemy::newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y)
 {
-    auto newBullet = std::make_unique<E_Bullet>(path, name, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
+    auto newBullet = std::make_unique<E_Bullet>(path, damage, position_x, position_y, size_x, size_y, velocity_x, velocity_y);
     _bullets.push_back(std::move(newBullet));
 }

@@ -87,14 +87,6 @@ namespace Engine {
         }
     };
 
-    void setDamageName(IEntity& entity, std::string newName)
-    {
-        C_Damage* damage = dynamic_cast<C_Damage*>(entity.getComponentOfType(typeid(C_Damage)));
-        if (damage) {
-            damage->_name = newName;
-        }
-    }
-
     void setDamageDamage(IEntity& entity, int newDamage)
     {
         C_Damage* damage = dynamic_cast<C_Damage*>(entity.getComponentOfType(typeid(C_Damage)));

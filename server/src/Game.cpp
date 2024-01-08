@@ -177,7 +177,7 @@ void server::Game::actionConnectCommand(int clientID, SystemManager manager, Spa
     }
     // create entity
     std::string path = "./assets/r-typesheet42.png";
-    entities.add(clientID, std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2));
+    entities.add(std::make_unique<E_Player>(path, 50, 50, 33.2, 17.2), clientID);
     auto& playerEntity = entities.get(clientID);
     // add entity to entities
     manager.getSystem<S_Renderer>()->addEntity(&playerEntity);
@@ -190,10 +190,10 @@ void server::Game::actionShootCommand(int clientID, SystemManager manager, Spars
         printf("player not connected");
         return;
     }
-    auto& playerEntity = entities.get(clientID);
+    E_Player& playerEntity = static_cast<E_Player&>(entities.get(clientID));
     if (typeid(playerEntity) == typeid(E_Player)) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        playerEntity.newShoot("./assets/r-typesheet24.png", "missile", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
+        playerEntity.newShoot("./assets/r-typesheet24.png", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
     }
     auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
     PlaySound(effect->second);
@@ -273,13 +273,23 @@ void server::Game::run()
     // To Remove
     manager.addSystem<S_Renderer>(800, 600, 60, "debug", "./assets/background.png");
     manager.addSystem<S_AudioManager>();
+    manager.addSystem<S_Collision>();
 
     SparseArray<IEntity> entities;
     std::string path = "./assets/r-typesheet24.png";
-    entities.add(10, std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66));
+    entities.add(std::make_unique<E_Enemy>(path, 700, 100, 65.2, 66), 10);
     auto& ennemyEntity = entities.get(10);
     manager.getSystem<S_Renderer>()->addEntity(&ennemyEntity);
     int numClientID = 0;
+
+    // parse the entities in the sparse array and add them to the collision system
+    const auto& sparseIds = entities.getAllIndices();
+    for (auto id : sparseIds) {
+        if (id != -1) {
+            auto& tmpEntity = entities.get(id);
+            manager.getSystem<S_Collision>()->addEntity(&tmpEntity);
+        }
+    }
 
     // To Remove
     auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
@@ -316,6 +326,7 @@ void server::Game::run()
                 continue;
             }
             auto& playerEntity = entities.get(numClientID);
+            manager.getSystem<S_Collision>()->addEntity(&playerEntity);
             _functions_client.push_back("POS " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.x) + " " + std::to_string(Engine::getComponentRef<C_Transform>(playerEntity)->_position.y) + " " + clientID);
             _mutex_client.unlock();
         }
@@ -347,7 +358,7 @@ std::vector<std::string> server::Game::getFunctionsClient()
 std::vector<char> server::Game::serialize()
 {
     std::vector<char> data;
-    data.insert(data.end(), reinterpret_cast<const char *>(&_tickSpeed), reinterpret_cast<const char *>(&_tickSpeed + 1));
     data.insert(data.end(), reinterpret_cast<const char *>(&_tick), reinterpret_cast<const char *>(&_tick + 1));
+    data.insert(data.end(), reinterpret_cast<const char *>(&_tickSpeed), reinterpret_cast<const char *>(&_tickSpeed + 1));
     return data;
 }

@@ -97,13 +97,7 @@ void client::Network::run()
             std::cout << "pass 1" << std::endl;
             // buffer[server - 1] = '\0';
             pass += 1;
-            std::cout << "pass 2" << std::endl;
-            std::istringstream archive_stream(std::string(buffer.begin(), buffer.begin() + buffer.size()));
-            std::cout << "pass 3" << std::endl;
-            boost::archive::binary_iarchive archive(archive_stream);
-            std::cout << "pass 4" << std::endl;
-            archive >> test;
-            std::cout << "pass 5" << std::endl;
+            test.deserialize(buffer);
             std::cout << "Tick: " << test.getTick() << std::endl;
             std::cout << "Tickspeed: " << test.getTickspeed() << std::endl;
             // std::cout << "Server: " << buffer << std::endl;
@@ -128,7 +122,7 @@ int client::Network::connectCommand()
     char buffer[1024];
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
-    std::string connectionMessage = "CONNECT\n";
+    std::string connectionMessage = "CONNECT";
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         sendto(_fd, connectionMessage.c_str(), connectionMessage.length(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
