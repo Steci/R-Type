@@ -215,13 +215,10 @@ namespace client {
             _mutex_frames.unlock();
             auto &entities = current_frame.getEntities();
             const auto& sparseIds = entities.getAllIndices();
-            printf("%d\n", sparseIds.size());
             for (auto id : sparseIds) {
-                printf("%d\n", id);
                 if (id != -1) {
                     auto& tmpEntity = entities.get(id);
                     if (typeid(tmpEntity) == typeid(E_Player)) {
-                        printf("PLAYERRRRR\n");
                         auto it = _player_sprites.find(id);
                         if (it != _player_sprites.end()) {
                             auto infos = it->second;
@@ -229,9 +226,9 @@ namespace client {
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                         }
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
-                        printf("ENEMY\n");
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
+                        printf("%d\n", ennemyInfo->_type);
                         if (it != _ennemy_sprites.end()) {
                             auto infos = it->second;
                             tmpEntity.addComponent(std::make_unique<C_Sprite>(infos._name));

@@ -139,7 +139,12 @@ namespace client {
             Game() {
                 _tick = 0;
                 _ennemy_sprites[1] = Infos(65.2, 66, "./assets/r-typesheet24.png");
+                _ennemy_sprites[2] = Infos(65.2, 66, "./assets/r-typesheet24.png");
+                _ennemy_sprites[3] = Infos(65.2, 66, "./assets/r-typesheet24.png");
+                _player_sprites[0] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
                 _player_sprites[1] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
+                _player_sprites[2] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
+                _player_sprites[3] = Infos(33.2, 17.2, "./assets/r-typesheet42.png");
                 //faite tout ce que vous avez besoin avec la window ici
             };
             ~Game() = default;

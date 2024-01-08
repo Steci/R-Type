@@ -37,9 +37,9 @@ void S_Renderer::render()
             DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getBackgrounds()[i].width * 2 + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
         }
 
-        // for (auto& entity : _entities) {
-        //     entity->render();
-        // }
+        for (auto& entity : _entities) {
+            entity->render();
+        }
         _parallax.update();
     EndDrawing();
 }
