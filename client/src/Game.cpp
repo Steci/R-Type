@@ -201,14 +201,16 @@ namespace client {
     {
         SystemManager manager;
         Frame current_frame;
+        Interaction interaction;
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
 
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
-            printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
-            testInteraction();
+            // printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
+            interaction.setInteraction(manager.getSystem<S_EventManager>()->getMovement(), manager.getSystem<S_EventManager>()->getShoot(), manager.getSystem<S_EventManager>()->getQuit());
+            infoInteraction(interaction);
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
@@ -258,6 +260,21 @@ namespace client {
         if (_frames.size() != 0 && _frames.back().getTick() == 100 && _interactions.size() == 0) {
             std::cout << "test interaction" << std::endl;
             inter.setInteraction(1);
+            _interactions.push_back(inter);
+        }
+        _mutex_interactions.unlock();
+        _mutex_frames.unlock();
+    }
+
+    void Game::infoInteraction(Interaction interaction)
+    {
+        Interaction inter;
+
+        _mutex_frames.lock();
+        _mutex_interactions.lock();
+        if (_frames.size() != 0 && _frames.back().getTick() == 100 && _interactions.size() == 0) {
+            std::cout << "Info interaction" << std::endl;
+            inter.setInteraction(interaction.getMovement(), interaction.getShoot(), interaction.getQuit());
             _interactions.push_back(inter);
         }
         _mutex_interactions.unlock();

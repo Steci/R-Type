@@ -24,9 +24,11 @@ namespace server
         public:
             Interaction() {};
             ~Interaction() {};
+
             int getMovement() const {return _movement;};
             int getShoot() const {return _shoot;};
             int getQuit() const {return _quit;};
+
             int getClientID() const {return _client_id;};
             int getConnect() const {return _connect;};
             void setClientID(int clientID) {_client_id = clientID;};

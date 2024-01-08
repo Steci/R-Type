@@ -170,6 +170,7 @@ void client::Network::checkInteraction(Game *game)
     std::vector<char> data;
 
     if (interactions.size() > 0) {
+        printf("\n\n\n\nInteraction Data Movment: %d\n\n\n\n", interactions[0].getMovement());
         data = interactions[0].serializeInteraction();
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         game->deleteInteraction(0);

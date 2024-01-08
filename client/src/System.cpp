@@ -64,7 +64,33 @@ int S_EventManager::EventKeyPressed(std::list<int> keys)
             return key;
         }
     }
-    return -1;
+}
+
+int S_EventManager::getMovement()
+{
+    if (IsKeyDown(KEY_RIGHT))
+        return 1;
+    if (IsKeyDown(KEY_LEFT))
+        return 2;
+    if (IsKeyDown(KEY_UP))
+        return 3;
+    if (IsKeyDown(KEY_DOWN))
+        return 4;
+    return 0;
+}
+
+int S_EventManager::getShoot()
+{
+    if (IsKeyPressed(KEY_SPACE))
+        return 1;
+    return 0;
+}
+
+int S_EventManager::getQuit()
+{
+    if (IsKeyPressed(KEY_ESCAPE))
+        return 1;
+    return 0;
 }
 
 S_Parallax::~S_Parallax()

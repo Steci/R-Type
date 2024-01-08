@@ -35,6 +35,9 @@ namespace client {
                 _shoot = shoot;
                 _quit = quit;
             }
+            int getMovement() const {return _movement;};
+            int getShoot() const {return _shoot;};
+            int getQuit() const {return _quit;};
             std::vector<char> serializeInteraction() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Interaction));
@@ -108,6 +111,7 @@ namespace client {
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
             void testInteraction();
+            void infoInteraction(Interaction interaction);
     };
 
 }
