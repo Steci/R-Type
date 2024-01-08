@@ -1,6 +1,15 @@
 project(server)
 
-file(GLOB SOURCES "src/*.cpp" "main.cpp")
+file(GLOB SOURCES
+    "src/Client.cpp"
+    "src/Entity.cpp"
+    "src/ErrorHandling.cpp"
+    "src/Game.cpp"
+    "src/Network.cpp"
+    "src/Server.cpp"
+    "src/System.cpp"
+    "main.cpp"
+)
 
 add_executable(server_build ${SOURCES})
 
