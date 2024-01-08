@@ -16,6 +16,9 @@ class S_Parallax : public System {
         std::vector<Texture2D> getBackgrounds() const { return _backgrounds; }
         std::vector<Image> getImages() const { return _images; }
 
+        void setScale(float newScale) { _scale = newScale; }
+        float getScale() const { return _scale; }
+
         std::vector<float> getScrolling() const { return _scrolling; }
 
         void setBackground(Image newImage)
@@ -38,6 +41,7 @@ class S_Parallax : public System {
     private:
         std::vector<Image> _images;
         std::vector<Texture2D> _backgrounds;
+        float _scale;
         std::vector<float> _scrolling;
         std::vector<float> _scrollingForces;
 };
