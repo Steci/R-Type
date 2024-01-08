@@ -113,6 +113,16 @@ class SparseArray {
         }
 
         /**
+         * @brief Clears the array of all elements.
+         *
+         */
+        void clearEntities() {
+            dense.clear();
+            sparse.clear();
+            indices.clear();
+        }
+
+        /**
          * @brief Gets the all the elements in the dense array.
          *
          * @return The arrary of actual elements
@@ -154,7 +164,6 @@ class SparseArray {
             return data;
         }
 
-        
     private:
         std::vector<std::shared_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'

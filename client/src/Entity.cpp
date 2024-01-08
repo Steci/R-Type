@@ -94,61 +94,65 @@ void E_Player::update()
 
 void E_Player::render()
 {
-    C_Score *score = dynamic_cast<C_Score*>(getComponents()[4].get());
-    std::string scoreText = "Score: " + std::to_string(score->_score);
-    DrawText(scoreText.c_str(), 250, 250, 30, WHITE);
-    C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponents()[3].get());
-    if (hitbox->_status == 1) {
-        if ((hitbox->_time % 2) != 0) {
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-            int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-            int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+    if (IsWindowReady() == true) {
+        C_Score *score = dynamic_cast<C_Score*>(getComponentOfType(typeid(C_Score)));
+        std::string scoreText = "Score: " + std::to_string(score->_score);
+        DrawText(scoreText.c_str(), 250, 250, 30, WHITE);
+        C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
+        if (hitbox->_status == 1) {
+            if ((hitbox->_time % 2) != 0) {
+                C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+                int xPos = transform->_position.x;
+                int yPos = transform->_position.y;
+                int xSize = transform->_size.x;
+                int ySize = transform->_size.y;
+                int animation = transform->_animation;
+                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+                Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                hitbox->_time -= 1;
+            } else {
+                hitbox->_time -= 1;
+            }
+            if (hitbox->_time <= 0) {
+                hitbox->_time = 10;
+                hitbox->_status = 0;
+            }
+        } else if (hitbox->_status == 2) {
+            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            int xPos = transform->_position.x;
+            int yPos = transform->_position.y;
+            int xSize = transform->_size.x;
+            int ySize = transform->_size.y;
+            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+            if (transform->_animation <= 7) {
+                Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
+                Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                transform->_animation += 1;
+            }
+        } else {
+            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            int xPos = transform->_position.x;
+            int yPos = transform->_position.y;
+            int xSize = transform->_size.x;
+            int ySize = transform->_size.y;
+            int animation = transform->_animation;
+            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            hitbox->_time -= 1;
-        } else {
-            hitbox->_time -= 1;
         }
-        if (hitbox->_time <= 0) {
-            hitbox->_time = 10;
-            hitbox->_status = 0;
-        }
-    } else if (hitbox->_status == 2) {
-        int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-        int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-        int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-        int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-        Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-        C_Transform *transform = dynamic_cast<C_Transform*>(getComponents()[0].get());
-        if (transform->_animation <= 7) {
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-            Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
-            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            transform->_animation += 1;
-        }
-    } else {
-        int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-        int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-        int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-        int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-        int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
-        Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-        Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
-        Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-        Vector2 origin = { 0.0f, 0.0f };
-        DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
     }
 }
 
 std::vector<char> E_Player::serializeToVector()
 {
+    printf("Player\n");
     std::vector<char> data;
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
@@ -230,53 +234,57 @@ void E_Enemy::update()
 
 void E_Enemy::render()
 {
-    C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponents()[3].get());
-    if (hitbox->_status == 1) {
-        if ((hitbox->_time % 2) != 0) {
-            int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-            int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-            int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-            int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-            int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
+    printf("Ennemy\n");
+    if (IsWindowReady() == true) {
+        C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
+        if (hitbox->_status == 1) {
+            if ((hitbox->_time % 2) != 0) {
+                C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+                int xPos = transform->_position.x;
+                int yPos = transform->_position.y;
+                int xSize = transform->_size.x;
+                int ySize = transform->_size.y;
+                int animation = transform->_animation;
+                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+                Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                hitbox->_time -= 1;
+            } else {
+                hitbox->_time -= 1;
+            }
+            if (hitbox->_time <= 0) {
+                hitbox->_time = 10;
+                hitbox->_status = 0;
+            }
+        } else if (hitbox->_status == 2) {
+            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            int xPos = transform->_position.x;
+            int yPos = transform->_position.y;
+            int xSize = transform->_size.x;
+            int ySize = transform->_size.y;
+            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+            if (transform->_animation <= 7) {
+                Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
+                Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                Vector2 origin = { 0.0f, 0.0f };
+                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                transform->_animation += 1;
+            }
+        } else {
+            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            int xPos = transform->_position.x;
+            int yPos = transform->_position.y;
+            int xSize = transform->_size.x;
+            int ySize = transform->_size.y;
+            int animation = transform->_animation;
+            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            hitbox->_time -= 1;
-        } else {
-            hitbox->_time -= 1;
         }
-        if (hitbox->_time <= 0) {
-            hitbox->_time = 10;
-            hitbox->_status = 0;
-        }
-    } else if (hitbox->_status == 2) {
-        int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-        int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-        int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-        int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-        Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-        C_Transform *transform = dynamic_cast<C_Transform*>(getComponents()[0].get());
-        if (transform->_animation <= 7) {
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-            Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
-            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
-            transform->_animation += 1;
-        }
-    } else {
-        int xPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.x;
-        int yPos = dynamic_cast<C_Transform*>(getComponents()[0].get())->_position.y;
-        int xSize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.x;
-        int ySize = dynamic_cast<C_Transform*>(getComponents()[0].get())->_size.y;
-        int animation = dynamic_cast<C_Transform*>(getComponents()[0].get())->_animation;
-        Texture2D sprite = dynamic_cast<C_Sprite*>(getComponents()[2].get())->_texture;
-        Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
-        Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-        Vector2 origin = { 0.0f, 0.0f };
-        DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
     }
 }
 
