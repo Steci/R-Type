@@ -85,4 +85,7 @@ class S_EventManager : public System {
         ~S_EventManager() = default;
         void update() override {};
         int EventKeyPressed(std::list<int> keys);
+        int getMovement();
+        int getShoot();
+        int getQuit();
 };

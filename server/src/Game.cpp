@@ -107,12 +107,35 @@ void server::Game::run()
         _mutex.unlock();
         if (interaction_client.size() > 0) {
             for (auto interaction : interaction_client) {
+                // Here, interaction reactions
                 if (interaction.getConnect() == 1) {
                     printf("New Player with ID : %d\n", interaction.getClientID());
                     entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
                 }
-                // if the interaction is to fire
-                // shoot a bullet
+                if (interaction.getMovement() == 1){
+                    // go up
+                    printf("go up\n");
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.y -= 5;
+                }
+                if (interaction.getMovement() == 2){
+                    // go down
+                    printf("go down\n");
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.y += 5;
+                }
+                if (interaction.getMovement() == 3){
+                    // go left
+                    printf("go left\n");
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.x -= 5;
+                }
+                if (interaction.getMovement() == 4){
+                    // go right
+                    printf("go right\n");
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.x += 5;
+                }
             }
         }
 
