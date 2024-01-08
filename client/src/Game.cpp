@@ -209,6 +209,7 @@ namespace client {
             testInteraction();
             _mutex_frames.lock();
             if (_frames.size() != 0) {
+                current_frame.clearEntities();
                 // std::cout << "frame tick : " << _frames.back().getTick() << std::endl;
                 current_frame = _frames.back();
                 _frames.pop_back();
