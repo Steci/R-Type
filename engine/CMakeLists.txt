@@ -6,6 +6,8 @@ add_executable(engine ${ENGINE_SOURCES})
 list(APPEND EXTRA_INCLUDES "include")
 target_include_directories(engine PUBLIC ${EXTRA_INCLUDES})
 
-find_package(raylib CONFIG REQUIRED)
+#find_package(fmt CONFIG)
+#find_package(raylib REQUIRED)
 
+target_link_libraries(engine PRIVATE fmt)
 target_link_libraries(engine PRIVATE raylib)
