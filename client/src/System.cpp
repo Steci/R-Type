@@ -19,11 +19,11 @@ S_Renderer::S_Renderer(int w, int h, int fps, std::string wName, const std::stri
     InitAudioDevice();
     SetTargetFPS(_targetFps);
     _parallax = S_Parallax();
-    _parallax.setScale(0.8f);
+    _parallax.setScale(0.7f);
     _parallax.add(imagePath+"1.png", 0.7f);
-    _parallax.add(imagePath+"2.png", 1.8f);
-    _parallax.add(imagePath+"3.png", 2.5f);
-    _parallax.add(imagePath+"4.png", 4.0f);
+    _parallax.add(imagePath+"2.png", 2.0f);
+    _parallax.add(imagePath+"3.png", 3.5f);
+    _parallax.add(imagePath+"4.png", 5.0f);
 };
 
 void S_Renderer::render()
@@ -34,7 +34,7 @@ void S_Renderer::render()
         // Parallax Draw
         for (int i = 0; i < _parallax.getBackgrounds().size(); i++) {
             DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getBackgrounds()[i].width * 2 + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
+            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
         }
 
         for (auto& entity : _entities) {
@@ -81,7 +81,7 @@ void S_Parallax::update()
 {
     for (int i = 0; i < _backgrounds.size(); i++) {
         _scrolling[i] -= _scrollingForces[i];
-        if (_scrolling[i] <= -_backgrounds[i].width * 2) {
+        if (_scrolling[i] <= -(_backgrounds[i].width * _scale)) {
             _scrolling[i] = 0;
         }
     }

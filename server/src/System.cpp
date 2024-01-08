@@ -177,7 +177,7 @@ void S_Collision::update()
             // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
-            if (transform->_position.x <= -10.0) {
+            if (transform->_position.x <= -100.0) {
                 printf("Enemy %d destroyed\n", denseIndex[index1]);
                 _sparseEntities.remove(denseIndex[index1]);
             }
