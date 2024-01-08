@@ -7,6 +7,5 @@ list(APPEND EXTRA_INCLUDES "include")
 target_include_directories(engine PUBLIC ${EXTRA_INCLUDES})
 
 find_package(raylib CONFIG REQUIRED)
-target_include_directories(engine PRIVATE raylib::raylib)
 
-target_link_libraries(engine raylib)
+target_link_libraries(engine PRIVATE raylib)

@@ -11,29 +11,21 @@ set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CAC
 if(WIN32)
     set(CMAKE_GENERATOR "Visual Studio 16 2019" CACHE STRING "CMake generator" FORCE)
     set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
+    set(VCPKG_TARGET_TRIPLET x64-windows)
 else()
     set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
     set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
-endif()
-
-list(APPEND CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_DIR}")
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    add_compile_options(-Wall -Wextra -g3)
-endif()
-
-if(WIN32)
-    add_compile_options(-Wall)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "./build/")
-endif()
-
-if(WIN32)
-    set(VCPKG_TARGET_TRIPLET x64-windows)
-else()
     set(VCPKG_TARGET_TRIPLET x64-linux)
 endif()
 
-set(CMAKE_PREFIX_PATH "vcpkg_installed/${VCPKG_TARGET_TRIPLET}" CACHE STRING "Vcpkg prefix path" FORCE)
+set(CMAKE_PREFIX_PATH "$ENV{VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}")
+set(raylib_DIR "$ENV{VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/share/raylib/cmake")
+
+if(WIN32)
+    add_compile_options(-Wall)
+else()
+    add_compile_options(-Wall -Wextra -g3)
+endif()
 
 add_subdirectory(engine)
 add_subdirectory(server)
