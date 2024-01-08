@@ -229,7 +229,6 @@ namespace client {
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
-                        printf("%d\n", ennemyInfo->_type);
                         if (it != _ennemy_sprites.end()) {
                             auto infos = it->second;
                             tmpEntity.addComponent(std::make_unique<C_Sprite>(infos._name));
