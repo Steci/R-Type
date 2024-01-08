@@ -154,6 +154,11 @@ class SparseArray {
 
             for (auto& element : dense) {
                 if (element->getType() == entityType) {
+                    if (entityType == "E_Enemy") {
+                        C_Transform *transform = dynamic_cast<C_Transform*>(element->getComponentOfType(typeid(C_Transform)));
+                        printf("enemy x serialize = %f | ", transform->_position.x);
+                        printf("enemy y serialize = %f\n\n", transform->_position.y);
+                    }
                     std::string typeHeader = entityType;
                     data.insert(data.end(), typeHeader.begin(), typeHeader.end());
                     data.push_back('\0');

@@ -249,6 +249,7 @@ void S_Spawner::update()
         int random5 = rand() % 3 + 1;
         printf("Creating Enemy with type %d\n", random2);
 
+        printf("pos enemy x: %d, y: %d\n", 800, random3);
         _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
     }
 }

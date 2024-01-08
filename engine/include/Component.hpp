@@ -50,16 +50,18 @@ struct C_Transform : public Component {
     ~C_Transform() = default;
     std::vector<char> serializeToVector() const {
         std::vector<char> data;
-        data.insert(data.end(), reinterpret_cast<const char*>(&_position), reinterpret_cast<const char*>(&_position) + sizeof(_position));
-        data.insert(data.end(), reinterpret_cast<const char*>(&_size), reinterpret_cast<const char*>(&_size) + sizeof(_size));
-        data.insert(data.end(), reinterpret_cast<const char*>(&_velocity), reinterpret_cast<const char*>(&_velocity) + sizeof(_velocity));
+        std::vector<char> position = _position.serializeToVector();
+        std::vector<char> size = _size.serializeToVector();
+        std::vector<char> velocity = _velocity.serializeToVector();
+        data.insert(data.end(), position.begin(), position.end());
+        data.insert(data.end(), size.begin(), size.end());
         data.insert(data.end(), reinterpret_cast<const char*>(&_animation), reinterpret_cast<const char*>(&_animation) + sizeof(_animation));
         return data;
     }
     void deserializeFromVector(const std::vector<char>& data) {
-        std::memcpy(&_position, data.data(), sizeof(_position));
-        std::memcpy(&_size, data.data() + sizeof(_position), sizeof(_size));
-        std::memcpy(&_velocity, data.data() + sizeof(_position) + sizeof(_size), sizeof(_velocity));
+        _position.deserializeFromVector(std::vector<char>(data.begin(), data.begin() + sizeof(_position)));
+        _size.deserializeFromVector(std::vector<char>(data.begin() + sizeof(_position), data.begin() + sizeof(_position) + sizeof(_size)));
+        _velocity.deserializeFromVector(std::vector<char>(data.begin() + sizeof(_position) + sizeof(_size), data.begin() + sizeof(_position) + sizeof(_size) + sizeof(_velocity)));
         std::memcpy(&_animation, data.data() + sizeof(_position) + sizeof(_size) + sizeof(_velocity), sizeof(_animation));
     }
 };
