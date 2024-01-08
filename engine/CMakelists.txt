@@ -1,0 +1,12 @@
+file(GLOB ENGINE_SOURCES "src/*.cpp" "main.cpp")
+
+add_library(EngineLib STATIC ${ENGINE_SOURCES})
+add_executable(engine ${ENGINE_SOURCES})
+
+list(APPEND EXTRA_INCLUDES "include")
+target_include_directories(engine PUBLIC ${EXTRA_INCLUDES})
+
+find_package(raylib CONFIG REQUIRED)
+target_include_directories(engine PRIVATE raylib::raylib)
+
+target_link_libraries(engine raylib)
