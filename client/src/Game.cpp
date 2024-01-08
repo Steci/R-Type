@@ -283,17 +283,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         }
         ++it;
         if (entityType == "E_Player") {
-            // int position_x, position_y;
-            // float size_x, size_y;
-            // std::memcpy(&position_x, &*it, sizeof(position_x));
-            // it += sizeof(position_x);
-            // // pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
-            // std::memcpy(&position_y, &*it, sizeof(position_y));
-            // it += sizeof(position_y);
-            // std::memcpy(&size_x, &*it, sizeof(size_x));
-            // it += sizeof(size_x);
-            // std::memcpy(&size_y, &*it, sizeof(size_y));
-            // it += sizeof(size_y);
             pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
             it += sizeof(pos);
             size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
@@ -301,44 +290,14 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             auto player = std::make_shared<E_Player>(pos.x, pos.y, size.x, size.y);
             _entities.add(player);
         } else if (entityType == "E_Enemy") {
-            // int position_x, position_y;
-            // float size_x, size_y;
-            // std::memcpy(&position_x, &*it, sizeof(position_x));
-            // it += sizeof(position_x);
-            // std::memcpy(&position_y, &*it, sizeof(position_y));
-            // it += sizeof(position_y);
             pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
             it += sizeof(pos);
-            printf("received new : pos x = %f, pos y = %f\n", pos.x, pos.y);
             size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
             it += sizeof(size);
-            // std::memcpy(&size_x, &*it, sizeof(size_x));
-            // it += sizeof(size_x);
-            // std::memcpy(&size_y, &*it, sizeof(size_y));
-            // it += sizeof(size_y);
 
             auto enemy = std::make_shared<E_Enemy>(pos.x, pos.y, size.x, size.y);
-            printf("received : pos x = %d, pos y = %d\n", pos.x, pos.y);
             _entities.add(enemy);
         } else if (entityType == "E_Bullet") {
-            // int damage, position_x, position_y, idCreator;
-            // float size_x, size_y, velocity_x, velocity_y;
-            // std::memcpy(&damage, &it, sizeof(damage));
-            // it += sizeof(damage);
-            // std::memcpy(&position_x, &it, sizeof(position_x));
-            // it += sizeof(position_x);
-            // std::memcpy(&position_y, &it, sizeof(position_y));
-            // it += sizeof(position_y);
-            // std::memcpy(&size_x, &it, sizeof(size_x));
-            // it += sizeof(size_x);
-            // std::memcpy(&size_y, &it, sizeof(size_y));
-            // it += sizeof(size_y);
-            // std::memcpy(&velocity_x, &it, sizeof(velocity_x));
-            // it += sizeof(velocity_x);
-            // std::memcpy(&velocity_y, &it, sizeof(velocity_y));
-            // it += sizeof(velocity_y);
-            // std::memcpy(&idCreator, &it, sizeof(idCreator));
-            // it += sizeof(idCreator);
             int damage;
             std::memcpy(&damage, &it, sizeof(damage));
             it += sizeof(damage);
