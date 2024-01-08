@@ -244,9 +244,9 @@ void S_Spawner::update()
 
     if (random == 1 || random == 50) {
         int random2 = rand() % 3;
-        int random3 = rand() % (random2 == 1 ? 400 : 600);
         int random4 = rand() % 600;
         int random5 = rand() % 3 + 1;
+        int random3 = rand() % (random5 == 1 ? 400 : 600);
         printf("Creating Enemy with type %d\n", random2);
 
         printf("pos enemy x: %d, y: %d\n", 800, random3);
