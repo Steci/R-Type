@@ -177,7 +177,7 @@ void S_Collision::update()
             // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
-            if (transform->_position.x <= -10.0) {
+            if (transform->_position.x <= -100.0) {
                 printf("Enemy %d destroyed\n", denseIndex[index1]);
                 _sparseEntities.remove(denseIndex[index1]);
             }
@@ -223,7 +223,7 @@ void S_EnemyAI::update()
             if (enemyInfo->_type == 3) {
                 // the enemy will move in a sinusoid pattern but smaller and faster
                 transform->_position.x -= 7;
-                transform->_position.y = 100 * sin(transform->_position.x / 50) + transform->_position.y;
+                transform->_position.y = 20 * sin(transform->_position.x / 50) + transform->_position.y;
             }
         }
     }
@@ -240,11 +240,11 @@ S_Spawner::~S_Spawner()
 
 void S_Spawner::update()
 {
-    int random = rand() % 100;
+    int random = rand() % 50;
 
-    if (random == 1) {
+    if (random == 1 || random == 50) {
         int random2 = rand() % 3;
-        int random3 = rand() % 600;
+        int random3 = rand() % (random2 == 1 ? 400 : 600);
         int random4 = rand() % 600;
         int random5 = rand() % 3 + 1;
         printf("Creating Enemy with type %d\n", random2);
