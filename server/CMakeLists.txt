@@ -19,8 +19,6 @@ target_link_libraries(server_build PRIVATE fmt::fmt)
 
 # Utiliser find_package pour trouver la bibliothèque raylib
 
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(server_build PRIVATE glfw)
 target_link_libraries(server_build PRIVATE raylib)
 
 

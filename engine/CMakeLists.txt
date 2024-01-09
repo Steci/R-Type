@@ -13,7 +13,6 @@ target_include_directories(EngineLib PUBLIC ${EXTRA_INCLUDES})
 
 # Utiliser find_package pour trouver la bibliothèque raylib
 target_link_libraries(EngineLib PRIVATE raylib)
-target_link_libraries(EngineLib PRIVATE glfw)
 
 
 

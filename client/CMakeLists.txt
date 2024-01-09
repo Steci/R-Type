@@ -6,9 +6,6 @@ add_executable(client_build ${SOURCES})
 
 list(APPEND EXTRA_INCLUDES "include")
 
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(client_build PRIVATE glfw)
-target_link_libraries(client_build PRIVATE glfw3)
 target_link_libraries(client_build PRIVATE raylib)
 
 target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
