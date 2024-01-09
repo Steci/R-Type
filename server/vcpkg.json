@@ -1,13 +1,8 @@
 {
-  "name": "server_build",
-  "version-string": "1.0",
   "dependencies": [
+    "fmt",
     "raylib",
-    "fmt"
-  ],
-  "targets": {
-    "x64-linux": {
-      "triplet": "x64-linux"
-    }
-  }
+    "gtest",
+    "glfw3"
+  ]
 }
