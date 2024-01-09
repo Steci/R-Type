@@ -329,19 +329,19 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         it += healthSize;
     }
 
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        std::vector<char> hitboxData(it, it + hitboxSize);
+        hitboxComponent->deserializeFromVector(hitboxData);
+        it += hitboxSize;
+    }
+
     C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
     if (enemyInfoComponent) {
         size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
         std::vector<char> enemyInfoData(it, it + enemyInfoSize);
         enemyInfoComponent->deserializeFromVector(enemyInfoData);
         it += enemyInfoSize;
-    }
-
-    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
-    if (scoreComponent) {
-        size_t scoreSize = sizeof(scoreComponent->_score);
-        std::vector<char> scoreData(it, it + scoreSize);
-        scoreComponent->deserializeFromVector(scoreData);
-        it += scoreSize;
     }
 }

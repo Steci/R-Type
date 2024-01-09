@@ -320,11 +320,11 @@ std::vector<char> E_Enemy::serializeToVector() {
 }
 
 void E_Enemy::deserializeFromVector(std::vector<char> data) {
-        auto it = data.begin();
+    auto it = data.begin();
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
-        size_t transformSize = sizeof(C_Transform);
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
         std::vector<char> transformData(it, it + transformSize);
         transformComponent->deserializeFromVector(transformData);
         it += transformSize;
@@ -332,7 +332,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
     if (healthComponent) {
-        size_t healthSize = sizeof(C_Health);
+        size_t healthSize = sizeof(healthComponent->_health);
         std::vector<char> healthData(it, it + healthSize);
         healthComponent->deserializeFromVector(healthData);
         it += healthSize;
@@ -340,7 +340,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
     if (hitboxComponent) {
-        size_t hitboxSize = sizeof(C_Hitbox);
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
         std::vector<char> hitboxData(it, it + hitboxSize);
         hitboxComponent->deserializeFromVector(hitboxData);
         it += hitboxSize;
@@ -348,7 +348,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
     if (enemyInfoComponent) {
-        size_t enemyInfoSize = sizeof(C_EnemyInfo);
+        size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
         std::vector<char> enemyInfoData(it, it + enemyInfoSize);
         enemyInfoComponent->deserializeFromVector(enemyInfoData);
         it += enemyInfoSize;

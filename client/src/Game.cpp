@@ -298,7 +298,9 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     Vec2 pos;
     Vec2 size;
     Vec2 velocity;
-    int type;
+    E_Player player(0, 0, 0, 0);
+    E_Enemy enemy(0, 0, 0, 0, 0);
+    E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         std::memcpy(&_tick, &it, sizeof(_tick));
@@ -312,40 +314,25 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         }
         ++it;
         if (entityType == "E_Player") {
-            pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
-            it += sizeof(pos);
-            size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
-            it += sizeof(size);
-            auto player = std::make_shared<E_Player>(pos.x, pos.y, size.x, size.y);
-            _entities.add(player);
+            player.deserializeFromVector(std::vector<char>(it, it + sizeof(player)));
+            it += sizeof(player);
+            auto playerShared = std::make_shared<E_Player>(player);
+            _entities.add(playerShared);
         } else if (entityType == "E_Enemy") {
-            pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
-            it += sizeof(pos);
-            size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
-            it += sizeof(size);
-            C_EnemyInfo info(1);
-            info.deserializeFromVector(std::vector<char>(it, it + sizeof(info)));
-            it += sizeof(info);
-            printf("%d\n", info._type);
-
-            auto enemy = std::make_shared<E_Enemy>(pos.x, pos.y, size.x, size.y, info._type);
-            _entities.add(enemy);
+            enemy.deserializeFromVector(std::vector<char>(it, it + sizeof(enemy)));
+            it += sizeof(enemy);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
+            C_Health *health = Engine::getComponentRef<C_Health>(enemy);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
+            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
+            printf("enemy type : %d\n", ennemyInfo->_type);
+            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
+            _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {
-            int damage;
-            std::memcpy(&damage, &it, sizeof(damage));
-            it += sizeof(damage);
-            pos.deserializeFromVector(std::vector<char>(it, it + sizeof(pos)));
-            it += sizeof(pos);
-            size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
-            it += sizeof(size);
-            velocity.deserializeFromVector(std::vector<char>(it, it + sizeof(velocity)));
-            it += sizeof(velocity);
-            int idCreator;
-            std::memcpy(&idCreator, &it, sizeof(idCreator));
-            it += sizeof(idCreator);
-
-            auto bullet = std::make_shared<E_Bullet>(damage, pos.x, pos.y, size.x, size.y, velocity.x, velocity.y, idCreator);
-            _entities.add(bullet);
+            bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
+            it += sizeof(bullet);
+            auto bulletShared = std::make_shared<E_Bullet>(bullet);
+            _entities.add(bulletShared);
         }
         if (isEndMarker(it, serializedData)) {
             break;
