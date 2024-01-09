@@ -1,6 +1,6 @@
 project(client)
 
-file(GLOB SOURCES
+file(GLOB CLIENT_SOURCES
     "src/Client.cpp"
     "src/Entity.cpp"
     "src/ErrorHandling.cpp"
@@ -11,11 +11,12 @@ file(GLOB SOURCES
     "main.cpp"
 )
 
-add_executable(client_build ${SOURCES})
+add_executable(client ${CLIENT_SOURCES})
 
 list(APPEND CLIENT_EXTRA_INCLUDES "include")
-target_include_directories(client_build PUBLIC ${CLIENT_EXTRA_INCLUDES})
+target_include_directories(client PUBLIC ${CLIENT_EXTRA_INCLUDES})
 
-target_link_libraries(client_build PRIVATE fmt)
-target_link_libraries(client_build PRIVATE raylib)
-target_link_libraries(client_build PRIVATE engineLib)
+target_link_libraries(client PRIVATE raylib)
+target_link_libraries(server_build PRIVATE EngineLib)
+
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
