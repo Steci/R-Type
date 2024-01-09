@@ -111,12 +111,19 @@ S_Collision::~S_Collision()
 {
 }
 
-bool S_Collision::checkCollision(C_Transform *transform1, C_Transform *transform2, C_Hitbox *hitbox1, C_Hitbox *hitbox2)
+bool S_Collision::checkCollision(C_Transform* transform1, C_Transform* transform2, C_Hitbox* hitbox1, C_Hitbox* hitbox2)
 {
-    if (transform1->_position.x < transform2->_position.x + hitbox2->_size.x &&
-        transform1->_position.x + hitbox1->_size.x > transform2->_position.x &&
-        transform1->_position.y < transform2->_position.y + hitbox2->_size.y &&
-        transform1->_position.y + hitbox1->_size.y > transform2->_position.y && (hitbox1->_status != 0 && hitbox2->_status != 0) ) {
+    float left1 = transform1->_position.x;
+    float right1 = transform1->_position.x + hitbox1->_size.x;
+    float top1 = transform1->_position.y;
+    float bottom1 = transform1->_position.y + hitbox1->_size.y;
+
+    float left2 = transform2->_position.x;
+    float right2 = transform2->_position.x + hitbox2->_size.x;
+    float top2 = transform2->_position.y;
+    float bottom2 = transform2->_position.y + hitbox2->_size.y;
+
+    if (right1 >= left2 && left1 <= right2 && bottom1 >= top2 && top1 <= bottom2) {
         return true;
     }
     return false;
@@ -127,37 +134,35 @@ void S_Collision::update()
     int index1 = 0;
     int index2 = 0;
     std::vector<int> denseIndex = _sparseEntities.getAllIndices();
+    std::vector<std::shared_ptr<IEntity>> &entities = _sparseEntities.getAll();
 
-    for (auto& entity1 : _sparseEntities.getAll()) {
-        for (auto& entity2 : _sparseEntities.getAll()) {
+    for (auto& entity1 : entities) {
+        for (auto& entity2 : entities) {
             if (entity1 != entity2) {
                 C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
                 C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
                 C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
                 C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
 
-                if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
-
-                    if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
+                if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
+                    if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
                         C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
-                        C_Damage* damage2 = Engine::getComponentRef<C_Damage>(*entity2);
 
-                        health1->_health -= damage2->_damage;
-                        health2->_health -= 1;
-                        transform1->_position.x -= 20;
+                        transform1->_position.x -= 50;
                     }
+                }
 
-                    if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
+                if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
+                    if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
 
-                        // health2->_health -= damage1->_damage;
                         _sparseEntities.remove(denseIndex[index1]);
                         _sparseEntities.remove(denseIndex[index2]);
                     }
                 }
-            }
+                }
             index2++;
         }
         if (typeid(*entity1) == typeid(E_Player)) {
