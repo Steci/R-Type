@@ -17,7 +17,7 @@ void ErrorHandling::help()
     std::cout << "\t-p, --port=PORT\t\t\tSet the port of the server" << std::endl;
 }
 
-std::vector<int> ErrorHandling::errorHandling(int argc, const char **argv)
+std::vector<int> ErrorHandling::errorHandling(int argc, char **argv)
 {
     int port = 0;
     int max_clients = 0;
@@ -58,7 +58,7 @@ std::vector<int> ErrorHandling::errorHandling(int argc, const char **argv)
     return {0, port, max_clients};
 }
 
-int ErrorHandling::checkPort(const char *port)
+int ErrorHandling::checkPort(char *port)
 {
     int i = 0;
 

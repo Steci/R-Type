@@ -181,10 +181,6 @@ int server::Network::bindSocket()
 
 std::tuple<int, server::Connection> server::Network::handleNewConnection(Connection connect)
 {
-    if (connect.getConnect() != 1) {
-        std::cout << "error connection" << std::endl;
-        return 84;
-    }
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;

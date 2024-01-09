@@ -80,13 +80,9 @@ namespace server {
             ~Connection() {};
             int getConnect() const {return _connect;};
             int getConnected() const {return _connected;};
-<<<<<<< HEAD
             void setConnected(int connected) {_connected = connected;};
             void setId(int id) {_id = id;};
             int getId() const {return _id;};
-=======
-            int setConnected(int connected) {_connected = connected;};
->>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
             std::vector<char> serializeConnection() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Connection));
@@ -94,7 +90,6 @@ namespace server {
             void deserializeConnection(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Connection*>(serializedData.data());
             }
-<<<<<<< HEAD
             Connection& operator=(const Connection& other) {
                 _connect = other._connect;
                 _connected = other._connected;
@@ -105,11 +100,6 @@ namespace server {
             int _connect;
             int _connected;
             int _id;
-=======
-        private:
-            int _connect;
-            int _connected;
->>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
     };
 
     class Network {
@@ -129,8 +119,6 @@ namespace server {
             #endif
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
-                SOCKADDR_IN _clientAddr;
-                int _clientAddrLen;
             #endif
             int _tickrate;
             int _last_tick_send = 0;
@@ -141,23 +129,11 @@ namespace server {
             int fillSocket();
             int fillAddr();
             int bindSocket();
-<<<<<<< HEAD
             std::tuple<int, server::Connection> handleNewConnection(Connection Connect);
             std::tuple<int, server::Connection> handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
             void updateClients(int client_id, Game *game);
-=======
-            int handleNewConnection(Connection Connect);
-            int handleClient(std::vector<char> buffer);
-            std::string handleClientMessage(std::string message, int client_id);
-            void manageMessage(std::string message, int client_id, Game *game);
-<<<<<<< HEAD
-            void updateClients(int client_id, std::string message, Game *game);
->>>>>>> 98fa4b0 ([FIX] modify server to connect with the serialize method)
-=======
-            void updateClients(int client_id, Game *game);
->>>>>>> 871ad90 ([FIX] send frame from server to client)
             void checkClass(std::vector<char> buffer);
 
             // Commands

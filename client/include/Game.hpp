@@ -62,19 +62,6 @@ namespace client {
             void deserializeFrame(const std::vector<char>& serializedData);
     };
 
-    class Frame {
-        public:
-            Frame() {}; // penser à remplir le constructeur si besoin
-            ~Frame() {}; // penser à remplir le destructeur si besoin
-            int getTick() const {return _tick;};
-            void deserializeFrame(const std::vector<char>& serializedData) {
-                *this = *reinterpret_cast<const Frame*>(serializedData.data());
-            }
-        private:
-            int _tick = -1;
-            // ici mettre les infos de la frame à display
-    };
-
     class Game
     {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);

@@ -259,6 +259,22 @@ namespace client {
         _mutex_interactions.unlock();
         _mutex_frames.unlock();
     }
+    
+    Game::~Game() {
+        for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
+            UnloadTexture(it->second._texture);
+            UnloadImage(it->second._image);
+        }
+        for (auto it = _player_sprites.begin(); it != _player_sprites.end(); ++it) {
+            UnloadTexture(it->second._texture);
+            UnloadImage(it->second._image);
+        }
+        for (auto it = _utils_sprites.begin(); it != _utils_sprites.end(); ++it) {
+            UnloadTexture(it->second._texture);
+            UnloadImage(it->second._image);
+        }
+
+    }
 
     Game::~Game() {
         for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
