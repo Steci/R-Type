@@ -17,6 +17,6 @@ list(APPEND CLIENT_EXTRA_INCLUDES "include")
 target_include_directories(client PUBLIC ${CLIENT_EXTRA_INCLUDES})
 
 target_link_libraries(client PRIVATE raylib)
-target_link_libraries(server_build PRIVATE EngineLib)
+target_link_libraries(client PRIVATE EngineLib)
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
