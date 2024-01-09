@@ -185,19 +185,7 @@ void S_Collision::update()
 
             if (transform->_position.x <= -100.0) {
                 printf("Enemy %d destroyed (POS X:%f Y:%f)\n", denseIndex[index1], transform->_position.x, transform->_position.y);
-                printf("Old size: %d\n", _sparseEntities.getAll().size());
-                // print sparse
-                for (auto& element : _sparseEntities.getSparse()) {
-                    printf("%d ", element);
-                }
-                printf("\n");
                 _sparseEntities.remove(denseIndex[index1]);
-                printf("New size: %d\n", _sparseEntities.getAll().size());
-                // print sparse
-                for (auto& element : _sparseEntities.getSparse()) {
-                    printf("%d ", element);
-                }
-                printf("\n");
             }
         }
         if (typeid(*entity1) == typeid(E_Bullet)) {
