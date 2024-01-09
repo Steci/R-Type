@@ -23,16 +23,18 @@ std::string E_Bullet::getType() const {
 
 void E_Bullet::render()
 {
-    auto* transform = dynamic_cast<C_Transform*>(getComponents()[0].get());
-    auto* spriteComponent = dynamic_cast<C_Sprite*>(getComponents()[1].get());
-    if (transform && spriteComponent) {
-        transform->_position.x += transform->_velocity.x;
-        transform->_position.y += transform->_velocity.y;
-        Texture2D sprite = spriteComponent->_texture;
-        Rectangle sourceRec = { 0.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
-        Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
-        Vector2 origin = { 0.0f, 0.0f };
-        DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+    if (IsWindowReady() == true) {
+        C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+        C_Sprite *spriteComponent = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)));
+        if (transform && spriteComponent) {
+            transform->_position.x += transform->_velocity.x;
+            transform->_position.y += transform->_velocity.y;
+            Texture2D sprite = spriteComponent->_texture;
+            Rectangle sourceRec = { 0.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
+            Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
+            Vector2 origin = { 0.0f, 0.0f };
+            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+        }
     }
 }
 

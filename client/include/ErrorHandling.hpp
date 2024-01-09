@@ -7,17 +7,17 @@
 
 #pragma once
 
+#include <iostream>
 #include <cstring>
-#include <string>
 #include <vector>
 
 class ErrorHandling {
     public:
         ErrorHandling() {};
         ~ErrorHandling() {};
-        std::vector<std::string> errorHandling(int argc, const char **argv);
+        std::vector<std::string> errorHandling(int argc, char **argv);
     private:
-        int checkPort(const char *serverPort);
-        int checkIP(const char *serverIP);
+        int checkPort(char *serverPort);
+        int checkIP(char *serverIP);
         void help();
 };

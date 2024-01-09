@@ -7,7 +7,7 @@
 
 #include "Network.hpp"
 
-client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort), _isRunning(true)
+client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort)
 {
     if (fillSocket() == 84 || fillAddr() == 84 || bindSocket() == 84)
         throw std::invalid_argument("Error: Network creation failed");
@@ -43,7 +43,7 @@ int client::Network::fillSocket()
             std::cerr << "Error: socket creation failed" << std::endl;
             return(84);
         }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(opt)) == -1) {
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
             return(84);
         }
@@ -127,17 +127,6 @@ int client::Network::connectCommand()
     }
     std::cerr << "Error: Connection timeout" << std::endl;
     return 84;
-}
-
-std::string client::Network::inputHandle(std::string message)
-{
-    for (auto input : _inputs) {
-        if (message == input) {
-            return "UPDATE " + message;
-        }
-    }
-    std::cerr << "Wrong input" << std::endl;
-    return "";
 }
 
 std::string client::Network::inputHandle(std::string message)

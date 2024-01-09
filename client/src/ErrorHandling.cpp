@@ -7,6 +7,7 @@
 
 #include "ErrorHandling.hpp"
 #include <iostream>
+#include <vector>
 
 void ErrorHandling::help()
 {
@@ -16,7 +17,7 @@ void ErrorHandling::help()
     std::cout << "\t-p, --port=PORT\t\t\tSet the port of the server" << std::endl;
 }
 
-std::vector<std::string> ErrorHandling::errorHandling(int argc, const char **argv)
+std::vector<std::string> ErrorHandling::errorHandling(int argc, char **argv)
 {
     std::string serverPort = "";
     std::string serverIP = "";
@@ -57,7 +58,7 @@ std::vector<std::string> ErrorHandling::errorHandling(int argc, const char **arg
     return {"0", serverIP, serverPort};
 }
 
-int ErrorHandling::checkPort(const char *port)
+int ErrorHandling::checkPort(char *port)
 {
     int i = 0;
 
@@ -69,7 +70,7 @@ int ErrorHandling::checkPort(const char *port)
     return 0;
 }
 
-int ErrorHandling::checkIP(const char *serverIP)
+int ErrorHandling::checkIP(char *serverIP)
 {
     int i = 0;
 

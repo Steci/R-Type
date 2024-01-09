@@ -38,7 +38,7 @@ std::string E_Bullet::getType() const {
 std::vector<char> E_Bullet::serializeToVector()
 {
     std::vector<char> data;
-    
+
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();

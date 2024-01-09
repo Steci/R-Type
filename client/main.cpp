@@ -7,8 +7,9 @@
 
 #include "ErrorHandling.hpp"
 #include "Client.hpp"
+#include <iostream>
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
     ErrorHandling error_handling;
     std::vector<std::string> error = error_handling.errorHandling(argc, argv);
