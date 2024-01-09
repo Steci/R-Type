@@ -111,7 +111,7 @@ void server::Network::manageClient(std::vector<char> buffer, int client_id, Game
 
     interaction.deserializeInteraction(buffer);
     interaction.setClientID(client_id);
-    std::cout << "Interaction: " << interaction.getMovement() << std::endl;
+    // std::cout << "Interaction: " << interaction.getMovement() << std::endl;
     if (interaction.getMovement() != -1)
         (*game).addInteraction(interaction);
 }
@@ -207,7 +207,7 @@ std::tuple<int, server::Connection> server::Network::handleClient(std::vector<ch
         std::cerr << "Error: ip or port recuperation failed" << std::endl;
         return std::make_tuple(-1, connect);
     }
-    std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
+    // std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
     // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
     connect.deserializeConnection(buffer);
     return handleNewConnection(connect);

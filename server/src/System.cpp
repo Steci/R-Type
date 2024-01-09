@@ -248,10 +248,9 @@ void S_Spawner::update()
         int random4 = rand() % 600;
         int random5 = rand() % 3 + 1;
         int random3 = rand() % (random5 == 1 ? 400 : 600);
-        printf("Creating Enemy with type %d\n", random2);
-
-        printf("pos enemy x: %d, y: %d\n", 800, random3);
-        _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
+        int id = _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
+        printf("Creating Enemy ID: %d with type %d\n", id, random2);
+        printf("Pos x: %d, y: %d\n", 800, random3);
     }
 }
 
@@ -268,7 +267,6 @@ void S_Weapon::shoot(int idCreator)
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Player)) {
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
-            C_Sprite* sprite = Engine::getComponentRef<C_Sprite>(*entity);
 
             if (idCreator == denseIndex[i]) {
                 // create bullet with player position info

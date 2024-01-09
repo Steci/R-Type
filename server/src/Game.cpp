@@ -136,6 +136,12 @@ void server::Game::run()
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x -= 8;
                 }
+                if (interaction.getShoot() == 1){
+                    // shoot
+                    printf("shoot\n");
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    manager.getSystem<S_Weapon>()->shoot(interaction.getClientID());
+                }
             }
         }
 

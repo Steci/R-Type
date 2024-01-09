@@ -24,8 +24,8 @@ std::string E_Bullet::getType() const {
 void E_Bullet::render()
 {
     if (IsWindowReady() == true) {
-        C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
-        C_Sprite *spriteComponent = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)));
+        C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+        C_Sprite *spriteComponent = Engine::getComponentRef<C_Sprite>(*this);
         if (transform && spriteComponent) {
             transform->_position.x += transform->_velocity.x;
             transform->_position.y += transform->_velocity.y;
@@ -97,19 +97,19 @@ void E_Player::update()
 void E_Player::render()
 {
     if (IsWindowReady() == true) {
-        C_Score *score = dynamic_cast<C_Score*>(getComponentOfType(typeid(C_Score)));
+        C_Score *score = Engine::getComponentRef<C_Score>(*this);
         std::string scoreText = "Score: " + std::to_string(score->_score);
         DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
-        C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
+        C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
-                C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+                C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
                 int xPos = transform->_position.x;
                 int yPos = transform->_position.y;
                 int xSize = transform->_size.x;
                 int ySize = transform->_size.y;
                 int animation = transform->_animation;
-                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+                Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
@@ -123,12 +123,12 @@ void E_Player::render()
                 hitbox->_status = 0;
             }
         } else if (hitbox->_status == 2) {
-            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             if (transform->_animation <= 7) {
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
@@ -137,13 +137,13 @@ void E_Player::render()
                 transform->_animation += 1;
             }
         } else {
-            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
             int animation = transform->_animation;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
@@ -237,16 +237,16 @@ void E_Enemy::update()
 void E_Enemy::render()
 {
     if (IsWindowReady() == true) {
-        C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
+        C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
-                C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+                C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
                 int xPos = transform->_position.x;
                 int yPos = transform->_position.y;
                 int xSize = transform->_size.x;
                 int ySize = transform->_size.y;
                 int animation = transform->_animation;
-                Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+                Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
@@ -260,12 +260,12 @@ void E_Enemy::render()
                 hitbox->_status = 0;
             }
         } else if (hitbox->_status == 2) {
-            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             if (transform->_animation <= 7) {
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
@@ -274,13 +274,13 @@ void E_Enemy::render()
                 transform->_animation += 1;
             }
         } else {
-            C_Transform *transform = dynamic_cast<C_Transform*>(getComponentOfType(typeid(C_Transform)));
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
             int animation = transform->_animation;
-            Texture2D sprite = dynamic_cast<C_Sprite*>(getComponentOfType(typeid(C_Sprite)))->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
