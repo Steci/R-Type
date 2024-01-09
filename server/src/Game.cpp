@@ -119,22 +119,22 @@ void server::Game::run()
                     transform->_position.y -= 5;
                 }
                 if (interaction.getMovement() == 2){
+                    // go right
+                    printf("go right\n");
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.x += 5;
+                }
+                if (interaction.getMovement() == 3){
                     // go down
                     printf("go down\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.y += 5;
                 }
-                if (interaction.getMovement() == 3){
+                if (interaction.getMovement() == 4){
                     // go left
                     printf("go left\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x -= 5;
-                }
-                if (interaction.getMovement() == 4){
-                    // go right
-                    printf("go right\n");
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x += 5;
                 }
             }
         }

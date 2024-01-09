@@ -218,12 +218,12 @@ void S_EnemyAI::update()
             if (enemyInfo->_type == 2) {
                 // the enemy will move in a sinusoid pattern
                 transform->_position.x -= 5;
-                transform->_position.y = 50 * sin(transform->_position.x / 50) + transform->_position.y;
+                transform->_position.y = 20 * sin(transform->_position.x / 30) + transform->_position.y;
             }
             if (enemyInfo->_type == 3) {
                 // the enemy will move in a sinusoid pattern but smaller and faster
-                transform->_position.x -= 7;
-                transform->_position.y = 20 * sin(transform->_position.x / 50) + transform->_position.y;
+                transform->_position.x -= 8;
+                transform->_position.y = 10 * sin(transform->_position.x / 20) + transform->_position.y;
             }
         }
     }

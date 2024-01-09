@@ -99,7 +99,7 @@ void E_Player::render()
     if (IsWindowReady() == true) {
         C_Score *score = dynamic_cast<C_Score*>(getComponentOfType(typeid(C_Score)));
         std::string scoreText = "Score: " + std::to_string(score->_score);
-        DrawText(scoreText.c_str(), 250, 250, 30, WHITE);
+        DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
         C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
@@ -236,7 +236,6 @@ void E_Enemy::update()
 
 void E_Enemy::render()
 {
-    printf("Enemy\n");
     if (IsWindowReady() == true) {
         C_Hitbox *hitbox = dynamic_cast<C_Hitbox*>(getComponentOfType(typeid(C_Hitbox)));
         if (hitbox->_status == 1) {

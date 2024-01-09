@@ -213,7 +213,9 @@ namespace client {
     {
         SystemManager manager;
         Frame current_frame;
-        Interaction interaction;
+        int mov;
+        int shoot;
+        int quit;
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
@@ -222,8 +224,10 @@ namespace client {
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
             // printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
-            interaction.setInteraction(manager.getSystem<S_EventManager>()->getMovement(), manager.getSystem<S_EventManager>()->getShoot(), manager.getSystem<S_EventManager>()->getQuit());
-            infoInteraction(interaction);
+            mov = manager.getSystem<S_EventManager>()->getMovement();
+            shoot = manager.getSystem<S_EventManager>()->getShoot();
+            quit = manager.getSystem<S_EventManager>()->getQuit();
+            infoInteraction(mov, shoot, quit);
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
@@ -280,7 +284,7 @@ namespace client {
         _mutex_interactions.unlock();
         _mutex_frames.unlock();
     }
-    
+
     Game::~Game() {
         for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
             UnloadTexture(it->second._texture);
@@ -297,15 +301,15 @@ namespace client {
 
     }
 
-    void Game::infoInteraction(Interaction interaction)
+    void Game::infoInteraction(int mov, int shoot, int quit)
     {
         Interaction inter;
 
+        // printf("Info with mov: %d, shoot: %d, quit: %d\n", mov, shoot, quit);
         _mutex_frames.lock();
         _mutex_interactions.lock();
-        if (_frames.size() != 0 && _frames.back().getTick() == 100 && _interactions.size() == 0) {
-            std::cout << "Info interaction" << std::endl;
-            inter.setInteraction(interaction.getMovement(), interaction.getShoot(), interaction.getQuit());
+        if (_frames.size() != 0 && _interactions.size() == 0) {
+            inter.setInteraction(mov, shoot, quit);
             _interactions.push_back(inter);
         }
         _mutex_interactions.unlock();

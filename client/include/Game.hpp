@@ -105,7 +105,7 @@ namespace client {
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
             void testInteraction();
-            void infoInteraction(Interaction interaction);
+            void infoInteraction(int mov, int shoot, int quit);
     };
 
 }

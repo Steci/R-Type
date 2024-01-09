@@ -155,9 +155,9 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
 {
     client::Frame frame;
 
-    std::cout << "frame received" << std::endl;
+    // std::cout << "frame received" << std::endl;
     frame.deserializeFrame(buffer);
-    std::cout << "frame deserialized" << std::endl;
+    // std::cout << "frame deserialized" << std::endl;
     if (frame.getTick() != -1) {
         game->addFrame(frame);
         return;

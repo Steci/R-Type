@@ -68,13 +68,13 @@ int S_EventManager::EventKeyPressed(std::list<int> keys)
 
 int S_EventManager::getMovement()
 {
-    if (IsKeyDown(KEY_RIGHT))
-        return 1;
-    if (IsKeyDown(KEY_LEFT))
-        return 2;
     if (IsKeyDown(KEY_UP))
-        return 3;
+        return 1;
+    if (IsKeyDown(KEY_RIGHT))
+        return 2;
     if (IsKeyDown(KEY_DOWN))
+        return 3;
+    if (IsKeyDown(KEY_LEFT))
         return 4;
     return 0;
 }
