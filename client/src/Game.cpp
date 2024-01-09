@@ -228,7 +228,6 @@ namespace client {
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
-                        printf("nnnnnnnnn %d\n", ennemyInfo->_type);
                         if (it != _ennemy_sprites.end()) {
                             auto infos = it->second;
                             tmpEntity.addComponent(std::make_unique<C_Sprite>());
@@ -326,7 +325,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
             printf("enemy type : %d\n", ennemyInfo->_type);
-            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
+            //auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
+            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, 2);
             _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {
             bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
