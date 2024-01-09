@@ -59,6 +59,8 @@ set(CMAKE_PREFIX_PATH "vcpkg_installed/${VCPKG_TARGET_TRIPLET}" CACHE STRING "Vc
 
 find_package(raylib CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+
 
 
 add_subdirectory(engine)

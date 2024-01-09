@@ -12,12 +12,15 @@ target_include_directories(server_build PUBLIC ${EXTRA_INCLUDES})
 
 
 target_link_libraries(server_build PRIVATE pthread)
-target_link_libraries(server_build PRIVATE "../engine/engineLib" raylib)
+target_link_libraries(server_build PRIVATE "${CMAKE_SOURCE_DIR}/engine/libEngineLib.a" raylib)
 
 # Utiliser find_package pour trouver la bibliothèque fmt
 target_link_libraries(server_build PRIVATE fmt::fmt)
 
 # Utiliser find_package pour trouver la bibliothèque raylib
+
+find_package(glfw3 CONFIG REQUIRED)
+target_link_libraries(server_build PRIVATE glfw)
 target_link_libraries(server_build PRIVATE raylib)
 
 
