@@ -20,7 +20,7 @@ class E_Bullet : public Entity {
         std::vector<char> serializeToVector() override;
         void deserializeFromVector(std::vector<char> data) override;
         int getIdCreator() const { return _idCreator; };
-    
+
     private:
         int _idCreator;
 };

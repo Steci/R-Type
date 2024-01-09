@@ -38,7 +38,7 @@ std::string E_Bullet::getType() const {
 std::vector<char> E_Bullet::serializeToVector()
 {
     std::vector<char> data;
-    
+
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();
@@ -82,7 +82,7 @@ E_Player::E_Player(int position_x, int position_y, float size_x, float size_y)
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
     addComponent(std::make_shared<C_Health>(100));
-    addComponent(std::make_shared<C_Hitbox>(33, 17));
+    addComponent(std::make_shared<C_Hitbox>(66, 34));
     addComponent(std::make_shared<C_Score>());
 }
 

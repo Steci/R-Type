@@ -163,15 +163,16 @@ void S_Collision::update()
         if (typeid(*entity1) == typeid(E_Player)) {
             // check if player is leaving screenWidth or screenHeight
             C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+            C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
 
             if (transform1->_position.x < 0)
                 transform1->_position.x = 0;
-            if (transform1->_position.x > screenWidth)
-                transform1->_position.x = screenWidth;
+            if (transform1->_position.x + hitbox1->_size.x > screenWidth)
+                transform1->_position.x = screenWidth - hitbox1->_size.x;
             if (transform1->_position.y < 0)
                 transform1->_position.y = 0;
-            if (transform1->_position.y > screenHeight)
-                transform1->_position.y = screenHeight;
+            if (transform1->_position.y + hitbox1->_size.y > screenHeight)
+                transform1->_position.y = screenHeight - hitbox1->_size.y;
         }
         if (typeid(*entity1) == typeid(E_Enemy)) {
             // Destroy enemy if it leaves the screen on the left
