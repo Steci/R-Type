@@ -68,24 +68,11 @@ namespace server
 
             // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
 
-            // void actionUpCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionDownCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionLeftCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionRightCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionDebugCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionConnectCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionShootCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-            // void actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities);
-
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
             std::mutex _mutex;
             std::vector<Interaction> _interaction_client;
-            // std::vector<std::string> _functions_server;
-            // std::map<int, Key> m{{KEY_A, Key}, {KEY_RIGHT, Key}, {KEY_LEFT, Key}, {KEY_DOWN, Key}, {KEY_ESCAPE, Key}};
             typedef void (*Key)(int button);
             std::vector<std::string> _functions;
             std::vector<std::string> _functions_client;

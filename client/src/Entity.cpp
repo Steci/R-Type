@@ -324,7 +324,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
-        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        size_t transformSize = sizeof(C_Transform);
         std::vector<char> transformData(it, it + transformSize);
         transformComponent->deserializeFromVector(transformData);
         it += transformSize;
@@ -332,25 +332,25 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
     if (healthComponent) {
-        size_t healthSize = sizeof(healthComponent->_health);
+        size_t healthSize = sizeof(C_Health);
         std::vector<char> healthData(it, it + healthSize);
         healthComponent->deserializeFromVector(healthData);
         it += healthSize;
     }
 
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        size_t hitboxSize = sizeof(C_Hitbox);
+        std::vector<char> hitboxData(it, it + hitboxSize);
+        hitboxComponent->deserializeFromVector(hitboxData);
+        it += hitboxSize;
+    }
+
     C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
     if (enemyInfoComponent) {
-        size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
+        size_t enemyInfoSize = sizeof(C_EnemyInfo);
         std::vector<char> enemyInfoData(it, it + enemyInfoSize);
         enemyInfoComponent->deserializeFromVector(enemyInfoData);
         it += enemyInfoSize;
-    }
-
-    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
-    if (scoreComponent) {
-        size_t scoreSize = sizeof(scoreComponent->_score);
-        std::vector<char> scoreData(it, it + scoreSize);
-        scoreComponent->deserializeFromVector(scoreData);
-        it += scoreSize;
     }
 }

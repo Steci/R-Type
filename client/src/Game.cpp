@@ -111,31 +111,6 @@ namespace client {
         entities.remove(clientID);
     }
 
-    //void Game::actionConnectCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    //{
-    //    int nbrPlayer = 0;
-    //    const auto& sparseIds = entities.getAllIndices();
-    //    for (auto id : sparseIds) {
-    //        if (id != -1) {
-    //            auto& tmpEntity = entities.get(id);
-    //            if (typeid(tmpEntity) == typeid(E_Player)) {
-    //                nbrPlayer++;
-    //            }
-    //        }
-    //    }
-    //    if (nbrPlayer >= 4)
-    //        return;
-    //    if (entities.exists(clientID) == true) {
-    //        printf("player already connected");
-    //        return;
-    //    }
-    //    // create entity
-    //    std::string path = "./assets/r-typesheet42.png";
-    //    entities.add(std::make_shared<E_Player>(path, 50, 50, 33.2, 17.2), clientID);
-    //    auto& playerEntity = entities.get(clientID);
-    //    // add entity to entities
-    //}
-
     void Game::actionShootCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
     {
         if (entities.exists(clientID) == false) {
@@ -253,6 +228,7 @@ namespace client {
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
+                        printf("nnnnnnnnn %d\n", ennemyInfo->_type);
                         if (it != _ennemy_sprites.end()) {
                             auto infos = it->second;
                             tmpEntity.addComponent(std::make_unique<C_Sprite>());
@@ -322,6 +298,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     Vec2 pos;
     Vec2 size;
     Vec2 velocity;
+    int type;
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         std::memcpy(&_tick, &it, sizeof(_tick));
@@ -346,8 +323,12 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             it += sizeof(pos);
             size.deserializeFromVector(std::vector<char>(it, it + sizeof(size)));
             it += sizeof(size);
+            C_EnemyInfo info(1);
+            info.deserializeFromVector(std::vector<char>(it, it + sizeof(info)));
+            it += sizeof(info);
+            printf("%d\n", info._type);
 
-            auto enemy = std::make_shared<E_Enemy>(pos.x, pos.y, size.x, size.y);
+            auto enemy = std::make_shared<E_Enemy>(pos.x, pos.y, size.x, size.y, info._type);
             _entities.add(enemy);
         } else if (entityType == "E_Bullet") {
             int damage;
