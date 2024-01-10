@@ -181,7 +181,7 @@ namespace client {
         _player_sprites[2] = Infos(33.2, 18, "./assets/r-player-3.png");
         _player_sprites[3] = Infos(33.2, 18, "./assets/r-player-4.png");
         _utils_sprites[0] = Infos(33.5, 35, "./assets/r-boom.png");
-        _utils_sprites[1] = Infos(33, 18, "./assets/r-shoot.png");
+        _utils_sprites[1] = Infos(20, 20, "./assets/r-shoot.png");
     }
 
     void Game::run()

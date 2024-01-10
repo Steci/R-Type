@@ -26,11 +26,10 @@ void E_Bullet::render()
     if (IsWindowReady() == true) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
         C_Sprite *spriteComponent = Engine::getComponentRef<C_Sprite>(*this);
+
         if (transform && spriteComponent) {
             Texture2D sprite = spriteComponent->_texture;
-            Rectangle sourceRec = { 0.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
-            printf("POSITION X = %d\n", transform->_position.x);
-            printf("POSITION Y = %d\n", transform->_position.y);
+            Rectangle sourceRec = { 127.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
             // Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
             // Vector2 origin = { 0.0f, 0.0f };
             DrawTextureRec(sprite, sourceRec, {(float)transform->_position.x, (float)transform->_position.y }, WHITE);
