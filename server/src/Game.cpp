@@ -14,64 +14,6 @@ server::Game::Game()
     _tick = 0;
 }
 
-server::Game::~Game()
-{
-}
-
-// void server::Game::actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("quit\n");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         manager.getSystem<S_Renderer>()->removeEntity(&playerEntity);
-//         entities.remove(clientID);
-//     }
-// }
-
-// void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("damage");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& entity = entities.get(clientID);
-//     C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(entity);
-//     C_Health *health = Engine::getComponentRef<C_Health>(entity);
-//     if (health->_health <= 0) {
-//         Engine::setHitboxStatus(entity, 2);
-//         std::string dead_path = "./assets/r-typesheet1.png";
-//         Image newImage = LoadImage(dead_path.c_str());
-//         if (newImage.data == nullptr) {
-//             std::cerr << "Erreur de chargement de l'image : " << dead_path << std::endl;
-//         }
-//         Engine::setSpriteImage(entity, newImage);
-//         Texture2D newTexture = LoadTextureFromImage(newImage);
-//         Engine::setSpriteTexture(entity, newTexture);
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
-//         Engine::setTransformSize(entity, {33.25, 345});
-//         Engine::setTransformAni(entity, 0);
-//     } else {
-//         Engine::setHealth(entity, health->_health - 10);
-//         Engine::setHitboxStatus(entity, 1);
-//     }
-// }
-
-std::pair<std::string, std::string> server::Game::parseCommand(const std::string& input) {
-    std::istringstream iss(input);
-    std::string command;
-    std::string clientID;
-
-    std::getline(iss, command, ' ');
-    std::getline(iss, clientID, ' ');
-
-    return {command, clientID};
-}
-
 bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerIndex)
 {
     if (playerList.size() == 0)
@@ -166,13 +108,6 @@ void server::Game::fillFrame(SparseArray<IEntity> entities)
     _mutex_frame.unlock();
 }
 
-// void server::Game::addFunction(std::string function)
-// {
-//     _mutex.lock();
-//     _functions_server.push_back(function);
-//     _mutex.unlock();
-// }
-
 std::vector<std::string> server::Game::getFunctionsClient()
 {
     _mutex_client.lock();
@@ -181,13 +116,6 @@ std::vector<std::string> server::Game::getFunctionsClient()
     _mutex_client.unlock();
     return functions;
 }
-
-// server::Frame& server::Frame::operator=(const Frame& other)
-// {
-//     _tick = other._tick;
-
-//     return *this;
-// }
 
 std::vector<char> server::Frame::serializeFrame()
 {
