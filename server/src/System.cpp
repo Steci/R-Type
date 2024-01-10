@@ -101,6 +101,7 @@ void S_Collision::update()
 
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
                 // printf("Bullet %d destroyed\n", denseIndex[index1]);
+                printf("Bullet %d destroyed\n", denseIndex[index1]);
                 _sparseEntities.remove(denseIndex[index1]);
             }
         }
@@ -183,7 +184,15 @@ void S_Weapon::shootPlayer(int idCreator)
                     // printf("Player position : %d %d\n", xpos, ypos);
                     float velocity_x = 20;
                     float velocity_y = 0;
-                    _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
+                    int id = _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
+                    printf("Creating Bullet ID: %d\n", id);
+                    const auto& sparseIds = _sparseEntities.getAllIndices();
+                    int tmp = 0;
+                    for (auto id_tmp : sparseIds) {
+                        printf("ID: %d\n", id_tmp);
+                        tmp += 1;
+                    }
+                    printf("Total: %d\n", tmp);
                     _lastTick = _tick;
                 }
             }
