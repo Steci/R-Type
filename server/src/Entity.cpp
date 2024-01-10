@@ -41,6 +41,7 @@ std::vector<char> E_Bullet::serializeToVector()
     std::vector<char> data;
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    // printf("Transform serialize X:%f Y:%f\n", transformComponent->_position.x, transformComponent->_position.y);
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();
         data.insert(data.end(), transformData.begin(), transformData.end());

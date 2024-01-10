@@ -303,8 +303,9 @@ void S_Weapon::update()
         if (typeid(*entity) == typeid(E_Bullet)) {
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
 
-            transform->_position.x += transform->_velocity.x;
-            transform->_position.y += transform->_velocity.y;
+            transform->_position.x = static_cast<float>(transform->_position.x + transform->_velocity.x);
+            transform->_position.y = static_cast<float>(transform->_position.y + transform->_velocity.y);
+            // printf("Bullet %d position : %f %f\n", denseIndex[i], transform->_position.x, transform->_position.y);
         }
         i++;
     }
