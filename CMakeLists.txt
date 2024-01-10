@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(Rtype)
 
+include(FetchContent)
+
+# VCPKG
+FetchContent_Declare(
+  vcpkg
+  GIT_REPOSITORY https://github.com/microsoft/vcpkg
+  GIT_TAG c9919121dde6f61c0436adda94624636e041226b
+)
+
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
