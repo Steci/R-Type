@@ -137,6 +137,7 @@ void S_Collision::update()
     std::vector<std::shared_ptr<IEntity>> &entities = _sparseEntities.getAll();
 
     for (auto& entity1 : entities) {
+        index2 = 0;
         for (auto& entity2 : entities) {
             if (entity1 != entity2) {
                 C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
@@ -150,6 +151,7 @@ void S_Collision::update()
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
 
                         transform1->_position.x -= 50;
+                        _sparseEntities.remove(denseIndex[index2]);
                     }
                 }
 
@@ -158,8 +160,9 @@ void S_Collision::update()
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
 
-                        // _sparseEntities.remove(denseIndex[index1]);
-                        // _sparseEntities.remove(denseIndex[index2]);
+                        // printf("Bullet ID: %d collided with Enemy ID: %d\n", index1, index2);
+                        _sparseEntities.remove(denseIndex[index2]);
+                        _sparseEntities.remove(denseIndex[index1]);
                     }
                 }
             }
@@ -265,7 +268,7 @@ S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick)
 
 void S_Weapon::shootPlayer(int idCreator)
 {
-    if (_tick - _lastTick < 20) {
+    if (_tick - _lastTick < 10) {
         printf("Refused to shoot\n");
         return;
     }
@@ -274,20 +277,27 @@ void S_Weapon::shootPlayer(int idCreator)
     std::vector<int> denseIndex = _sparseEntities.getAllIndices();
 
     for (auto& entity : _sparseEntities.getAll()) {
-        if (typeid(*entity) == typeid(E_Player)) {
-            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+        try {
+            if (typeid(*entity) == typeid(E_Player)) {
+                C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
 
-            if (idCreator == denseIndex[i]) {
-                // create bullet with player position info
-                int xpos = transform->_position.x + transform->_size.x;
-                int ypos = transform->_position.y + transform->_size.y / 2;
-                printf("Player position : %d %d\n", xpos, ypos);
-                float velocity_x = 10;
-                float velocity_y = 0;
-                _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
-                printf("Shot !\n");
-                _lastTick = _tick;
+                if (idCreator == denseIndex[i]) {
+                    // create bullet with player position info
+                    int xpos = transform->_position.x + transform->_size.x;
+                    int ypos = transform->_position.y + transform->_size.y / 2;
+                    printf("Player position : %d %d\n", xpos, ypos);
+                    float velocity_x = 20;
+                    float velocity_y = 0;
+                    printf("Trying to add bullet\n");
+                    _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
+                    printf("Shot !\n");
+                    _lastTick = _tick;
+                }
             }
+        }
+        catch (std::exception& e) {
+            printf("Exception caught : %s\n", e.what());
+            continue;
         }
         i++;
     }
