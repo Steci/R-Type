@@ -172,6 +172,6 @@ void client::Network::checkInteraction(Game *game)
     if (interactions.size() > 0) {
         data = interactions[0].serializeInteraction();
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        game->deleteInteraction(0);
+        game->deleteInteraction(1);
     }
 }

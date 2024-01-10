@@ -150,6 +150,7 @@ class SparseArray {
 
             for (auto& element : dense) {
                 if (element->getType() == entityType) {
+                    // printf("convert %s\n", element->getType().c_str());
                     std::string typeHeader = entityType;
                     data.insert(data.end(), typeHeader.begin(), typeHeader.end());
                     data.push_back('\0');

@@ -350,7 +350,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             _entities.add(bulletShared);
         }
         if (isEndMarker(it, serializedData)) {
-            printf("\n");
+            // printf("\n");
             break;
         }
     }

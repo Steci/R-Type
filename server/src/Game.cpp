@@ -193,8 +193,8 @@ std::vector<char> server::Frame::serializeFrame()
 {
     std::vector<char> data;
 
-    char* tickPtr = reinterpret_cast<char*>(&_tick);
-    data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
+    data.insert(data.end(), reinterpret_cast<const char*>(&_tick), reinterpret_cast<const char*>(&_tick) + sizeof(_tick));
+    // printf("tick = %d\n", _tick);
 
     auto playerData = _entities.serializeToVector("E_Player");
     data.insert(data.end(), playerData.begin(), playerData.end());
@@ -204,6 +204,8 @@ std::vector<char> server::Frame::serializeFrame()
 
     auto bulletData = _entities.serializeToVector("E_Bullet");
     data.insert(data.end(), bulletData.begin(), bulletData.end());
+    // if (data.size() > 4)
+    //     printf("\n");
 
     std::string endMarker = "END";
     data.insert(data.end(), endMarker.begin(), endMarker.end());

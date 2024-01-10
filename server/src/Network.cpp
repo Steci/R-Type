@@ -81,6 +81,7 @@ void server::Network::run(Game *game)
     std::vector<char> buffer(1024);
 
     while(_isRunning) {
+        client = 0;
         client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         updateClients(id, game);
         if (client < 0) {
@@ -88,9 +89,9 @@ void server::Network::run(Game *game)
         }
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
-        if (id != 0 && id != -1)
+        if (id != 0 && id != -1) {
             manageClient(buffer, id, game);
-        else if (id == 0) {
+        } else if (id == 0) {
             interaction.setClientID(connect.getId());
             interaction.setConnect(1);
             (*game).addInteraction(interaction);
