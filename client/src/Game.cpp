@@ -149,6 +149,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     E_Player player(0, 0, 0, 0);
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
+    int player_id = 1;
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         std::memcpy(&_tick, &it, sizeof(_tick));
@@ -170,7 +171,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
             C_Score *score = Engine::getComponentRef<C_Score>(player);
             auto playerShared = std::make_shared<E_Player>(player);
-            _entities.add(playerShared);
+            _entities.add(playerShared, player_id);
+            player_id += 1;
         } else if (entityType == "E_Enemy") {
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
