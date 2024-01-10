@@ -194,16 +194,26 @@ namespace client {
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
+        manager.addSystem<S_AudioManager>();
         createTextures();
         //detruire toutes les texture à la fin du jeu
+
+        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
+        PlayMusicStream(backgroundMusic->second);
+        //detruire toutes les music à la fin du jeu
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
             // printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
             mov = manager.getSystem<S_EventManager>()->getMovement();
             shoot = manager.getSystem<S_EventManager>()->getShoot();
             quit = manager.getSystem<S_EventManager>()->getQuit();
-            if (mov != 0 || shoot != 0 || quit != 0)
+            if (mov != 0 || shoot != 0 || quit != 0) {
+                if (shoot != 0) {
+                    auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
+                    PlaySound(effect->second);
+                }
                 infoInteraction(mov, shoot, quit);
+            }
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
@@ -212,6 +222,7 @@ namespace client {
                 _frames.pop_back();
             }
             _mutex_frames.unlock();
+            UpdateMusicStream(backgroundMusic->second);
             auto &entities = current_frame.getEntities();
             const auto& sparseIds = entities.getAllIndices();
             for (auto id : sparseIds) {
