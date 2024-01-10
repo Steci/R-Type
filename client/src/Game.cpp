@@ -202,7 +202,8 @@ namespace client {
             mov = manager.getSystem<S_EventManager>()->getMovement();
             shoot = manager.getSystem<S_EventManager>()->getShoot();
             quit = manager.getSystem<S_EventManager>()->getQuit();
-            infoInteraction(mov, shoot, quit);
+            if (mov != 0 || shoot != 0 || quit != 0)
+                infoInteraction(mov, shoot, quit);
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
