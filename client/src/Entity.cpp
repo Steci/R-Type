@@ -30,8 +30,9 @@ void E_Bullet::render()
         if (this->getComponents().size() > 2) {
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             Rectangle sourceRec = { 127.0f, 0.0f, transform->_size.x, transform->_size.y};
-            printf("SourceRec Infos : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
-            printf("Transform Infos : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
+            printf("------\n");
+            printf("SourceRec : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
+            printf("Transform : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
             DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
         }
     }
