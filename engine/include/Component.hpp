@@ -188,3 +188,31 @@ struct C_EnemyInfo : public Component {
         std::memcpy(&_type, data.data(), sizeof(_type));
     }
 };
+
+struct C_AnimationInfo : public Component {
+    Vec2 _size;
+    int _maxXframe;
+    int _maxYframe;
+    int _speed;
+    C_AnimationInfo(int x, int y, int maxXframe, int maxYframe, int speed) {
+        _size = {x, y};
+        _maxXframe = maxXframe;
+        _maxYframe = maxYframe;
+        _speed = speed;
+    }
+    ~C_AnimationInfo() = default;
+    std::vector<char> serializeToVector() const {
+        std::vector<char> data;
+        data.insert(data.end(), reinterpret_cast<const char*>(&_size), reinterpret_cast<const char*>(&_size) + sizeof(_size));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_maxXframe), reinterpret_cast<const char*>(&_maxXframe) + sizeof(_maxXframe));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_maxYframe), reinterpret_cast<const char*>(&_maxYframe) + sizeof(_maxYframe));
+        data.insert(data.end(), reinterpret_cast<const char*>(&_speed), reinterpret_cast<const char*>(&_speed) + sizeof(_speed));
+        return data;
+    }
+    void deserializeFromVector(const std::vector<char>& data) {
+        std::memcpy(&_size, data.data(), sizeof(_size));
+        std::memcpy(&_maxXframe, data.data() + sizeof(_size), sizeof(_maxXframe));
+        std::memcpy(&_maxYframe, data.data() + sizeof(_size) + sizeof(_maxXframe), sizeof(_maxYframe));
+        std::memcpy(&_speed, data.data() + sizeof(_size) + sizeof(_maxXframe) + sizeof(_maxYframe), sizeof(_speed));
+    }
+};

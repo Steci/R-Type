@@ -226,6 +226,7 @@ E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y, int
     addComponent(std::make_shared<C_Health>(20));
     addComponent(std::make_shared<C_Hitbox>(65, 66));
     addComponent(std::make_shared<C_EnemyInfo>(type));
+    addComponent(std::make_shared<C_AnimationInfo>(65, 66, 7, 0, 10));
 }
 
 void E_Enemy::update()

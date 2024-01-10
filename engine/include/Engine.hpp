@@ -74,18 +74,14 @@ class SparseArray {
         void remove(int id) {
             assert(id < sparse.size() && sparse[id] != -1 && "Invalid ID");
 
-            int denseIndex = sparse[id];
-            int lastIndex = dense.size() - 1;
-            int lastID = indices[lastIndex];
-
-            std::swap(dense[denseIndex], dense[lastIndex]);
-            std::swap(indices[denseIndex], indices[lastIndex]);
-
-            sparse[lastID] = denseIndex;
-            sparse[id] = -1;
-
+            // Remove all traces of the element in dense, sparse, and indices!
+            int index = sparse[id];
+            dense[index] = dense.back();
             dense.pop_back();
+            sparse[id] = -1;
+            indices[index] = indices.back();
             indices.pop_back();
+            sparse[indices[index]] = index;
         }
 
         /**

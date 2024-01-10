@@ -162,7 +162,7 @@ void S_Collision::update()
                         _sparseEntities.remove(denseIndex[index2]);
                     }
                 }
-                }
+            }
             index2++;
         }
         if (typeid(*entity1) == typeid(E_Player)) {
@@ -184,7 +184,7 @@ void S_Collision::update()
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
             if (transform->_position.x <= -100.0) {
-                printf("Enemy %d destroyed\n", denseIndex[index1]);
+                printf("Enemy %d destroyed (POS X:%f Y:%f)\n", denseIndex[index1], transform->_position.x, transform->_position.y);
                 _sparseEntities.remove(denseIndex[index1]);
             }
         }
@@ -255,7 +255,6 @@ void S_Spawner::update()
         int random3 = rand() % (random5 == 1 ? 400 : 600);
         int id = _sparseEntities.add(std::make_shared<E_Enemy>(800, random3, 65.2, 66, random5));
         printf("Creating Enemy ID: %d with type %d\n", id, random2);
-        printf("Pos x: %d, y: %d\n", 800, random3);
     }
 }
 
