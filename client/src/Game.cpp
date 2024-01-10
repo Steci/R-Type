@@ -209,6 +209,17 @@ namespace client {
                 current_frame.clearEntities();
                 // std::cout << "frame tick : " << _frames.back().getTick() << std::endl;
                 current_frame = _frames.back();
+                // bool print = false;
+                // for (auto it : current_frame.getEntities().getAll()) {
+                //     auto& entity = *it;
+                //     if (typeid(entity) == typeid(E_Bullet)) {
+                //         print = true;
+                //         C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
+                //         printf("Bullet Y:%f ", transform->_position.y);
+                //     }
+                // }
+                // if (print)
+                //     printf("\n");
                 _frames.pop_back();
             }
             _mutex_frames.unlock();
@@ -254,21 +265,6 @@ namespace client {
         }
     }
 
-    void Game::testInteraction()
-    {
-        Interaction inter;
-
-        _mutex_frames.lock();
-        _mutex_interactions.lock();
-        if (_frames.size() != 0 && _frames.back().getTick() == 100 && _interactions.size() == 0) {
-            std::cout << "test interaction" << std::endl;
-            inter.setInteraction(1);
-            _interactions.push_back(inter);
-        }
-        _mutex_interactions.unlock();
-        _mutex_frames.unlock();
-    }
-
     Game::~Game() {
         for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
             UnloadTexture(it->second._texture);
@@ -282,7 +278,6 @@ namespace client {
             UnloadTexture(it->second._texture);
             UnloadImage(it->second._image);
         }
-
     }
 
     void Game::infoInteraction(int mov, int shoot, int quit)
@@ -343,6 +338,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
             it += sizeof(bullet);
             auto bulletShared = std::make_shared<E_Bullet>(bullet);
+            // float bulletY = dynamic_cast<C_Transform*>(bulletShared->getComponentOfType(typeid(C_Transform)))->_position.y;
+            // printf("bullet pos y = %f\n", bulletY);
             _entities.add(bulletShared);
         }
         if (isEndMarker(it, serializedData)) {

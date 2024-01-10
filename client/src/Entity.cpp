@@ -25,15 +25,14 @@ void E_Bullet::render()
 {
     if (IsWindowReady() == true) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
-        C_Sprite *spriteComponent = Engine::getComponentRef<C_Sprite>(*this);
 
-        if (transform && spriteComponent) {
-            Texture2D sprite = spriteComponent->_texture;
-            Rectangle sourceRec = { 127.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
-            // Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
-            // Vector2 origin = { 0.0f, 0.0f };
-            DrawTextureRec(sprite, sourceRec, {(float)transform->_position.x, (float)transform->_position.y }, WHITE);
-            // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+        // Check if C_Sprite component exists
+        if (this->getComponents().size() > 2) {
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            Rectangle sourceRec = { 127.0f, 0.0f, transform->_size.x, transform->_size.y};
+            printf("SourceRec Infos : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
+            printf("Transform Infos : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
+            DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
         }
     }
 }
