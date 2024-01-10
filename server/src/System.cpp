@@ -88,7 +88,7 @@ S_AudioManager::S_AudioManager()
     _background_music_game["GAME_OVER"] = LoadMusicStream("./music/Game_over.mp3");
     _background_music_game["THEME"] = LoadMusicStream("./music/Theme_song.mp3");
     _sound_effects["DEAD"] = LoadSound("./music/dead.wav");
-    _sound_effects["SHOOT"] = LoadSound("./music/shoot.wav");;;
+    _sound_effects["SHOOT"] = LoadSound("./music/shoot.wav");
 }
 
 S_AudioManager::~S_AudioManager()
