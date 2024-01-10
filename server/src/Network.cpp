@@ -290,16 +290,3 @@ int server::Network::commandError(std::string data, int client_id) const
         }
     return 0;
 }
-
-// server::Network &server::Network::operator=(const server::Network &other)
-// {
-//     _port = other._port;
-//     _maxClients = other._maxClients;
-//     _isRunning = other._isRunning;
-//     _fd = other._fd;
-//     _maxFd = other._maxFd;
-//     _readFds = other._readFds;
-//     _addr = other._addr;
-//     _clients = other._clients;
-//     return *this;
-// }

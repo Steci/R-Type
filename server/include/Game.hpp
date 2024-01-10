@@ -58,7 +58,7 @@ namespace server
 
         public:
             Game();
-            ~Game();
+            ~Game() = default;
             void run();
             void addInteraction(Interaction interaction) {_mutex.lock();_interaction_client.push_back(interaction);_mutex.unlock();};
             std::vector<std::string> getFunctions() {return _functions;}

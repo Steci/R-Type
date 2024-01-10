@@ -38,31 +38,6 @@ void E_Bullet::render()
     }
 }
 
-std::vector<char> E_Bullet::serializeToVector()
-{
-    std::vector<char> data;
-
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    if (transformComponent) {
-        auto transformData = transformComponent->serializeToVector();
-        data.insert(data.end(), transformData.begin(), transformData.end());
-    }
-
-    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
-    if (damageComponent) {
-        auto damageData = damageComponent->serializeToVector();
-        data.insert(data.end(), damageData.begin(), damageData.end());
-    }
-
-    // C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    // if (hitboxComponent) {
-    //     auto hitboxData = hitboxComponent->serializeToVector();
-    //     data.insert(data.end(), hitboxData.begin(), hitboxData.end());
-    // }
-    data.insert(data.end(), reinterpret_cast<const char*>(&_idCreator), reinterpret_cast<const char*>(&_idCreator) + sizeof(_idCreator));
-    return data;
-}
-
 void E_Bullet::deserializeFromVector(std::vector<char> data) {
     auto it = data.begin();
 
@@ -161,34 +136,6 @@ void E_Player::render()
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
         }
     }
-}
-
-std::vector<char> E_Player::serializeToVector()
-{
-    printf("Player\n");
-    std::vector<char> data;
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
-
-    if (transformComponent) {
-        auto transformData = transformComponent->serializeToVector();
-        data.insert(data.end(), transformData.begin(), transformData.end());
-    }
-    if (healthComponent) {
-        auto healthData = healthComponent->serializeToVector();
-        data.insert(data.end(), healthData.begin(), healthData.end());
-    }
-    if (hitboxComponent) {
-        auto hitboxData = hitboxComponent->serializeToVector();
-        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
-    }
-    if (scoreComponent) {
-        auto scoreData = scoreComponent->serializeToVector();
-        data.insert(data.end(), scoreData.begin(), scoreData.end());
-    }
-    return data;
 }
 
 std::string E_Player::getType() const {
@@ -323,32 +270,6 @@ void E_Enemy::render()
 
 std::string E_Enemy::getType() const {
     return "E_Enemy";
-}
-
-std::vector<char> E_Enemy::serializeToVector() {
-    std::vector<char> data;
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
-
-    if (transformComponent) {
-        auto transformData = transformComponent->serializeToVector();
-        data.insert(data.end(), transformData.begin(), transformData.end());
-    }
-    if (healthComponent) {
-        auto healthData = healthComponent->serializeToVector();
-        data.insert(data.end(), healthData.begin(), healthData.end());
-    }
-    if (hitboxComponent) {
-        auto hitboxData = hitboxComponent->serializeToVector();
-        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
-    }
-    if (enemyInfoComponent) {
-        auto enemyInfoData = enemyInfoComponent->serializeToVector();
-        data.insert(data.end(), enemyInfoData.begin(), enemyInfoData.end());
-    }
-    return data;
 }
 
 void E_Enemy::deserializeFromVector(std::vector<char> data) {
