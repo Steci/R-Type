@@ -310,28 +310,28 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         }
         ++it;
         if (entityType == "E_Player") {
-            player.deserializeFromVector(std::vector<char>(it, it + sizeof(player)));
-            it += sizeof(player);
+            size_t size_player = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_Score);
+            player.deserializeFromVector(std::vector<char>(it, it + size_player));
+            it += sizeof(size_player);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(player);
+            C_Health *health = Engine::getComponentRef<C_Health>(player);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
+            C_Score *score = Engine::getComponentRef<C_Score>(player);
             auto playerShared = std::make_shared<E_Player>(player);
             _entities.add(playerShared);
         } else if (entityType == "E_Enemy") {
-            enemy.deserializeFromVector(std::vector<char>(it, it + sizeof(enemy)));
-            it += sizeof(enemy);
+            size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
+            enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
+            it += sizeof(size_enemy);
             C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
-            printf("enemy pos x = %f, pos y = %f, size x = %f, size y = %f, velocity x = %f, velocity y = %f, animation = %d\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, transform->_velocity.x, transform->_velocity.y, transform->_animation);
-
             C_Health *health = Engine::getComponentRef<C_Health>(enemy);
-            printf("enemy health = %d\n", health->_health);
-
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
-            printf("enemy hitbox x = %f, hitbox y = %f, hitbox time = %d, hitbox status = %d\n", hitbox->_size.x, hitbox->_size.y, hitbox->_time, hitbox->_status);
-
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
-            printf("enemy type : %d\n", ennemyInfo->_type);
-            //auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
-            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, 2);
+            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {
+            // size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
+            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(int);
             bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
             it += sizeof(bullet);
             auto bulletShared = std::make_shared<E_Bullet>(bullet);

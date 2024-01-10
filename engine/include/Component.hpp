@@ -137,9 +137,9 @@ struct C_Sprite : public Component {
  * @brief The C_Hitbox struct represents a component that stores information about a hitbox.
  */
 struct C_Hitbox : public Component {
+    Vec2 _size;
     int _time;
     int _status;
-    Vec2 _size;
     C_Hitbox(int x, int y) {
         _size = {x, y};
         _time = 10;
