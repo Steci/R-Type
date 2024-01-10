@@ -269,7 +269,6 @@ S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick)
 void S_Weapon::shootPlayer(int idCreator)
 {
     if (_tick - _lastTick < 10) {
-        printf("Refused to shoot\n");
         return;
     }
 
@@ -285,12 +284,10 @@ void S_Weapon::shootPlayer(int idCreator)
                     // create bullet with player position info
                     int xpos = transform->_position.x + transform->_size.x;
                     int ypos = transform->_position.y + transform->_size.y / 2;
-                    printf("Player position : %d %d\n", xpos, ypos);
+                    // printf("Player position : %d %d\n", xpos, ypos);
                     float velocity_x = 20;
                     float velocity_y = 0;
-                    printf("Trying to add bullet\n");
                     _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
-                    printf("Shot !\n");
                     _lastTick = _tick;
                 }
             }

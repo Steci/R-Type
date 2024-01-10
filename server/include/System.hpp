@@ -109,9 +109,10 @@ class S_Weapon : public System {
        ~S_Weapon() = default;
        void update();
        void shootPlayer(int idCreator);
+       int getLastTick() {return _lastTick;};
 
    private:
        SparseArray<IEntity> &_sparseEntities;
        int &_tick;
-       int _lastTick;
+       int _lastTick = 0;
 };

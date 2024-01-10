@@ -112,6 +112,11 @@ void server::Game::run()
                     printf("New Player with ID : %d\n", interaction.getClientID());
                     entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
                 }
+                if (interaction.getShoot() == 1){
+                    // shoot
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
+                }
                 if (interaction.getMovement() == 1){
                     // go up
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
@@ -131,12 +136,6 @@ void server::Game::run()
                     // go left
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x -= 8;
-                }
-                if (interaction.getShoot() == 1){
-                    // shoot
-                    printf("Trying to shoot...\n");
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
             }
         }

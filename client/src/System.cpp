@@ -81,14 +81,14 @@ int S_EventManager::getMovement()
 
 int S_EventManager::getShoot()
 {
-    if (IsKeyPressed(KEY_SPACE))
+    if (IsKeyDown(KEY_SPACE))
         return 1;
     return 0;
 }
 
 int S_EventManager::getQuit()
 {
-    if (IsKeyPressed(KEY_ESCAPE))
+    if (IsKeyDown(KEY_ESCAPE))
         return 1;
     return 0;
 }
