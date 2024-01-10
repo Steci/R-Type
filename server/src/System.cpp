@@ -258,13 +258,18 @@ void S_Spawner::update()
     }
 }
 
-S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities)
-   : _sparseEntities(sparseEntities)
+S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick)
+   : _sparseEntities(sparseEntities) , _tick(tick)
 {
 }
 
-void S_Weapon::shoot(int idCreator)
+void S_Weapon::shootPlayer(int idCreator)
 {
+    if (_tick - _lastTick < 50) {
+        printf("Refused to shoot\n");
+        return;
+    }
+
     int i = 0;
     std::vector<int> denseIndex = _sparseEntities.getAllIndices();
 
@@ -280,7 +285,9 @@ void S_Weapon::shoot(int idCreator)
                 float size_y = transform->_size.y;
                 float velocity_x = 10;
                 float velocity_y = 0;
-                _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, size_x, size_y, velocity_x, velocity_y, idCreator));
+                // _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, size_x, size_y, velocity_x, velocity_y, idCreator));
+                printf("Shot !\n");
+                _lastTick = _tick;
             }
         }
         i++;

@@ -94,7 +94,7 @@ void server::Game::run()
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
     manager.addSystem<S_Spawner>(entities);
-    manager.addSystem<S_Weapon>(entities);
+    manager.addSystem<S_Weapon>(entities, _tick);
 
     int numClientID = 0;
 
@@ -114,33 +114,29 @@ void server::Game::run()
                 }
                 if (interaction.getMovement() == 1){
                     // go up
-                    printf("go up\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.y -= 8;
                 }
                 if (interaction.getMovement() == 2){
                     // go right
-                    printf("go right\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x += 8;
                 }
                 if (interaction.getMovement() == 3){
                     // go down
-                    printf("go down\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.y += 8;
                 }
                 if (interaction.getMovement() == 4){
                     // go left
-                    printf("go left\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x -= 8;
                 }
                 if (interaction.getShoot() == 1){
                     // shoot
-                    printf("shoot\n");
+                    printf("Trying to shoot...\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    manager.getSystem<S_Weapon>()->shoot(interaction.getClientID());
+                    manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
             }
         }

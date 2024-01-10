@@ -226,7 +226,7 @@ E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y, int
     addComponent(std::make_shared<C_Health>(20));
     addComponent(std::make_shared<C_Hitbox>(65, 66));
     addComponent(std::make_shared<C_EnemyInfo>(type));
-    addComponent(std::make_shared<C_AnimationInfo>(65, 66, 7, 0, 10));
+    addComponent(std::make_shared<C_AnimationInfo>(65, 66, 7, 0, 8));
 }
 
 void E_Enemy::update()
@@ -276,16 +276,36 @@ void E_Enemy::render()
             }
         } else {
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            C_AnimationInfo *animationInfo = Engine::getComponentRef<C_AnimationInfo>(*this);
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            int animation = transform->_animation;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
-            Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
-            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+
+            int maxXframe = animationInfo->_maxXframe;
+            int maxYframe = animationInfo->_maxYframe;
+
+            Rectangle frameRec = { 0.0f, 0.0f, (float)xSize, (float)ySize };
+
+            // animationInfo->_framesCounter++;
+            // printf("Speed = %d\n", animationInfo->_speed);
+            // printf("60/speed = %d\n", (60 / animationInfo->_speed));
+            // printf("animationInfo->_framesCounter = %d\n", animationInfo->_framesCounter);
+            // if (animationInfo->_framesCounter >= (60 / animationInfo->_speed)) {
+            //     printf("animationInfo->_framesCounter = %d\n", animationInfo->_framesCounter);
+            //     animationInfo->_framesCounter = 0;
+            //     animationInfo->_currentFrame++;
+
+            //     printf("animationInfo->_currentFrame = %d\n", animationInfo->_currentFrame);
+            //     if (animationInfo->_currentFrame > maxXframe) {
+            //         animationInfo->_currentFrame = 0;
+            //     }
+            //     frameRec.x = (float)animationInfo->_currentFrame * (float)xSize;
+            //     printf("frameRec.x = %f\n", frameRec.x);
+            // }
+            DrawTextureRec(sprite, frameRec, {(float)xPos, (float)yPos }, WHITE);
         }
     }
 }

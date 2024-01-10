@@ -105,11 +105,13 @@ class S_EventManager : public System {
 
 class S_Weapon : public System {
    public:
-       S_Weapon(SparseArray<IEntity> &sparseEntities);
+       S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick);
        ~S_Weapon() = default;
        void update();
-       void shoot(int idCreator);
+       void shootPlayer(int idCreator);
 
    private:
        SparseArray<IEntity> &_sparseEntities;
+       int &_tick;
+       int _lastTick;
 };

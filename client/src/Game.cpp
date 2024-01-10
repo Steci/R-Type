@@ -324,7 +324,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Health *health = Engine::getComponentRef<C_Health>(enemy);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
-            printf("enemy type : %d\n", ennemyInfo->_type);
+            // printf("enemy type : %d\n", ennemyInfo->_type);
             //auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, 2);
             _entities.add(enemyShared);

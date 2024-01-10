@@ -191,6 +191,8 @@ struct C_AnimationInfo : public Component {
     Vec2 _size;
     int _maxXframe;
     int _maxYframe;
+    int _framesCounter = 0;
+    int _currentFrame = 0;
     int _speed;
     C_AnimationInfo(int x, int y, int maxXframe, int maxYframe, int speed) {
         _size = {x, y};
@@ -211,6 +213,5 @@ struct C_AnimationInfo : public Component {
         std::memcpy(&_size, data.data(), sizeof(_size));
         std::memcpy(&_maxXframe, data.data() + sizeof(_size), sizeof(_maxXframe));
         std::memcpy(&_maxYframe, data.data() + sizeof(_size) + sizeof(_maxXframe), sizeof(_maxYframe));
-        std::memcpy(&_speed, data.data() + sizeof(_size) + sizeof(_maxXframe) + sizeof(_maxYframe), sizeof(_speed));
     }
 };
