@@ -295,9 +295,6 @@ namespace client {
 
 void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     auto it = serializedData.begin();
-    Vec2 pos;
-    Vec2 size;
-    Vec2 velocity;
     E_Player player(0, 0, 0, 0);
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
@@ -322,10 +319,17 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             enemy.deserializeFromVector(std::vector<char>(it, it + sizeof(enemy)));
             it += sizeof(enemy);
             C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
+            printf("enemy pos x = %f, pos y = %f, size x = %f, size y = %f, velocity x = %f, velocity y = %f, animation = %d\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, transform->_velocity.x, transform->_velocity.y, transform->_animation);
+
             C_Health *health = Engine::getComponentRef<C_Health>(enemy);
+            printf("enemy health = %d\n", health->_health);
+
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
+            printf("enemy hitbox x = %f, hitbox y = %f, hitbox time = %d, hitbox status = %d\n", hitbox->_size.x, hitbox->_size.y, hitbox->_time, hitbox->_status);
+
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
-            printf("enemy type : %d\n", ennemyInfo->_type);
+            printf("enemy type = %d\n\n", ennemyInfo->_type);
+
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {

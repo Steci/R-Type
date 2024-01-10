@@ -293,18 +293,22 @@ std::vector<char> E_Enemy::serializeToVector() {
 
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();
+        printf("pos x = %f, pos y = %f, size x = %f, size y = %f, vel x = %f, vel y = %f, animation = %d\n", transformComponent->_position.x, transformComponent->_position.y, transformComponent->_size.x, transformComponent->_size.y, transformComponent->_velocity.x, transformComponent->_velocity.y, transformComponent->_animation);
         data.insert(data.end(), transformData.begin(), transformData.end());
     }
     if (healthComponent) {
         auto healthData = healthComponent->serializeToVector();
+        printf("health = %d\n", healthComponent->_health);
         data.insert(data.end(), healthData.begin(), healthData.end());
     }
     if (hitboxComponent) {
         auto hitboxData = hitboxComponent->serializeToVector();
+        printf("hitbox x = %f, hitbox y = %f, time = %d, status = %d\n", hitboxComponent->_size.x, hitboxComponent->_size.y, hitboxComponent->_time, hitboxComponent->_status);
         data.insert(data.end(), hitboxData.begin(), hitboxData.end());
     }
     if (enemyInfoComponent) {
         auto enemyInfoData = enemyInfoComponent->serializeToVector();
+        printf("type = %d\n\n", enemyInfoComponent->_type);
         data.insert(data.end(), enemyInfoData.begin(), enemyInfoData.end());
     }
     return data;
@@ -315,7 +319,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
-        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity) + sizeof(transformComponent->_animation);
         std::vector<char> transformData(it, it + transformSize);
         transformComponent->deserializeFromVector(transformData);
         it += transformSize;
@@ -331,7 +335,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
     if (hitboxComponent) {
-        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_time) + sizeof(hitboxComponent->_status);
         std::vector<char> hitboxData(it, it + hitboxSize);
         hitboxComponent->deserializeFromVector(hitboxData);
         it += hitboxSize;
@@ -342,6 +346,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
         std::vector<char> enemyInfoData(it, it + enemyInfoSize);
         enemyInfoComponent->deserializeFromVector(enemyInfoData);
+        printf("Enemy type inside: %d\n", enemyInfoComponent->_type);
         it += enemyInfoSize;
     }
 }
