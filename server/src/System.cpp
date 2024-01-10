@@ -173,33 +173,16 @@ void S_Weapon::shootPlayer(int idCreator)
     std::vector<int> denseIndex = _sparseEntities.getAllIndices();
 
     for (auto& entity : _sparseEntities.getAll()) {
-        try {
-            if (typeid(*entity) == typeid(E_Player)) {
-                C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
-
-                if (idCreator == denseIndex[i]) {
-                    // create bullet with player position info
-                    int xpos = transform->_position.x + transform->_size.x;
-                    int ypos = transform->_position.y + transform->_size.y / 2;
-                    // printf("Player position : %d %d\n", xpos, ypos);
-                    float velocity_x = 20;
-                    float velocity_y = 0;
-                    int id = _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
-                    printf("Creating Bullet ID: %d\n", id);
-                    const auto& sparseIds = _sparseEntities.getAllIndices();
-                    int tmp = 0;
-                    for (auto id_tmp : sparseIds) {
-                        printf("ID: %d\n", id_tmp);
-                        tmp += 1;
-                    }
-                    printf("Total: %d\n", tmp);
-                    _lastTick = _tick;
-                }
-            }
-        }
-        catch (std::exception& e) {
-            printf("Exception caught : %s\n", e.what());
-            continue;
+        if (idCreator == denseIndex[i]) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+            // create bullet with player position info
+            int xpos = transform->_position.x + transform->_size.x;
+            int ypos = transform->_position.y + transform->_size.y / 2;
+            // printf("Player position : %d %d\n", xpos, ypos);
+            float velocity_x = 20;
+            float velocity_y = 0;
+            _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
+            _lastTick = _tick;
         }
         i++;
     }
