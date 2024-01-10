@@ -307,7 +307,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
-        std::memcpy(&_tick, &it, sizeof(_tick));
+        _tick = *reinterpret_cast<const int*>(&(*it));
+        // printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
@@ -318,6 +319,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         }
         ++it;
         if (entityType == "E_Player") {
+            // printf("deserialize player\n");
             size_t size_player = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_Score);
             player.deserializeFromVector(std::vector<char>(it, it + size_player));
             it += sizeof(size_player);
@@ -328,6 +330,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             auto playerShared = std::make_shared<E_Player>(player);
             _entities.add(playerShared);
         } else if (entityType == "E_Enemy") {
+            // printf("deserialize enemy\n");
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
             it += sizeof(size_enemy);
@@ -338,6 +341,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {
+            // printf("deserialize bullet\n");
             size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
             bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
             it += sizeof(bullet);
@@ -345,6 +349,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             _entities.add(bulletShared);
         }
         if (isEndMarker(it, serializedData)) {
+            printf("\n");
             break;
         }
     }
