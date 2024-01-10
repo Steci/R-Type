@@ -13,6 +13,7 @@ E_Bullet::E_Bullet(int damage, int position_x, int position_y, float size_x, flo
 {
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, velocity_x, velocity_y));
     addComponent(std::make_shared<C_Damage>(damage));
+    addComponent(std::make_shared<C_Hitbox>(size_x, size_y));
     _idCreator = idCreator;
 }
 
@@ -51,11 +52,11 @@ std::vector<char> E_Bullet::serializeToVector()
         data.insert(data.end(), damageData.begin(), damageData.end());
     }
 
-    // C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    // if (hitboxComponent) {
-    //     auto hitboxData = hitboxComponent->serializeToVector();
-    //     data.insert(data.end(), hitboxData.begin(), hitboxData.end());
-    // }
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        auto hitboxData = hitboxComponent->serializeToVector();
+        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
+    }
     data.insert(data.end(), reinterpret_cast<const char*>(&_idCreator), reinterpret_cast<const char*>(&_idCreator) + sizeof(_idCreator));
     return data;
 }

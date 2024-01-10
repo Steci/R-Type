@@ -27,13 +27,14 @@ void E_Bullet::render()
         C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
         C_Sprite *spriteComponent = Engine::getComponentRef<C_Sprite>(*this);
         if (transform && spriteComponent) {
-            transform->_position.x += transform->_velocity.x;
-            transform->_position.y += transform->_velocity.y;
             Texture2D sprite = spriteComponent->_texture;
             Rectangle sourceRec = { 0.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
-            Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            printf("POSITION X = %d\n", transform->_position.x);
+            printf("POSITION Y = %d\n", transform->_position.y);
+            // Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
+            // Vector2 origin = { 0.0f, 0.0f };
+            DrawTextureRec(sprite, sourceRec, {(float)transform->_position.x, (float)transform->_position.y }, WHITE);
+            // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
         }
     }
 }
@@ -81,13 +82,13 @@ void E_Bullet::deserializeFromVector(std::vector<char> data) {
         damageComponent->deserializeFromVector(damageData);
         it += damageSize;
     }
-    // C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    // if (hitboxComponent) {
-    //     size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
-    //     std::vector<char> hitboxData(it, it + hitboxSize);
-    //     hitboxComponent->deserializeFromVector(hitboxData);
-    //     it += hitboxSize;
-    // }
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        std::vector<char> hitboxData(it, it + hitboxSize);
+        hitboxComponent->deserializeFromVector(hitboxData);
+        it += hitboxSize;
+    }
     std::memcpy(&_idCreator, data.data() + sizeof(C_Transform) + sizeof(C_Damage), sizeof(_idCreator));
 }
 

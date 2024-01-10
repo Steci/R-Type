@@ -234,6 +234,14 @@ namespace client {
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                             Engine::setSpriteTexture(tmpEntity, infos._texture);
                         }
+                    } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
+                        auto it = _utils_sprites.find(1);
+                        if (it != _utils_sprites.end()) {
+                            auto infos = it->second;
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                            Engine::setSpriteTexture(tmpEntity, infos._texture);
+                        }
                     }
                     // std::cout << "entity pos x: " << tmpEntity.getComponentOfType(typeid(C_Transform))._position.x << " y: " << tmpEntity.getComponentOfType(typeid(C_Transform))->position_y << std::endl;
                     // printf("pos x = %f, pos y = %f\n", Engine::getComponentRef<C_Transform>(tmpEntity)->_position.x, Engine::getComponentRef<C_Transform>(tmpEntity)->_position.y);
@@ -330,8 +338,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {
-            // size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
-            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(int);
+            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
             bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
             it += sizeof(bullet);
             auto bulletShared = std::make_shared<E_Bullet>(bullet);

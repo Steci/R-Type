@@ -158,8 +158,8 @@ void S_Collision::update()
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
 
-                        _sparseEntities.remove(denseIndex[index1]);
-                        _sparseEntities.remove(denseIndex[index2]);
+                        // _sparseEntities.remove(denseIndex[index1]);
+                        // _sparseEntities.remove(denseIndex[index2]);
                     }
                 }
             }
@@ -265,7 +265,7 @@ S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick)
 
 void S_Weapon::shootPlayer(int idCreator)
 {
-    if (_tick - _lastTick < 50) {
+    if (_tick - _lastTick < 20) {
         printf("Refused to shoot\n");
         return;
     }
@@ -279,13 +279,12 @@ void S_Weapon::shootPlayer(int idCreator)
 
             if (idCreator == denseIndex[i]) {
                 // create bullet with player position info
-                float xpos = transform->_position.x;
-                float ypos = transform->_position.y;
-                float size_x = transform->_size.x;
-                float size_y = transform->_size.y;
+                int xpos = transform->_position.x + transform->_size.x;
+                int ypos = transform->_position.y + transform->_size.y / 2;
+                printf("Player position : %d %d\n", xpos, ypos);
                 float velocity_x = 10;
                 float velocity_y = 0;
-                // _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, size_x, size_y, velocity_x, velocity_y, idCreator));
+                _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
                 printf("Shot !\n");
                 _lastTick = _tick;
             }
@@ -303,7 +302,6 @@ void S_Weapon::update()
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Bullet)) {
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
-            C_Sprite* sprite = Engine::getComponentRef<C_Sprite>(*entity);
 
             transform->_position.x += transform->_velocity.x;
             transform->_position.y += transform->_velocity.y;
