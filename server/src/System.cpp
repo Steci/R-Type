@@ -196,7 +196,7 @@ void S_Collision::update()
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
-                printf("Bullet %d destroyed\n", denseIndex[index1]);
+                // printf("Bullet %d destroyed\n", denseIndex[index1]);
                 _sparseEntities.remove(denseIndex[index1]);
             }
         }
