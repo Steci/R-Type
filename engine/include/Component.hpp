@@ -43,9 +43,9 @@ struct C_Transform : public Component {
     C_Transform(int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
         _position = {position_x, position_y};
         _size = {size_x, size_y};
-        _animation = 0;
         _velocity.x = velocity_x;
         _velocity.y = velocity_y;
+        _animation = 0;
     }
     ~C_Transform() = default;
     std::vector<char> serializeToVector() const {
@@ -55,6 +55,7 @@ struct C_Transform : public Component {
         std::vector<char> velocity = _velocity.serializeToVector();
         data.insert(data.end(), position.begin(), position.end());
         data.insert(data.end(), size.begin(), size.end());
+        data.insert(data.end(), velocity.begin(), velocity.end());
         data.insert(data.end(), reinterpret_cast<const char*>(&_animation), reinterpret_cast<const char*>(&_animation) + sizeof(_animation));
         return data;
     }
@@ -147,13 +148,14 @@ struct C_Hitbox : public Component {
     ~C_Hitbox() = default;
     std::vector<char> serializeToVector() const {
         std::vector<char> data;
-        data.insert(data.end(), reinterpret_cast<const char*>(&_size), reinterpret_cast<const char*>(&_size) + sizeof(_size));
+        std::vector<char> size = _size.serializeToVector();
+        data.insert(data.end(), size.begin(), size.end());
         data.insert(data.end(), reinterpret_cast<const char*>(&_time), reinterpret_cast<const char*>(&_time) + sizeof(_time));
         data.insert(data.end(), reinterpret_cast<const char*>(&_status), reinterpret_cast<const char*>(&_status) + sizeof(_status));
         return data;
     }
     void deserializeFromVector(const std::vector<char>& data) {
-        std::memcpy(&_size, data.data(), sizeof(_size));
+        _size.deserializeFromVector(std::vector<char>(data.begin(), data.begin() + sizeof(_size)));
         std::memcpy(&_time, data.data() + sizeof(_size), sizeof(_time));
         std::memcpy(&_status, data.data() + sizeof(_size) + sizeof(_time), sizeof(_status));
     }
