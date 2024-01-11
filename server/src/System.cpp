@@ -35,70 +35,113 @@ bool S_Collision::checkCollision(C_Transform* transform1, C_Transform* transform
 
 void S_Collision::update()
 {
-    std::vector<std::shared_ptr<IEntity>> &entities = _sparseEntities.getAll();
-
-    for (auto& entity1 : entities) {
-        for (auto& entity2 : entities) {
+    for (auto& entity1 : _sparseEntities.getAll()) {
+        printf("Before line 1\n");
+        for (auto& entity2 : _sparseEntities.getAll()) {
+            printf("Before line 2\n");
             if (entity1 != entity2) {
+                printf("Before line 3\n");
+                // print ALL the info about the entities
+                // print the denseIndex of the entities
+                for (auto& entity : _sparseEntities.getAll()) {
+                    printf("Entity ID: %d\n", entity->getId());
+                }
+                printf("start printing specific\n");
+                printf("Entity1 type: %s\n", typeid(*entity1).name());
+                printf("Entity1 ID: %d\n", entity1->getId());
+                printf("Entity2 ID: %d\n", entity2->getId());
+                printf("Entity1 Type: %s\n", entity1->getType().c_str());
+                printf("Entity2 Type: %s\n", entity2->getType().c_str());
                 C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
+                printf("Before line 4\n");
                 C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
+                printf("Before line 5\n");
                 C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+                printf("Before line 6\n");
                 C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
+                printf("Before line 7\n");
 
                 if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
+                    printf("Before line 8\n");
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
+                        printf("Before line 9\n");
                         C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
+                        printf("Before line 10\n");
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
 
+                        printf("Before line 11\n");
                         transform1->_position.x -= 50;
+                        printf("Before line 12\n");
                         _sparseEntities.remove(entity2->getId());
+                        printf("After line 12\n");
                     }
                 }
-
-                if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
+                else if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
+                    printf("Before line 13\n");
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
+                        printf("Before line 14\n");
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
+                        printf("Before line 15\n");
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
 
-                        // printf("Bullet ID: %d collided with Enemy ID: %d\n", index1, index2);
+                        printf("Before line 16\n");
                         _sparseEntities.remove(entity1->getId());
+                        printf("Before line 17\n");
                         _sparseEntities.remove(entity2->getId());
+                        printf("After line 17\n");
                     }
                 }
             }
         }
         if (typeid(*entity1) == typeid(E_Player)) {
+            printf("Before line 18\n");
             // check if player is leaving screenWidth or screenHeight
             C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
+            printf("Before line 19\n");
             C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
 
+            printf("Before line 20\n");
             if (transform1->_position.x < 0)
                 transform1->_position.x = 0;
+            printf("Before line 21\n");
             if (transform1->_position.x + hitbox1->_size.x > screenWidth)
                 transform1->_position.x = screenWidth - hitbox1->_size.x;
+            printf("Before line 22\n");
             if (transform1->_position.y < 0)
                 transform1->_position.y = 0;
+            printf("Before line 23\n");
             if (transform1->_position.y + hitbox1->_size.y > screenHeight)
                 transform1->_position.y = screenHeight - hitbox1->_size.y;
+            printf("After line 23\n");
         }
         if (typeid(*entity1) == typeid(E_Enemy)) {
+            printf("Before line 24\n");
             // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
+            printf("Before line 25\n");
             if (transform->_position.x <= -100.0) {
+                printf("Before line 26\n");
                 int id = entity1->getId();
                 printf("Enemy %d destroyed (POS X:%f Y:%f)\n", id, transform->_position.x, transform->_position.y);
+                printf("Before line 27\n");
                 _sparseEntities.remove(id);
+                printf("After line 27\n");
             }
         }
         else if (typeid(*entity1) == typeid(E_Bullet)) {
+            printf("Before line 28\n");
             // Destroy bullet if it leaves the screen
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
+            printf("Before line 29\n");
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
+                printf("Before line 30\n");
                 // printf("Bullet %d destroyed\n", entity1->getId());
                 printf("Bullet %d destroyed\n", entity1->getId());
+                printf("Before line 31\n");
                 _sparseEntities.remove(entity1->getId());
+                printf("After line 31\n");
             }
         }
     }
