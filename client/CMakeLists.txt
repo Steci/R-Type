@@ -20,3 +20,7 @@ target_link_libraries(client_build PRIVATE raylib)
 target_link_libraries(client_build PRIVATE EngineLib)
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
+
+add_custom_command(TARGET client_build POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
+)
