@@ -43,7 +43,7 @@ int client::Network::fillSocket()
             std::cerr << "Error: socket creation failed" << std::endl;
             return(84);
         }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
             return(84);
         }
@@ -115,7 +115,13 @@ int client::Network::connectCommand()
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #ifdef linux
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
+        #ifdef _WIN64
+            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
         if (server != -1) {
             std::cout << "Info received" << std::endl;
             receiveConnection.deserializeConnection(receiveData);
