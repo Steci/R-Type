@@ -17,7 +17,7 @@ class E_Bullet : public Entity {
         void update() override {};
         void render() override;
         std::string getType() const override;
-        //std::vector<char> serializeToVector() override {};
+        std::vector<char> serializeToVector() override {return std::vector<char>();};
         void deserializeFromVector(std::vector<char> data) override;
         int getIdCreator() const { return _idCreator; };
 
@@ -31,7 +31,7 @@ class E_Player : public Entity {
         void update() override;
         void render() override;
         std::string getType() const override;
-        //std::vector<char> serializeToVector() override {};
+        std::vector<char> serializeToVector() override {return std::vector<char>();};
         void deserializeFromVector(std::vector<char> data) override;
 };
 
@@ -41,6 +41,6 @@ class E_Enemy : public Entity {
         void update() override;
         void render() override;
         std::string getType() const override;
-        //std::vector<char> serializeToVector() override {};
+        std::vector<char> serializeToVector() override {return std::vector<char>();};
         void deserializeFromVector(std::vector<char> data) override;
 };

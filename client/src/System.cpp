@@ -32,15 +32,15 @@ void S_Renderer::render()
         ClearBackground(RAYWHITE);
 
         // Parallax Draw
-        for (int i = 0; i < _parallax.getBackgrounds().size(); i++) {
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
-        }
+    for (int i = 0; i < _parallax.getBackgrounds().size(); i++) {
+        DrawTextureEx(_parallax.getBackgrounds()[i], Vector2{_parallax.getScrolling()[i], 0}, 0.0f, _parallax.getScale(), WHITE);
+        DrawTextureEx(_parallax.getBackgrounds()[i], Vector2{(_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0}, 0.0f, _parallax.getScale(), WHITE);
+    }
 
-        for (auto& entity : _entities) {
-            entity->render();
-        }
-        _parallax.update();
+    for (auto& entity : _entities) {
+        entity->render();
+    }
+    _parallax.update();
     EndDrawing();
 }
 
