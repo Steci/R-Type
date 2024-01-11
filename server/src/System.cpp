@@ -91,7 +91,7 @@ void S_Collision::update()
                 _sparseEntities.remove(id);
             }
         }
-        if (typeid(*entity1) == typeid(E_Bullet)) {
+        else if (typeid(*entity1) == typeid(E_Bullet)) {
             // Destroy bullet if it leaves the screen
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 

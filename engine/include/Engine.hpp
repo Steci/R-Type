@@ -96,8 +96,10 @@ class SparseArray {
             // SparseArray<T> tmp;
             // tmp.insert(dense.)
             std::vector<std::shared_ptr<T>> temp;
-            temp.insert(temp.end(), dense.begin(), dense.begin() + index);
-            temp.insert(temp.end(), dense.begin() + index + 1, dense.end());
+            if (index > 0 && index < dense.size())
+                temp.insert(temp.end(), dense.begin(), dense.begin() + index);
+            if (index + 1 < dense.size())
+                temp.insert(temp.end(), dense.begin() + index + 1, dense.end());
             dense = std::move(temp);
             // std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
             sparse[id] = -1;
