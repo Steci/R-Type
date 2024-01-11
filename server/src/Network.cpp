@@ -79,6 +79,9 @@ void server::Network::run(Game *game)
     Interaction interaction;
     std::string message;
     std::vector<char> buffer(1024);
+    std::vector<Game> games;
+    std::vector<int> idNotUsableGame;
+    std::map<int, std::thread> threads;
 
     while(_isRunning) {
         client = 0;
@@ -90,6 +93,18 @@ void server::Network::run(Game *game)
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
         if (id != 0 && id != -1) {
+            // if (interaction.getCreateGame() == 1) {
+            //     for (auto client = _clients.begin(); client != _clients.end(); client++) {
+            //         if (client->getId() == connect.getId()) {
+            //             Game gameTmp;
+            //             gameTmp.setGameId(CreateGame(idNotUsableGame));
+            //             idNotUsableGame.push_back(gameTmp.getGameId());
+            //             games.push_back(gameTmp);
+            //             threads[gameTmp.getGameId()] = std::thread(&Game::run, &games.back());
+
+            //         }
+            //     }
+            // }
             manageClient(buffer, id, game);
         } else if (id == 0) {
             interaction.setClientID(connect.getId());
@@ -104,6 +119,19 @@ void server::Network::run(Game *game)
         //         manageMessage(resData, id, game);
         // }
     }
+}
+
+int server::Network::CreateGame(std::vector<int> idNotUsableGame)
+{
+    int id = 0;
+
+    for (int i = 0; i < _maxClients; i++) {
+        if (std::find(idNotUsableGame.begin(), idNotUsableGame.end(), i) == idNotUsableGame.end()) {
+            id = i;
+            break;
+        }
+    }
+    return id;
 }
 
 void server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)

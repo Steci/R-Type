@@ -80,6 +80,7 @@ void client::Network::run(Game *game)
     int server = 0;
     std::vector<char> buffer(1024);
     client::Serialize convert;
+    std::vector<Game> games;
 
     while(_isRunning) {
         server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
