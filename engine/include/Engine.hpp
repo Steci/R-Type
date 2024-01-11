@@ -59,11 +59,16 @@ class SparseArray {
             if (sparse[id] == -1) {
                 sparse[id] = dense.size();
                 dense.push_back(std::move(element));
-                indices.push_back(id);
             } else {
                 // Replace if already exists
                 dense[sparse[id]] = std::move(element);
             }
+            // print all the sparse nicely
+            printf("After Addition\n");
+            for (int i = 0; i < sparse.size(); i++) {
+                printf("%d[%d], ", i, sparse[i]);
+            }
+            printf("\n");
             return id;
         }
 
@@ -76,19 +81,39 @@ class SparseArray {
          * @param id The ID of the element to be removed.
          */
         void remove(int id) {
-            assert(id < sparse.size() && sparse[id] != -1 && "Invalid ID");
-            printf("iDDDDDDDDD = %d\n", id);
+            printf("\nREMOVE|| ID : %d\tSIZE :%d\tSPARSE[ID] : %d\n", id, sparse.size(), sparse[id]);
+            printf("Dense IDS BEFORE DELETION\n");
+            for (int i = 0; i < dense.size(); i++) {
+                if (dense[i] != nullptr)
+                    printf("%d[%d], ", i, dense[i]->getId());
+                else
+                    printf("%d[nullptr], ", i);
+            }
+            assert(id < sparse.size() && "Invalid ID");
             // Remove all traces of the element in dense, sparse, and indices!
             int index = sparse[id];
-            printf("index remove = %d\n", index);
-            dense[index] = dense.back();
-            dense.pop_back();
-            std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
+            // printf("index remove = %d\n", index);
+            // SparseArray<T> tmp;
+            // tmp.insert(dense.)
+            std::vector<std::shared_ptr<T>> temp;
+            temp.insert(temp.end(), dense.begin(), dense.begin() + index);
+            temp.insert(temp.end(), dense.begin() + index + 1, dense.end());
+            dense = std::move(temp);
+            // std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
             sparse[id] = -1;
-            indices[index] = indices.back();
-            indices.pop_back();
-            sparse[indices[index]] = index;
-            //printf("sparse[indices[index]] = %d\n", sparse[indices[index]]);
+            printf("After Deletion\n");
+            for (int i = 0; i < sparse.size(); i++) {
+                printf("%d[%d], ", i, sparse[i]);
+            }
+            printf("\n");
+            printf("Dense IDS\n");
+            for (int i = 0; i < dense.size(); i++) {
+                if (dense[i] != nullptr)
+                    printf("%d[%d], ", i, dense[i]->getId());
+                else
+                    printf("%d[nullptr], ", i);
+            }
+            printf("\n------------\n");
         }
 
         /**
@@ -122,7 +147,6 @@ class SparseArray {
         void clearEntities() {
             dense.clear();
             sparse.clear();
-            indices.clear();
         }
 
         /**
@@ -143,15 +167,6 @@ class SparseArray {
             return sparse;
         }
 
-        /**
-         * @brief Gets the all the elements in the dense array.
-         *
-         * @return The arrary of indices
-         */
-        const std::vector<int>& getAllIndices() const {
-            return indices;
-        }
-
         std::vector<char> serializeToVector(const std::string& entityType) {
             std::vector<char> data;
 
@@ -170,5 +185,4 @@ class SparseArray {
     private:
         std::vector<std::shared_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'
-        std::vector<int> indices; // Stores original IDs
 };

@@ -67,6 +67,8 @@ class IEntity {
 
         virtual std::vector<char> serializeToVector() = 0;
         virtual void deserializeFromVector(std::vector<char> data) = 0;
+        virtual void setId(int id) = 0;
+        virtual int getId() const = 0;
 };
 
 class Entity : public IEntity {
@@ -99,8 +101,15 @@ class Entity : public IEntity {
             }
             return nullptr;
         }
+        void setId(int id) {
+            _id = id;
+        }
+        int getId() const {
+            return _id;
+        }
 
     private:
+        int _id;
         std::vector<std::shared_ptr<Component>> components;
 };
 
