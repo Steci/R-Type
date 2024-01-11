@@ -166,26 +166,21 @@ void S_Weapon::shootPlayer(int idCreator)
     if (_tick - _lastTick < 10) {
         return;
     }
-
-    int i = 0;
-
-    for (auto& entity : _sparseEntities.getAll()) {
-        if (idCreator == entity->getId()) {
-            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
-            // create bullet with player position info
-            int xpos = transform->_position.x + transform->_size.x;
-            int ypos = transform->_position.y + transform->_size.y / 2;
-            // printf("Player position : %d %d\n", xpos, ypos);
-            float velocity_x = 20;
-            float velocity_y = 0;
-            std::shared_ptr<E_Bullet> bullet = std::make_shared<E_Bullet>(0, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator);
-            int id = _sparseEntities.add(bullet);
-            bullet->setId(id);
-            printf("Creating Bullet ID: %d\n", id);
-            _lastTick = _tick;
-        }
-        i++;
+    IEntity& entity = _sparseEntities.get(idCreator);
+    if (&entity == nullptr) {
+        return;
     }
+    C_Transform* transform = Engine::getComponentRef<C_Transform>(entity);
+    // create bullet with player position info
+    int xpos = transform->_position.x + transform->_size.x;
+    int ypos = transform->_position.y + transform->_size.y / 2;
+    // printf("Player position : %d %d\n", xpos, ypos);
+    float velocity_x = 20;
+    float velocity_y = 0;
+    std::shared_ptr<E_Bullet> bullet = std::make_shared<E_Bullet>(0, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator);
+    int id = _sparseEntities.add(bullet);
+    bullet->setId(id);
+    _lastTick = _tick;
 }
 
 void S_Weapon::update()
