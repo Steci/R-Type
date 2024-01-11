@@ -5,32 +5,51 @@ include(FetchContent)
 
 # VCPKG
 FetchContent_Declare(
-  vcpkg
-  GIT_REPOSITORY https://github.com/microsoft/vcpkg
-  GIT_TAG c9919121dde6f61c0436adda94624636e041226b
+    vcpkg
+    URL https://github.com/microsoft/vcpkg/archive/refs/tags/2023.12.12.zip
+    URL_MD5 E77B826B0579D653150BDA55643B4143
 )
+
+message(STATUS "Fetching VCPKG...")
+set(FETCHCONTENT_QUIET OFF) 
+set(FETCHCONTENT_SOURCE_DIR_CHANGE_WHEN_HASH_MATCH TRUE)
+FetchContent_MakeAvailable(vcpkg)
+
+message(STATUS "Install VCPKG...")
+if(WIN32)
+    execute_process(COMMAND "${vcpkg_SOURCE_DIR}/bootstrap-vcpkg.bat")
+    execute_process(COMMAND "${vcpkg_SOURCE_DIR}/vcpkg.exe" install)
+else()
+    execute_process(COMMAND "${vcpkg_SOURCE_DIR}/bootstrap-vcpkg.sh")
+    execute_process(COMMAND "${vcpkg_SOURCE_DIR}/vcpkg" install)
+endif()
+message(STATUS "SETTING UP ENVIRONMENT...")
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 20)
 set(GRAPHICS GRAPHICS_API_OPENGL_43)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(OpenGL_GL_PREFERENCE GLVND)
-set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+set(CMAKE_TOOLCHAIN_FILE "${vcpkg_SOURCE_DIR}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
 
 if(WIN32)
     set(CMAKE_GENERATOR "Visual Studio 16 2019" CACHE STRING "CMake generator" FORCE)
-    set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
     set(VCPKG_TARGET_TRIPLET x64-windows)
-    set(CMAKE_PREFIX_PATH "$ENV{VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}")
-    set(raylib_DIR "$ENV{VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/share/raylib/cmake")
     add_compile_options(-Wall)
 else()
     set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
-    set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRING "")
     set(VCPKG_TARGET_TRIPLET x64-linux)
     add_compile_options(-Wall -Wextra -g3)
 endif()
 
+message(STATUS "FIND PACKAGES...")
+set(CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+
+find_package(fmt CONFIG REQUIRED)
+find_package(raylib CONFIG REQUIRED)
+
+message(STATUS "START PROJECTS SETUP...")
 add_subdirectory(engine)
 add_subdirectory(server)
 add_subdirectory(client)
