@@ -31,26 +31,16 @@ namespace client {
 
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
-        manager.addSystem<S_AudioManager>();
         createTextures();
         //detruire toutes les texture à la fin du jeu
-
-        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
-        PlayMusicStream(backgroundMusic->second);
-        //detruire toutes les music à la fin du jeu
         while (1) {
             manager.getSystem<S_Renderer>()->clearEntities();
             // printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
             mov = manager.getSystem<S_EventManager>()->getMovement();
             shoot = manager.getSystem<S_EventManager>()->getShoot();
             quit = manager.getSystem<S_EventManager>()->getQuit();
-            if (mov != 0 || shoot != 0 || quit != 0) {
-                if (shoot != 0) {
-                    auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-                    PlaySound(effect->second);
-                }
+            if (mov != 0 || shoot != 0 || quit != 0)
                 infoInteraction(mov, shoot, quit);
-            }
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
@@ -70,44 +60,54 @@ namespace client {
                 _frames.pop_back();
             }
             _mutex_frames.unlock();
-            UpdateMusicStream(backgroundMusic->second);
             auto &entities = current_frame.getEntities();
-            const auto& sparseIds = entities.getAllIndices();
-            for (auto id : sparseIds) {
-                if (id != -1) {
+            const auto& sparseIds = entities.getSparse();
+            for (int id = 0; id < sparseIds.size(); ++id) {
+                if (sparseIds[id] != -1) {
                     auto& tmpEntity = entities.get(id);
+                    std::cout << "Debug: tmpEntity is obtained." << std::endl;
                     if (typeid(tmpEntity) == typeid(E_Player)) {
-                        auto it = _player_sprites.find(id);
-                        if (it != _player_sprites.end()) {
-                            auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                            C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
-                            sprite->setupByTexture(infos._texture);
-                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        }
+                        printf("PLAYER ID: %d\n", sparseIds[id]);
+                        std::cout << "Debug: tmpEntity is of type E_Player." << std::endl;
+                        auto it = _player_sprites.find(sparseIds[id]);
+                        std::cout << "Debug: Player sprite found." << std::endl;
+                        auto infos = it->second;
+                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
+                        C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
+                        sprite->setupByTexture(infos._texture);
+                        std::cout << "Debug: Sprite setup with texture." << std::endl;
+                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        std::cout << "Debug: Transform size set." << std::endl;
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
+                        std::cout << "Debug: tmpEntity is of type E_Enemy." << std::endl;
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
-                        if (it != _ennemy_sprites.end()) {
-                            auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                            Engine::setSpriteTexture(tmpEntity, infos._texture);
-                        }
+                        std::cout << "Debug: Enemy sprite found." << std::endl;
+                        auto infos = it->second;
+                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
+                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        std::cout << "Debug: Transform size set." << std::endl;
+                        Engine::setSpriteTexture(tmpEntity, infos._texture);
+                        std::cout << "Debug: Sprite texture set." << std::endl;
                     } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
+                        std::cout << "Debug: tmpEntity is of type E_Bullet." << std::endl;
                         auto it = _utils_sprites.find(1);
-                        if (it != _utils_sprites.end()) {
-                            auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                            Engine::setSpriteTexture(tmpEntity, infos._texture);
-                        }
+                        std::cout << "Debug: Utils sprite found." << std::endl;
+                        auto infos = it->second;
+                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
+                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        std::cout << "Debug: Transform size set." << std::endl;
+                        Engine::setSpriteTexture(tmpEntity, infos._texture);
+                        std::cout << "Debug: Sprite texture set." << std::endl;
                     }
-                    // std::cout << "entity pos x: " << tmpEntity.getComponentOfType(typeid(C_Transform))._position.x << " y: " << tmpEntity.getComponentOfType(typeid(C_Transform))->position_y << std::endl;
-                    // printf("pos x = %f, pos y = %f\n", Engine::getComponentRef<C_Transform>(tmpEntity)->_position.x, Engine::getComponentRef<C_Transform>(tmpEntity)->_position.y);
+                    std::cout << "Debug: Adding tmpEntity to S_Renderer." << std::endl;
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                 }
             }
+            std::cout << "Debug: Calling manager.update()." << std::endl;
             manager.update();
             //tout le bordel d'affichage + détection de touches
         }
@@ -149,7 +149,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     E_Player player(0, 0, 0, 0);
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
-    int player_id = 1;
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         _tick = *reinterpret_cast<const int*>(&(*it));
@@ -173,8 +172,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
             C_Score *score = Engine::getComponentRef<C_Score>(player);
             auto playerShared = std::make_shared<E_Player>(player);
-            _entities.add(playerShared, player_id);
-            player_id += 1;
+            _entities.add(playerShared);
         } else if (entityType == "E_Enemy") {
             // printf("deserialize enemy\n");
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);

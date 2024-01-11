@@ -30,9 +30,8 @@ void E_Bullet::render()
         if (this->getComponents().size() > 2) {
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             Rectangle sourceRec = { 127.0f, 0.0f, transform->_size.x, transform->_size.y};
-            printf("------\n");
-            printf("SourceRec : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
-            printf("Transform : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
+            // printf("SourceRec Infos : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
+            // printf("Transform Infos : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
             DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
         }
     }
@@ -83,57 +82,106 @@ void E_Player::update()
 void E_Player::render()
 {
     if (IsWindowReady() == true) {
+        printf("IsWindowReady() == true\n");
         C_Score *score = Engine::getComponentRef<C_Score>(*this);
+        printf("C_Score *score = Engine::getComponentRef<C_Score>(*this);\n");
         std::string scoreText = "Score: " + std::to_string(score->_score);
+        printf("std::string scoreText = \"Score: \" + std::to_string(score->_score);\n");
         DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
+        printf("DrawText(scoreText.c_str(), 300, 20, 30, WHITE);\n");
         C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
+        printf("C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);\n");
         if (hitbox->_status == 1) {
+            printf("hitbox->_status == 1\n");
             if ((hitbox->_time % 2) != 0) {
+                printf("(hitbox->_time % 2) != 0\n");
                 C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+                printf("C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);\n");
                 int xPos = transform->_position.x;
+                printf("int xPos = transform->_position.x;\n");
                 int yPos = transform->_position.y;
+                printf("int yPos = transform->_position.y;\n");
                 int xSize = transform->_size.x;
+                printf("int xSize = transform->_size.x;\n");
                 int ySize = transform->_size.y;
+                printf("int ySize = transform->_size.y;\n");
                 int animation = transform->_animation;
+                printf("int animation = transform->_animation;\n");
                 Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+                printf("Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;\n");
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                printf("Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };\n");
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                printf("Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };\n");
                 Vector2 origin = { 0.0f, 0.0f };
+                printf("Vector2 origin = { 0.0f, 0.0f };\n");
                 DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                printf("DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);\n");
                 hitbox->_time -= 1;
+                printf("hitbox->_time -= 1;\n");
             } else {
+                printf("(hitbox->_time % 2) == 0\n");
                 hitbox->_time -= 1;
+                printf("hitbox->_time -= 1;\n");
             }
             if (hitbox->_time <= 0) {
+                printf("hitbox->_time <= 0\n");
                 hitbox->_time = 10;
+                printf("hitbox->_time = 10;\n");
                 hitbox->_status = 0;
+                printf("hitbox->_status = 0;\n");
             }
         } else if (hitbox->_status == 2) {
+            printf("hitbox->_status == 2\n");
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            printf("C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);\n");
             int xPos = transform->_position.x;
+            printf("int xPos = transform->_position.x;\n");
             int yPos = transform->_position.y;
+            printf("int yPos = transform->_position.y;\n");
             int xSize = transform->_size.x;
+            printf("int xSize = transform->_size.x;\n");
             int ySize = transform->_size.y;
+            printf("int ySize = transform->_size.y;\n");
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            printf("Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;\n");
             if (transform->_animation <= 7) {
+                printf("transform->_animation <= 7\n");
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
+                printf("Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };\n");
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                printf("Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };\n");
                 Vector2 origin = { 0.0f, 0.0f };
+                printf("Vector2 origin = { 0.0f, 0.0f };\n");
                 DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                printf("DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);\n");
                 transform->_animation += 1;
+                printf("transform->_animation += 1;\n");
             }
         } else {
+            printf("hitbox->_status != 1 && hitbox->_status != 2\n");
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            printf("C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);\n");
             int xPos = transform->_position.x;
+            printf("int xPos = transform->_position.x;\n");
             int yPos = transform->_position.y;
+            printf("int yPos = transform->_position.y;\n");
             int xSize = transform->_size.x;
+            printf("int xSize = transform->_size.x;\n");
             int ySize = transform->_size.y;
+            printf("int ySize = transform->_size.y;\n");
             int animation = transform->_animation;
+            printf("int animation = transform->_animation;\n");
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            printf("Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;\n");
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+            printf("Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };\n");
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+            printf("Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };\n");
             Vector2 origin = { 0.0f, 0.0f };
+            printf("Vector2 origin = { 0.0f, 0.0f };\n");
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            printf("DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);\n");
         }
     }
 }

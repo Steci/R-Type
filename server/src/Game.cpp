@@ -52,7 +52,9 @@ void server::Game::run()
                 // Here, interaction reactions
                 if (interaction.getConnect() == 1) {
                     printf("New Player with ID : %d\n", interaction.getClientID());
-                    entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
+                    std::shared_ptr<E_Player> player = std::make_shared<E_Player>(50, 50, 33.2, 17.2);
+                    entities.add(player, interaction.getClientID());
+                    player->setId(interaction.getClientID());
                 }
                 if (interaction.getShoot() == 1){
                     // shoot
