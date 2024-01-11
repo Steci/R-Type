@@ -3,19 +3,18 @@ project(Rtype)
 
 include(FetchContent)
 
-# VCPKG
+message(STATUS "Fetching VCPKG...")
 FetchContent_Declare(
     vcpkg
     URL https://github.com/microsoft/vcpkg/archive/refs/tags/2023.12.12.zip
     URL_MD5 E77B826B0579D653150BDA55643B4143
 )
 
-message(STATUS "Fetching VCPKG...")
-set(FETCHCONTENT_QUIET OFF) 
+set(FETCHCONTENT_QUIET OFF)
 set(FETCHCONTENT_SOURCE_DIR_CHANGE_WHEN_HASH_MATCH TRUE)
 FetchContent_MakeAvailable(vcpkg)
 
-message(STATUS "Install VCPKG...")
+message(STATUS "Install VCPKG PACKAGES...")
 if(WIN32)
     execute_process(COMMAND "${vcpkg_SOURCE_DIR}/bootstrap-vcpkg.bat")
     execute_process(COMMAND "${vcpkg_SOURCE_DIR}/vcpkg.exe" install)
@@ -23,6 +22,7 @@ else()
     execute_process(COMMAND "${vcpkg_SOURCE_DIR}/bootstrap-vcpkg.sh")
     execute_process(COMMAND "${vcpkg_SOURCE_DIR}/vcpkg" install)
 endif()
+
 message(STATUS "SETTING UP ENVIRONMENT...")
 
 set(CMAKE_BUILD_TYPE Release)
@@ -46,8 +46,12 @@ endif()
 message(STATUS "FIND PACKAGES...")
 set(CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 
-find_package(fmt CONFIG REQUIRED)
-find_package(raylib CONFIG REQUIRED)
+if (WIN32)
+    find_package(fmt CONFIG REQUIRED)
+    find_package(raylib CONFIG REQUIRED)
+else()
+    include(raylib.cmake)
+endif()
 
 message(STATUS "START PROJECTS SETUP...")
 add_subdirectory(engine)
