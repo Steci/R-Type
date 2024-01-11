@@ -15,10 +15,14 @@
     #include <sys/types.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>
+    #include <unistd.h>
     #define OS "linux"
 #endif
 
 #ifdef _WIN64
+    #define NOGDI
+    #define NOUSER
+    #define MMNOSOUND
     #include <winsock2.h>
     #include <ws2tcpip.h>
     #define OS "windows"
@@ -33,7 +37,6 @@
 #include <fstream>
 #include <algorithm>
 #include <cstring>
-#include <netdb.h>
 #include <chrono>
 #include <sstream>
 #include <tuple>
@@ -123,6 +126,8 @@ namespace server {
             #endif
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
+                SOCKADDR_IN _clientAddr;
+                size_t _clientAddrLen;
             #endif
             int _tickrate;
             int _last_tick_send = 0;

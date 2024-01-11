@@ -13,10 +13,14 @@
     #include <sys/types.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>
+    #include <unistd.h>
     #define OS "linux"
 #endif
 
 #ifdef _WIN64
+    #define NOGDI
+    #define NOUSER
+    #define MMNOSOUND
     #include <winsock2.h>
     #include <ws2tcpip.h>
     #define OS "windows"
@@ -31,7 +35,6 @@
 #include <fstream>
 #include <algorithm>
 #include <cstring>
-#include <netdb.h>
 #include <chrono>
 #include <thread>
 #include <cstdlib>
@@ -73,6 +76,8 @@ namespace client {
             #endif
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
+                SOCKADDR_IN _serverAddr;
+                size_t _serverAddrLen;
             #endif
             int _tickrate;
             std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR"};
