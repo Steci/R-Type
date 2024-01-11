@@ -13,10 +13,10 @@ namespace client {
         _ennemy_sprites[1] = Infos(65.25, 132, "./assets/r-enemy-1.png");
         _ennemy_sprites[2] = Infos(33.25, 36, "./assets/r-enemy-2.png");
         _ennemy_sprites[3] = Infos(65.2, 66, "./assets/r-enemy-3.png");
-        _player_sprites[1] = Infos(33.2, 18, "./assets/r-player-1.png");
-        _player_sprites[2] = Infos(33.2, 18, "./assets/r-player-2.png");
-        _player_sprites[3] = Infos(33.2, 18, "./assets/r-player-3.png");
-        _player_sprites[4] = Infos(33.2, 18, "./assets/r-player-4.png");
+        _player_sprites[0] = Infos(33.2, 18, "./assets/r-player-1.png");
+        _player_sprites[1] = Infos(33.2, 18, "./assets/r-player-2.png");
+        _player_sprites[2] = Infos(33.2, 18, "./assets/r-player-3.png");
+        _player_sprites[3] = Infos(33.2, 18, "./assets/r-player-4.png");
         _utils_sprites[0] = Infos(33.5, 35, "./assets/r-boom.png");
         _utils_sprites[1] = Infos(20, 20, "./assets/r-shoot.png");
     }
@@ -67,8 +67,9 @@ namespace client {
                     auto& tmpEntity = entities.get(id);
                     std::cout << "Debug: tmpEntity is obtained." << std::endl;
                     if (typeid(tmpEntity) == typeid(E_Player)) {
+                        printf("PLAYER ID: %d\n", sparseIds[id]);
                         std::cout << "Debug: tmpEntity is of type E_Player." << std::endl;
-                        auto it = _player_sprites.find(id);
+                        auto it = _player_sprites.find(sparseIds[id]);
                         std::cout << "Debug: Player sprite found." << std::endl;
                         auto infos = it->second;
                         tmpEntity.addComponent(std::make_unique<C_Sprite>());
