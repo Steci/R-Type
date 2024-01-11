@@ -75,6 +75,9 @@ namespace server {
             #ifdef linux
                 struct sockaddr_in _addr;
             #endif
+            #ifdef _WIN64
+                SOCKADDR_IN _addr;
+            #endif
             int _id;
             int _gameId = -1;
             bool _isConnected = true;
@@ -127,7 +130,7 @@ namespace server {
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
                 SOCKADDR_IN _clientAddr;
-                size_t _clientAddrLen;
+                int _clientAddrLen;
             #endif
             int _tickrate;
             int _last_tick_send = 0;
