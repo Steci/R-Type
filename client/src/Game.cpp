@@ -32,8 +32,7 @@ namespace client {
         manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
         createTextures();
-        //detruire toutes les texture à la fin du jeu
-        while (1) {
+        while (!WindowShouldClose()) {
             manager.getSystem<S_Renderer>()->clearEntities();
             // printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
             mov = manager.getSystem<S_EventManager>()->getMovement();
@@ -44,19 +43,7 @@ namespace client {
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
-                // std::cout << "frame tick : " << _frames.back().getTick() << std::endl;
                 current_frame = _frames.back();
-                // bool print = false;
-                // for (auto it : current_frame.getEntities().getAll()) {
-                //     auto& entity = *it;
-                //     if (typeid(entity) == typeid(E_Bullet)) {
-                //         print = true;
-                //         C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
-                //         printf("Bullet Y:%f ", transform->_position.y);
-                //     }
-                // }
-                // if (print)
-                //     printf("\n");
                 _frames.pop_back();
             }
             _mutex_frames.unlock();
@@ -65,51 +52,32 @@ namespace client {
             for (int id = 0; id < sparseIds.size(); ++id) {
                 if (sparseIds[id] != -1) {
                     auto& tmpEntity = entities.get(id);
-                    std::cout << "Debug: tmpEntity is obtained." << std::endl;
                     if (typeid(tmpEntity) == typeid(E_Player)) {
                         printf("PLAYER ID: %d\n", sparseIds[id]);
-                        std::cout << "Debug: tmpEntity is of type E_Player." << std::endl;
                         auto it = _player_sprites.find(sparseIds[id]);
-                        std::cout << "Debug: Player sprite found." << std::endl;
                         auto infos = it->second;
                         tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
                         C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
                         sprite->setupByTexture(infos._texture);
-                        std::cout << "Debug: Sprite setup with texture." << std::endl;
                         Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        std::cout << "Debug: Transform size set." << std::endl;
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
-                        std::cout << "Debug: tmpEntity is of type E_Enemy." << std::endl;
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
-                        std::cout << "Debug: Enemy sprite found." << std::endl;
                         auto infos = it->second;
                         tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
                         Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        std::cout << "Debug: Transform size set." << std::endl;
                         Engine::setSpriteTexture(tmpEntity, infos._texture);
-                        std::cout << "Debug: Sprite texture set." << std::endl;
                     } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
-                        std::cout << "Debug: tmpEntity is of type E_Bullet." << std::endl;
                         auto it = _utils_sprites.find(1);
-                        std::cout << "Debug: Utils sprite found." << std::endl;
                         auto infos = it->second;
                         tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
                         Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        std::cout << "Debug: Transform size set." << std::endl;
                         Engine::setSpriteTexture(tmpEntity, infos._texture);
-                        std::cout << "Debug: Sprite texture set." << std::endl;
                     }
-                    std::cout << "Debug: Adding tmpEntity to S_Renderer." << std::endl;
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                 }
             }
-            std::cout << "Debug: Calling manager.update()." << std::endl;
             manager.update();
-            //tout le bordel d'affichage + détection de touches
         }
     }
 
