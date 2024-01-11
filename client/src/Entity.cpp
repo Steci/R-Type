@@ -25,39 +25,16 @@ void E_Bullet::render()
 {
     if (IsWindowReady() == true) {
         C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
-        C_Sprite *spriteComponent = Engine::getComponentRef<C_Sprite>(*this);
-        if (transform && spriteComponent) {
-            transform->_position.x += transform->_velocity.x;
-            transform->_position.y += transform->_velocity.y;
-            Texture2D sprite = spriteComponent->_texture;
-            Rectangle sourceRec = { 0.0f, 0.0f, (float)transform->_size.x, (float)transform->_size.y };
-            Rectangle destRec = { (float)transform->_position.x, (float)transform->_position.y, (float)transform->_size.x * 2, (float)transform->_size.y * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+
+        // Check if C_Sprite component exists
+        if (this->getComponents().size() > 2) {
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            Rectangle sourceRec = { 127.0f, 0.0f, transform->_size.x, transform->_size.y};
+            // printf("SourceRec Infos : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
+            // printf("Transform Infos : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
+            DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
         }
     }
-}
-
-std::vector<char> E_Bullet::serializeToVector() {
-    std::vector<char> data;
-
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    if (transformComponent) {
-        auto transformData = transformComponent->serializeToVector();
-        data.insert(data.end(), transformData.begin(), transformData.end());
-    }
-
-    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
-    if (damageComponent) {
-        auto damageData = damageComponent->serializeToVector();
-        data.insert(data.end(), damageData.begin(), damageData.end());
-    }
-
-    size_t dataSize = data.size();
-    char* sizePtr = reinterpret_cast<char*>(&dataSize);
-    std::vector<char> sizeData(sizePtr, sizePtr + sizeof(dataSize));
-    sizeData.insert(sizeData.end(), data.begin(), data.end());
-    return sizeData;
 }
 
 void E_Bullet::deserializeFromVector(std::vector<char> data) {
@@ -78,6 +55,14 @@ void E_Bullet::deserializeFromVector(std::vector<char> data) {
         damageComponent->deserializeFromVector(damageData);
         it += damageSize;
     }
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    if (hitboxComponent) {
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        std::vector<char> hitboxData(it, it + hitboxSize);
+        hitboxComponent->deserializeFromVector(hitboxData);
+        it += hitboxSize;
+    }
+    std::memcpy(&_idCreator, data.data() + sizeof(C_Transform) + sizeof(C_Damage), sizeof(_idCreator));
 }
 
 E_Player::E_Player(int position_x, int position_y, float size_x, float size_y)
@@ -97,87 +82,108 @@ void E_Player::update()
 void E_Player::render()
 {
     if (IsWindowReady() == true) {
+        printf("IsWindowReady() == true\n");
         C_Score *score = Engine::getComponentRef<C_Score>(*this);
+        printf("C_Score *score = Engine::getComponentRef<C_Score>(*this);\n");
         std::string scoreText = "Score: " + std::to_string(score->_score);
+        printf("std::string scoreText = \"Score: \" + std::to_string(score->_score);\n");
         DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
+        printf("DrawText(scoreText.c_str(), 300, 20, 30, WHITE);\n");
         C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
+        printf("C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);\n");
         if (hitbox->_status == 1) {
+            printf("hitbox->_status == 1\n");
             if ((hitbox->_time % 2) != 0) {
+                printf("(hitbox->_time % 2) != 0\n");
                 C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+                printf("C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);\n");
                 int xPos = transform->_position.x;
+                printf("int xPos = transform->_position.x;\n");
                 int yPos = transform->_position.y;
+                printf("int yPos = transform->_position.y;\n");
                 int xSize = transform->_size.x;
+                printf("int xSize = transform->_size.x;\n");
                 int ySize = transform->_size.y;
+                printf("int ySize = transform->_size.y;\n");
                 int animation = transform->_animation;
+                printf("int animation = transform->_animation;\n");
                 Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+                printf("Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;\n");
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+                printf("Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };\n");
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                printf("Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };\n");
                 Vector2 origin = { 0.0f, 0.0f };
+                printf("Vector2 origin = { 0.0f, 0.0f };\n");
                 DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                printf("DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);\n");
                 hitbox->_time -= 1;
+                printf("hitbox->_time -= 1;\n");
             } else {
+                printf("(hitbox->_time % 2) == 0\n");
                 hitbox->_time -= 1;
+                printf("hitbox->_time -= 1;\n");
             }
             if (hitbox->_time <= 0) {
+                printf("hitbox->_time <= 0\n");
                 hitbox->_time = 10;
+                printf("hitbox->_time = 10;\n");
                 hitbox->_status = 0;
+                printf("hitbox->_status = 0;\n");
             }
         } else if (hitbox->_status == 2) {
+            printf("hitbox->_status == 2\n");
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            printf("C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);\n");
             int xPos = transform->_position.x;
+            printf("int xPos = transform->_position.x;\n");
             int yPos = transform->_position.y;
+            printf("int yPos = transform->_position.y;\n");
             int xSize = transform->_size.x;
+            printf("int xSize = transform->_size.x;\n");
             int ySize = transform->_size.y;
+            printf("int ySize = transform->_size.y;\n");
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            printf("Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;\n");
             if (transform->_animation <= 7) {
+                printf("transform->_animation <= 7\n");
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
+                printf("Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };\n");
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+                printf("Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };\n");
                 Vector2 origin = { 0.0f, 0.0f };
+                printf("Vector2 origin = { 0.0f, 0.0f };\n");
                 DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                printf("DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);\n");
                 transform->_animation += 1;
+                printf("transform->_animation += 1;\n");
             }
         } else {
+            printf("hitbox->_status != 1 && hitbox->_status != 2\n");
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            printf("C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);\n");
             int xPos = transform->_position.x;
+            printf("int xPos = transform->_position.x;\n");
             int yPos = transform->_position.y;
+            printf("int yPos = transform->_position.y;\n");
             int xSize = transform->_size.x;
+            printf("int xSize = transform->_size.x;\n");
             int ySize = transform->_size.y;
+            printf("int ySize = transform->_size.y;\n");
             int animation = transform->_animation;
+            printf("int animation = transform->_animation;\n");
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            printf("Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;\n");
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
+            printf("Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };\n");
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
+            printf("Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };\n");
             Vector2 origin = { 0.0f, 0.0f };
+            printf("Vector2 origin = { 0.0f, 0.0f };\n");
             DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            printf("DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);\n");
         }
     }
-}
-
-std::vector<char> E_Player::serializeToVector()
-{
-    printf("Player\n");
-    std::vector<char> data;
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
-
-    if (transformComponent) {
-        auto transformData = transformComponent->serializeToVector();
-        data.insert(data.end(), transformData.begin(), transformData.end());
-    }
-    if (healthComponent) {
-        auto healthData = healthComponent->serializeToVector();
-        data.insert(data.end(), healthData.begin(), healthData.end());
-    }
-    if (hitboxComponent) {
-        auto hitboxData = hitboxComponent->serializeToVector();
-        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
-    }
-    if (scoreComponent) {
-        auto scoreData = scoreComponent->serializeToVector();
-        data.insert(data.end(), scoreData.begin(), scoreData.end());
-    }
-    return data;
 }
 
 std::string E_Player::getType() const {
@@ -189,7 +195,7 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
-        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity )+ sizeof(transformComponent->_animation);
         std::vector<char> transformData(it, it + transformSize);
         transformComponent->deserializeFromVector(transformData);
         it += transformSize;
@@ -226,6 +232,7 @@ E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y, int
     addComponent(std::make_shared<C_Health>(20));
     addComponent(std::make_shared<C_Hitbox>(65, 66));
     addComponent(std::make_shared<C_EnemyInfo>(type));
+    addComponent(std::make_shared<C_AnimationInfo>(65, 66, 7, 0, 8));
 }
 
 void E_Enemy::update()
@@ -275,16 +282,36 @@ void E_Enemy::render()
             }
         } else {
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            C_AnimationInfo *animationInfo = Engine::getComponentRef<C_AnimationInfo>(*this);
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            int animation = transform->_animation;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
-            Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
-            Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
-            Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+
+            int maxXframe = animationInfo->_maxXframe;
+            int maxYframe = animationInfo->_maxYframe;
+
+            Rectangle frameRec = { 0.0f, 0.0f, (float)xSize, (float)ySize };
+
+            // animationInfo->_framesCounter++;
+            // printf("Speed = %d\n", animationInfo->_speed);
+            // printf("60/speed = %d\n", (60 / animationInfo->_speed));
+            // printf("animationInfo->_framesCounter = %d\n", animationInfo->_framesCounter);
+            // if (animationInfo->_framesCounter >= (60 / animationInfo->_speed)) {
+            //     printf("animationInfo->_framesCounter = %d\n", animationInfo->_framesCounter);
+            //     animationInfo->_framesCounter = 0;
+            //     animationInfo->_currentFrame++;
+
+            //     printf("animationInfo->_currentFrame = %d\n", animationInfo->_currentFrame);
+            //     if (animationInfo->_currentFrame > maxXframe) {
+            //         animationInfo->_currentFrame = 0;
+            //     }
+            //     frameRec.x = (float)animationInfo->_currentFrame * (float)xSize;
+            //     printf("frameRec.x = %f\n", frameRec.x);
+            // }
+            DrawTextureRec(sprite, frameRec, {(float)xPos, (float)yPos }, WHITE);
         }
     }
 }
@@ -293,38 +320,12 @@ std::string E_Enemy::getType() const {
     return "E_Enemy";
 }
 
-std::vector<char> E_Enemy::serializeToVector() {
-    std::vector<char> data;
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
-    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
-    C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
-
-    if (transformComponent) {
-        auto transformData = transformComponent->serializeToVector();
-        data.insert(data.end(), transformData.begin(), transformData.end());
-    }
-    if (healthComponent) {
-        auto healthData = healthComponent->serializeToVector();
-        data.insert(data.end(), healthData.begin(), healthData.end());
-    }
-    if (hitboxComponent) {
-        auto hitboxData = hitboxComponent->serializeToVector();
-        data.insert(data.end(), hitboxData.begin(), hitboxData.end());
-    }
-    if (enemyInfoComponent) {
-        auto enemyInfoData = enemyInfoComponent->serializeToVector();
-        data.insert(data.end(), enemyInfoData.begin(), enemyInfoData.end());
-    }
-    return data;
-}
-
 void E_Enemy::deserializeFromVector(std::vector<char> data) {
     auto it = data.begin();
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
     if (transformComponent) {
-        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
+        size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity) + sizeof(transformComponent->_animation);
         std::vector<char> transformData(it, it + transformSize);
         transformComponent->deserializeFromVector(transformData);
         it += transformSize;
@@ -340,7 +341,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
 
     C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
     if (hitboxComponent) {
-        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
+        size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_time) + sizeof(hitboxComponent->_status);
         std::vector<char> hitboxData(it, it + hitboxSize);
         hitboxComponent->deserializeFromVector(hitboxData);
         it += hitboxSize;

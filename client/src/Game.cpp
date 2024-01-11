@@ -8,169 +8,6 @@
 #include "../include/Game.hpp"
 
 namespace client {
-    void Game::actionUpCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    {
-        if (entities.exists(clientID) == false) {
-            printf("player not connected");
-            return;
-        }
-        auto& playerEntity = entities.get(clientID);
-        interaction->setInteraction(1);
-        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        if (transform) {
-            Engine::setTransformPos(playerEntity, {transform->_position.x, transform->_position.y - 10});
-            if (transform->_animation == 3) {
-                Engine::setTransformAni(playerEntity, 4);
-            } else if (transform->_animation == 2) {
-                Engine::setTransformAni(playerEntity, 1);
-            } else if (transform->_animation == 1) {
-                Engine::setTransformAni(playerEntity, 0);
-            } else if (transform->_animation == 0) {
-                Engine::setTransformAni(playerEntity, 3);
-            } else {
-                Engine::setTransformAni(playerEntity, 4);
-            }
-        }
-    }
-
-    void Game::actionDownCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    {
-        if (entities.exists(clientID) == false) {
-            printf("player not connected");
-            return;
-        }
-        auto& playerEntity = entities.get(clientID);
-        interaction->setInteraction(3);
-        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        if (transform) {
-            Engine::setTransformPos(playerEntity, {transform->_position.x, transform->_position.y + 10});
-            if (transform->_animation == 1) {
-                Engine::setTransformAni(playerEntity, 2);
-            } else if (transform->_animation == 4) {
-                Engine::setTransformAni(playerEntity, 3);
-            } else if (transform->_animation == 3) {
-                Engine::setTransformAni(playerEntity, 0);
-            } else if (transform->_animation == 0) {
-                Engine::setTransformAni(playerEntity, 1);
-            } else {
-                Engine::setTransformAni(playerEntity, 2);
-            }
-        }
-    }
-
-    void Game::actionLeftCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    {
-        if (entities.exists(clientID) == false) {
-            printf("player not connected");
-            return;
-        }
-        auto& playerEntity = entities.get(clientID);
-        interaction->setInteraction(4);
-        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        if (transform) {
-            Engine::setTransformPos(playerEntity, {transform->_position.x - 10, transform->_position.y});
-            if (transform->_animation == 2) {
-                Engine::setTransformAni(playerEntity, 1);
-            } else if (transform->_animation == 4) {
-                Engine::setTransformAni(playerEntity, 3);
-            } else {
-                Engine::setTransformAni(playerEntity, 0);
-            }
-        }
-    }
-
-    void Game::actionRightCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    {
-        if (entities.exists(clientID) == false) {
-            printf("player not connected");
-            return;
-        }
-        auto& playerEntity = entities.get(clientID);
-        interaction->setInteraction(2);
-        C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        if (transform) {
-            Engine::setTransformPos(playerEntity, {transform->_position.x + 10, transform->_position.y});
-            if (transform->_animation == 2) {
-                Engine::setTransformAni(playerEntity, 1);
-            } else if (transform->_animation == 4) {
-                Engine::setTransformAni(playerEntity, 3);
-            } else {
-                Engine::setTransformAni(playerEntity, 0);
-            }
-        }
-    }
-
-    void Game::actionQuitCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    {
-        if (entities.exists(clientID) == false) {
-            printf("player not connected");
-            return;
-        }
-        auto& playerEntity = entities.get(clientID);
-        interaction->setInteraction(0, 0, 1);
-        entities.remove(clientID);
-    }
-
-    void Game::actionShootCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction)
-    {
-        if (entities.exists(clientID) == false) {
-            printf("player not connected");
-            return;
-        }
-        interaction->setInteraction(0, 1, 0);
-        //cote server -> a voir pour le system de music
-        //E_Player& playerEntity = static_cast<E_Player&>(entities.get(clientID));
-        //if (typeid(playerEntity) == typeid(E_Player)) {
-        //    C_Transform *transform = Engine::getComponentRef<C_Transform>(playerEntity);
-        //    playerEntity.newShoot("./assets/r-typesheet24.png", 10, transform->_position.x + 10, transform->_position.y + 2, transform->_size.x, transform->_size.y, 5, 0);
-        //}
-        //auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-        //PlaySound(effect->second);
-    }
-
-    // void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-    // {
-    //     printf("damage");
-    //     if (entities.exists(clientID) == false) {
-    //         printf("player not connected");
-    //         return;
-    //     }
-    //     auto& entity = entities.get(clientID);
-    //     C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(entity);
-    //     C_Health *health = Engine::getComponentRef<C_Health>(entity);
-    //     if (health->_health <= 0) {
-    //         Engine::setHitboxStatus(entity, 2);
-    //         std::string dead_path = "./assets/r-typesheet1.png";
-    //         Image newImage = LoadImage(dead_path.c_str());
-    //         if (newImage.data == nullptr) {
-    //             std::cerr << "Erreur de chargement de l'image : " << dead_path << std::endl;
-    //         }
-    //         Engine::setSpriteImage(entity, newImage);
-    //         Texture2D newTexture = LoadTextureFromImage(newImage);
-    //         Engine::setSpriteTexture(entity, newTexture);
-    //         C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
-    //         Engine::setTransformSize(entity, {33.25, 345});
-    //         Engine::setTransformAni(entity, 0);
-    //     } else {
-    //         Engine::setHealth(entity, health->_health - 10);
-    //         Engine::setHitboxStatus(entity, 1);
-    //     }
-    // }
-
-    // void server::Game::actionScoreCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-    // {
-    //     printf("score");
-    //     if (entities.exists(clientID) == false) {
-    //         printf("player not connected");
-    //         return;
-    //     }
-    //     auto& playerEntity = entities.get(clientID);
-    //     if (typeid(playerEntity) == typeid(E_Player)) {
-    //         C_Score *score = Engine::getComponentRef<C_Score>(playerEntity);
-    //         Engine::setScore(playerEntity, score->_score + 10);
-    //     }
-    // }
-
     void Game::createTextures()
     {
         _ennemy_sprites[1] = Infos(65.25, 132, "./assets/r-enemy-1.png");
@@ -181,7 +18,7 @@ namespace client {
         _player_sprites[2] = Infos(33.2, 18, "./assets/r-player-3.png");
         _player_sprites[3] = Infos(33.2, 18, "./assets/r-player-4.png");
         _utils_sprites[0] = Infos(33.5, 35, "./assets/r-boom.png");
-        _utils_sprites[1] = Infos(33, 18, "./assets/r-shoot.png");
+        _utils_sprites[1] = Infos(20, 20, "./assets/r-shoot.png");
     }
 
     void Game::run()
@@ -202,64 +39,80 @@ namespace client {
             mov = manager.getSystem<S_EventManager>()->getMovement();
             shoot = manager.getSystem<S_EventManager>()->getShoot();
             quit = manager.getSystem<S_EventManager>()->getQuit();
-            infoInteraction(mov, shoot, quit);
+            if (mov != 0 || shoot != 0 || quit != 0)
+                infoInteraction(mov, shoot, quit);
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
                 // std::cout << "frame tick : " << _frames.back().getTick() << std::endl;
                 current_frame = _frames.back();
+                // bool print = false;
+                // for (auto it : current_frame.getEntities().getAll()) {
+                //     auto& entity = *it;
+                //     if (typeid(entity) == typeid(E_Bullet)) {
+                //         print = true;
+                //         C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
+                //         printf("Bullet Y:%f ", transform->_position.y);
+                //     }
+                // }
+                // if (print)
+                //     printf("\n");
                 _frames.pop_back();
             }
             _mutex_frames.unlock();
             auto &entities = current_frame.getEntities();
-            const auto& sparseIds = entities.getAllIndices();
-            for (auto id : sparseIds) {
-                if (id != -1) {
+            const auto& sparseIds = entities.getSparse();
+            for (int id = 0; id < sparseIds.size(); ++id) {
+                if (sparseIds[id] != -1) {
                     auto& tmpEntity = entities.get(id);
+                    std::cout << "Debug: tmpEntity is obtained." << std::endl;
                     if (typeid(tmpEntity) == typeid(E_Player)) {
-                        auto it = _player_sprites.find(id);
-                        if (it != _player_sprites.end()) {
-                            auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                            C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
-                            sprite->setupByTexture(infos._texture);
-                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        }
+                        printf("PLAYER ID: %d\n", sparseIds[id]);
+                        std::cout << "Debug: tmpEntity is of type E_Player." << std::endl;
+                        auto it = _player_sprites.find(sparseIds[id]);
+                        std::cout << "Debug: Player sprite found." << std::endl;
+                        auto infos = it->second;
+                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
+                        C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
+                        sprite->setupByTexture(infos._texture);
+                        std::cout << "Debug: Sprite setup with texture." << std::endl;
+                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        std::cout << "Debug: Transform size set." << std::endl;
                     } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
+                        std::cout << "Debug: tmpEntity is of type E_Enemy." << std::endl;
                         C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                         auto it = _ennemy_sprites.find(ennemyInfo->_type);
-                        if (it != _ennemy_sprites.end()) {
-                            auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                            Engine::setSpriteTexture(tmpEntity, infos._texture);
-                        }
+                        std::cout << "Debug: Enemy sprite found." << std::endl;
+                        auto infos = it->second;
+                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
+                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        std::cout << "Debug: Transform size set." << std::endl;
+                        Engine::setSpriteTexture(tmpEntity, infos._texture);
+                        std::cout << "Debug: Sprite texture set." << std::endl;
+                    } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
+                        std::cout << "Debug: tmpEntity is of type E_Bullet." << std::endl;
+                        auto it = _utils_sprites.find(1);
+                        std::cout << "Debug: Utils sprite found." << std::endl;
+                        auto infos = it->second;
+                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                        std::cout << "Debug: C_Sprite component added to tmpEntity." << std::endl;
+                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                        std::cout << "Debug: Transform size set." << std::endl;
+                        Engine::setSpriteTexture(tmpEntity, infos._texture);
+                        std::cout << "Debug: Sprite texture set." << std::endl;
                     }
-                    // std::cout << "entity pos x: " << tmpEntity.getComponentOfType(typeid(C_Transform))._position.x << " y: " << tmpEntity.getComponentOfType(typeid(C_Transform))->position_y << std::endl;
-                    // printf("pos x = %f, pos y = %f\n", Engine::getComponentRef<C_Transform>(tmpEntity)->_position.x, Engine::getComponentRef<C_Transform>(tmpEntity)->_position.y);
+                    std::cout << "Debug: Adding tmpEntity to S_Renderer." << std::endl;
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                 }
             }
+            std::cout << "Debug: Calling manager.update()." << std::endl;
             manager.update();
             //tout le bordel d'affichage + détection de touches
         }
     }
 
-    void Game::testInteraction()
-    {
-        Interaction inter;
-
-        _mutex_frames.lock();
-        _mutex_interactions.lock();
-        if (_frames.size() != 0 && _frames.back().getTick() == 100 && _interactions.size() == 0) {
-            std::cout << "test interaction" << std::endl;
-            inter.setInteraction(1);
-            _interactions.push_back(inter);
-        }
-        _mutex_interactions.unlock();
-        _mutex_frames.unlock();
-    }
-    
     Game::~Game() {
         for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
             UnloadTexture(it->second._texture);
@@ -273,23 +126,6 @@ namespace client {
             UnloadTexture(it->second._texture);
             UnloadImage(it->second._image);
         }
-
-    }
-
-    Game::~Game() {
-        for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
-            UnloadTexture(it->second._texture);
-            UnloadImage(it->second._image);
-        }
-        for (auto it = _player_sprites.begin(); it != _player_sprites.end(); ++it) {
-            UnloadTexture(it->second._texture);
-            UnloadImage(it->second._image);
-        }
-        for (auto it = _utils_sprites.begin(); it != _utils_sprites.end(); ++it) {
-            UnloadTexture(it->second._texture);
-            UnloadImage(it->second._image);
-        }
-
     }
 
     void Game::infoInteraction(int mov, int shoot, int quit)
@@ -310,15 +146,13 @@ namespace client {
 
 void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     auto it = serializedData.begin();
-    Vec2 pos;
-    Vec2 size;
-    Vec2 velocity;
     E_Player player(0, 0, 0, 0);
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
-        std::memcpy(&_tick, &it, sizeof(_tick));
+        _tick = *reinterpret_cast<const int*>(&(*it));
+        // printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
@@ -329,28 +163,39 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         }
         ++it;
         if (entityType == "E_Player") {
-            player.deserializeFromVector(std::vector<char>(it, it + sizeof(player)));
-            it += sizeof(player);
+            // printf("deserialize player\n");
+            size_t size_player = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_Score);
+            player.deserializeFromVector(std::vector<char>(it, it + size_player));
+            it += sizeof(size_player);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(player);
+            C_Health *health = Engine::getComponentRef<C_Health>(player);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
+            C_Score *score = Engine::getComponentRef<C_Score>(player);
             auto playerShared = std::make_shared<E_Player>(player);
             _entities.add(playerShared);
         } else if (entityType == "E_Enemy") {
-            enemy.deserializeFromVector(std::vector<char>(it, it + sizeof(enemy)));
-            it += sizeof(enemy);
+            // printf("deserialize enemy\n");
+            size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
+            enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
+            it += sizeof(size_enemy);
             C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
             C_Health *health = Engine::getComponentRef<C_Health>(enemy);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
-            printf("enemy type : %d\n", ennemyInfo->_type);
-            //auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
-            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, 2);
+            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             _entities.add(enemyShared);
         } else if (entityType == "E_Bullet") {
+            // printf("deserialize bullet\n");
+            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
             bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
             it += sizeof(bullet);
             auto bulletShared = std::make_shared<E_Bullet>(bullet);
+            // float bulletY = dynamic_cast<C_Transform*>(bulletShared->getComponentOfType(typeid(C_Transform)))->_position.y;
+            // printf("bullet pos y = %f\n", bulletY);
             _entities.add(bulletShared);
         }
         if (isEndMarker(it, serializedData)) {
+            // printf("\n");
             break;
         }
     }

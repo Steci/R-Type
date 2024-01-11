@@ -79,8 +79,12 @@ void server::Network::run(Game *game)
     Interaction interaction;
     std::string message;
     std::vector<char> buffer(1024);
+    std::vector<Game> games;
+    std::vector<int> idNotUsableGame;
+    std::map<int, std::thread> threads;
 
     while(_isRunning) {
+        client = 0;
         client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         updateClients(id, game);
         if (client < 0) {
@@ -88,9 +92,21 @@ void server::Network::run(Game *game)
         }
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
-        if (id != 0 && id != -1)
+        if (id != 0 && id != -1) {
+            // if (interaction.getCreateGame() == 1) {
+            //     for (auto client = _clients.begin(); client != _clients.end(); client++) {
+            //         if (client->getId() == connect.getId()) {
+            //             Game gameTmp;
+            //             gameTmp.setGameId(CreateGame(idNotUsableGame));
+            //             idNotUsableGame.push_back(gameTmp.getGameId());
+            //             games.push_back(gameTmp);
+            //             threads[gameTmp.getGameId()] = std::thread(&Game::run, &games.back());
+
+            //         }
+            //     }
+            // }
             manageClient(buffer, id, game);
-        else if (id == 0) {
+        } else if (id == 0) {
             interaction.setClientID(connect.getId());
             interaction.setConnect(1);
             (*game).addInteraction(interaction);
@@ -103,6 +119,19 @@ void server::Network::run(Game *game)
         //         manageMessage(resData, id, game);
         // }
     }
+}
+
+int server::Network::CreateGame(std::vector<int> idNotUsableGame)
+{
+    int id = 0;
+
+    for (int i = 0; i < _maxClients; i++) {
+        if (std::find(idNotUsableGame.begin(), idNotUsableGame.end(), i) == idNotUsableGame.end()) {
+            id = i;
+            break;
+        }
+    }
+    return id;
 }
 
 void server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)
@@ -289,16 +318,3 @@ int server::Network::commandError(std::string data, int client_id) const
         }
     return 0;
 }
-
-// server::Network &server::Network::operator=(const server::Network &other)
-// {
-//     _port = other._port;
-//     _maxClients = other._maxClients;
-//     _isRunning = other._isRunning;
-//     _fd = other._fd;
-//     _maxFd = other._maxFd;
-//     _readFds = other._readFds;
-//     _addr = other._addr;
-//     _clients = other._clients;
-//     return *this;
-// }

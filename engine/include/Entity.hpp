@@ -67,15 +67,17 @@ class IEntity {
 
         virtual std::vector<char> serializeToVector() = 0;
         virtual void deserializeFromVector(std::vector<char> data) = 0;
+        virtual void setId(int id) = 0;
+        virtual int getId() const = 0;
 };
 
 class Entity : public IEntity {
     public:
         void update() override = 0;
-        void render() override = 0;
-        std::vector<char> serializeToVector() override = 0;
+        void render() override {};
+        std::vector<char> serializeToVector() override {};
         std::string getType() const override = 0;
-        void deserializeFromVector(std::vector<char> data) override = 0;
+        void deserializeFromVector(std::vector<char> data) override {};
 
         void addComponent(std::shared_ptr<Component> component) override {
             components.push_back(std::move(component));
@@ -99,8 +101,15 @@ class Entity : public IEntity {
             }
             return nullptr;
         }
+        void setId(int id) {
+            _id = id;
+        }
+        int getId() const {
+            return _id;
+        }
 
     private:
+        int _id;
         std::vector<std::shared_ptr<Component>> components;
 };
 

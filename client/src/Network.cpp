@@ -80,6 +80,7 @@ void client::Network::run(Game *game)
     int server = 0;
     std::vector<char> buffer(1024);
     client::Serialize convert;
+    std::vector<Game> games;
 
     while(_isRunning) {
         server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
@@ -172,6 +173,6 @@ void client::Network::checkInteraction(Game *game)
     if (interactions.size() > 0) {
         data = interactions[0].serializeInteraction();
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        game->deleteInteraction(0);
+        game->deleteInteraction(1);
     }
 }

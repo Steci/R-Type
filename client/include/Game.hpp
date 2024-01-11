@@ -46,6 +46,7 @@ namespace client {
             int _movement = 0; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server) !!!!!! jamais négatif !!!!!!
             int _shoot = 0; // 0 si rien 1 si quelque chose
             int _quit = 0; // 0 si rien 1 si le client veut quitter
+            int _createGame = 0; // 0 si rien 1 si le client veut créer une game
     };
 
     class Frame : public AFrame {

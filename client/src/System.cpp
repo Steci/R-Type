@@ -81,14 +81,14 @@ int S_EventManager::getMovement()
 
 int S_EventManager::getShoot()
 {
-    if (IsKeyPressed(KEY_SPACE))
+    if (IsKeyDown(KEY_SPACE))
         return 1;
     return 0;
 }
 
 int S_EventManager::getQuit()
 {
-    if (IsKeyPressed(KEY_ESCAPE))
+    if (IsKeyDown(KEY_ESCAPE))
         return 1;
     return 0;
 }
@@ -120,7 +120,7 @@ S_AudioManager::S_AudioManager()
     _background_music_game["GAME_OVER"] = LoadMusicStream("./music/Game_over.mp3");
     _background_music_game["THEME"] = LoadMusicStream("./music/Theme_song.mp3");
     _sound_effects["DEAD"] = LoadSound("./music/dead.wav");
-    _sound_effects["SHOOT"] = LoadSound("./music/shoot.wav");;;
+    _sound_effects["SHOOT"] = LoadSound("./music/shoot.wav");
 }
 
 S_AudioManager::~S_AudioManager()

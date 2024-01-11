@@ -14,64 +14,6 @@ server::Game::Game()
     _tick = 0;
 }
 
-server::Game::~Game()
-{
-}
-
-// void server::Game::actionQuitCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("quit\n");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& playerEntity = entities.get(clientID);
-//     if (typeid(playerEntity) == typeid(E_Player)) {
-//         manager.getSystem<S_Renderer>()->removeEntity(&playerEntity);
-//         entities.remove(clientID);
-//     }
-// }
-
-// void server::Game::actionDamageCommand(int clientID, SystemManager manager, SparseArray<IEntity>& entities)
-// {
-//     printf("damage");
-//     if (entities.exists(clientID) == false) {
-//         printf("player not connected");
-//         return;
-//     }
-//     auto& entity = entities.get(clientID);
-//     C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(entity);
-//     C_Health *health = Engine::getComponentRef<C_Health>(entity);
-//     if (health->_health <= 0) {
-//         Engine::setHitboxStatus(entity, 2);
-//         std::string dead_path = "./assets/r-typesheet1.png";
-//         Image newImage = LoadImage(dead_path.c_str());
-//         if (newImage.data == nullptr) {
-//             std::cerr << "Erreur de chargement de l'image : " << dead_path << std::endl;
-//         }
-//         Engine::setSpriteImage(entity, newImage);
-//         Texture2D newTexture = LoadTextureFromImage(newImage);
-//         Engine::setSpriteTexture(entity, newTexture);
-//         C_Transform *transform = Engine::getComponentRef<C_Transform>(entity);
-//         Engine::setTransformSize(entity, {33.25, 345});
-//         Engine::setTransformAni(entity, 0);
-//     } else {
-//         Engine::setHealth(entity, health->_health - 10);
-//         Engine::setHitboxStatus(entity, 1);
-//     }
-// }
-
-std::pair<std::string, std::string> server::Game::parseCommand(const std::string& input) {
-    std::istringstream iss(input);
-    std::string command;
-    std::string clientID;
-
-    std::getline(iss, command, ' ');
-    std::getline(iss, clientID, ' ');
-
-    return {command, clientID};
-}
-
 bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerIndex)
 {
     if (playerList.size() == 0)
@@ -94,7 +36,7 @@ void server::Game::run()
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
     manager.addSystem<S_Spawner>(entities);
-    manager.addSystem<S_Weapon>(entities);
+    manager.addSystem<S_Weapon>(entities, _tick);
 
     int numClientID = 0;
 
@@ -110,44 +52,41 @@ void server::Game::run()
                 // Here, interaction reactions
                 if (interaction.getConnect() == 1) {
                     printf("New Player with ID : %d\n", interaction.getClientID());
-                    entities.add(std::make_shared<E_Player>(50, 50, 33.2, 17.2), interaction.getClientID());
+                    std::shared_ptr<E_Player> player = std::make_shared<E_Player>(50, 50, 33.2, 17.2);
+                    entities.add(player, interaction.getClientID());
+                    player->setId(interaction.getClientID());
+                }
+                if (interaction.getShoot() == 1){
+                    // shoot
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
                 if (interaction.getMovement() == 1){
                     // go up
-                    printf("go up\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.y -= 8;
                 }
                 if (interaction.getMovement() == 2){
                     // go right
-                    printf("go right\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x += 8;
                 }
                 if (interaction.getMovement() == 3){
                     // go down
-                    printf("go down\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.y += 8;
                 }
                 if (interaction.getMovement() == 4){
                     // go left
-                    printf("go left\n");
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     transform->_position.x -= 8;
-                }
-                if (interaction.getShoot() == 1){
-                    // shoot
-                    printf("shoot\n");
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    manager.getSystem<S_Weapon>()->shoot(interaction.getClientID());
                 }
             }
         }
 
         _functions.clear();
         manager.update();
-        // printf("tick++");
+        // printf("tick+getClientID+");
         _tick++;
         // printf("tick = " << _tick);
 
@@ -171,13 +110,6 @@ void server::Game::fillFrame(SparseArray<IEntity> entities)
     _mutex_frame.unlock();
 }
 
-// void server::Game::addFunction(std::string function)
-// {
-//     _mutex.lock();
-//     _functions_server.push_back(function);
-//     _mutex.unlock();
-// }
-
 std::vector<std::string> server::Game::getFunctionsClient()
 {
     _mutex_client.lock();
@@ -187,19 +119,12 @@ std::vector<std::string> server::Game::getFunctionsClient()
     return functions;
 }
 
-// server::Frame& server::Frame::operator=(const Frame& other)
-// {
-//     _tick = other._tick;
-
-//     return *this;
-// }
-
 std::vector<char> server::Frame::serializeFrame()
 {
     std::vector<char> data;
 
-    char* tickPtr = reinterpret_cast<char*>(&_tick);
-    data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
+    data.insert(data.end(), reinterpret_cast<const char*>(&_tick), reinterpret_cast<const char*>(&_tick) + sizeof(_tick));
+    // printf("tick = %d\n", _tick);
 
     auto playerData = _entities.serializeToVector("E_Player");
     data.insert(data.end(), playerData.begin(), playerData.end());
@@ -209,6 +134,8 @@ std::vector<char> server::Frame::serializeFrame()
 
     auto bulletData = _entities.serializeToVector("E_Bullet");
     data.insert(data.end(), bulletData.begin(), bulletData.end());
+    // if (data.size() > 4)
+    //     printf("\n");
 
     std::string endMarker = "END";
     data.insert(data.end(), endMarker.begin(), endMarker.end());

@@ -64,12 +64,15 @@ namespace server {
             std::string getName() const {return _name;};
             bool operator==(const Client& other) const;
             Client& operator=(const Client& other);
+            void setGameId(int gameId) {_gameId = gameId;};
+            int getGameId() const {return _gameId;};
 
         private:
             #ifdef linux
                 struct sockaddr_in _addr;
             #endif
             int _id;
+            int _gameId = -1;
             bool _isConnected = true;
             const std::string _name;
     };
@@ -135,6 +138,7 @@ namespace server {
             void manageMessage(std::string message, int client_id, Game *game);
             void updateClients(int client_id, Game *game);
             void checkClass(std::vector<char> buffer);
+            int CreateGame(std::vector<int> idNotUsableGame);
 
             // Commands
             int commandKill(std::string data);
