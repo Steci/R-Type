@@ -46,7 +46,11 @@ class SparseArray {
                     }
                 }
                 if (id == -1) {
-                    id = sparse.size();
+                    if (sparse.size() < 4) {
+                        id = 5;
+                    } else {
+                        id = sparse.size();
+                    }
                 }
             }
             if (id >= sparse.size()) {
@@ -73,15 +77,18 @@ class SparseArray {
          */
         void remove(int id) {
             assert(id < sparse.size() && sparse[id] != -1 && "Invalid ID");
-
+            printf("iDDDDDDDDD = %d\n", id);
             // Remove all traces of the element in dense, sparse, and indices!
             int index = sparse[id];
+            printf("index remove = %d\n", index);
             dense[index] = dense.back();
             dense.pop_back();
+            std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
             sparse[id] = -1;
             indices[index] = indices.back();
             indices.pop_back();
             sparse[indices[index]] = index;
+            //printf("sparse[indices[index]] = %d\n", sparse[indices[index]]);
         }
 
         /**

@@ -84,7 +84,7 @@ void server::Game::run()
 
         _functions.clear();
         manager.update();
-        // printf("tick++");
+        // printf("tick+getClientID+");
         _tick++;
         // printf("tick = " << _tick);
 

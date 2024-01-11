@@ -101,6 +101,7 @@ void S_Collision::update()
 
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
                 // printf("Bullet %d destroyed\n", denseIndex[index1]);
+                printf("Bullet %d destroyed\n", denseIndex[index1]);
                 _sparseEntities.remove(denseIndex[index1]);
             }
         }
@@ -172,25 +173,16 @@ void S_Weapon::shootPlayer(int idCreator)
     std::vector<int> denseIndex = _sparseEntities.getAllIndices();
 
     for (auto& entity : _sparseEntities.getAll()) {
-        try {
-            if (typeid(*entity) == typeid(E_Player)) {
-                C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
-
-                if (idCreator == denseIndex[i]) {
-                    // create bullet with player position info
-                    int xpos = transform->_position.x + transform->_size.x;
-                    int ypos = transform->_position.y + transform->_size.y / 2;
-                    // printf("Player position : %d %d\n", xpos, ypos);
-                    float velocity_x = 20;
-                    float velocity_y = 0;
-                    _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
-                    _lastTick = _tick;
-                }
-            }
-        }
-        catch (std::exception& e) {
-            printf("Exception caught : %s\n", e.what());
-            continue;
+        if (idCreator == denseIndex[i]) {
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+            // create bullet with player position info
+            int xpos = transform->_position.x + transform->_size.x;
+            int ypos = transform->_position.y + transform->_size.y / 2;
+            // printf("Player position : %d %d\n", xpos, ypos);
+            float velocity_x = 20;
+            float velocity_y = 0;
+            _sparseEntities.add(std::make_shared<E_Bullet>(10, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator));
+            _lastTick = _tick;
         }
         i++;
     }
