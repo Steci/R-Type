@@ -63,12 +63,6 @@ class SparseArray {
                 // Replace if already exists
                 dense[sparse[id]] = std::move(element);
             }
-            // print all the sparse nicely
-            printf("After Addition\n");
-            for (int i = 0; i < sparse.size(); i++) {
-                printf("%d[%d], ", i, sparse[i]);
-            }
-            printf("\n");
             return id;
         }
 
@@ -81,14 +75,6 @@ class SparseArray {
          * @param id The ID of the element to be removed.
          */
         void remove(int id) {
-            printf("\nREMOVE|| ID : %d\tSIZE :%d\tSPARSE[ID] : %d\n", id, sparse.size(), sparse[id]);
-            printf("Dense IDS BEFORE DELETION\n");
-            for (int i = 0; i < dense.size(); i++) {
-                if (dense[i] != nullptr)
-                    printf("%d[%d], ", i, dense[i]->getId());
-                else
-                    printf("%d[nullptr], ", i);
-            }
             assert(id < sparse.size() && "Invalid ID");
             // Remove all traces of the element in dense, sparse, and indices!
             int index = sparse[id];
@@ -102,19 +88,6 @@ class SparseArray {
             dense = std::move(temp);
             // std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
             sparse[id] = -1;
-            printf("After Deletion\n");
-            for (int i = 0; i < sparse.size(); i++) {
-                printf("%d[%d], ", i, sparse[i]);
-            }
-            printf("\n");
-            printf("Dense IDS\n");
-            for (int i = 0; i < dense.size(); i++) {
-                if (dense[i] != nullptr)
-                    printf("%d[%d], ", i, dense[i]->getId());
-                else
-                    printf("%d[nullptr], ", i);
-            }
-            printf("\n------------\n");
         }
 
         /**
