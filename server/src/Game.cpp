@@ -212,3 +212,22 @@ std::vector<char> server::Frame::serializeFrame()
 
     return data;
 }
+
+std::vector<char> server::Frame::serializeFrames(const std::string &entityType)
+{
+
+    std::vector<char> data;
+
+    char* tickPtr = reinterpret_cast<char*>(&_tick);
+    data.insert(data.end(), tickPtr, tickPtr + sizeof(_tick));
+
+    auto playerData = _entities.serializeToVector(entityType);
+    data.insert(data.end(), playerData.begin(), playerData.end());
+
+
+    std::string endMarker = "END";
+    data.insert(data.end(), endMarker.begin(), endMarker.end());
+    data.push_back('\0');
+
+    return data;
+}   

@@ -118,13 +118,23 @@ void server::Network::manageClient(std::vector<char> buffer, int client_id, Game
 
 void server::Network::updateClients(int client_id, Game *game)
 {
+    // crée une listes de string
     std::vector<std::string> functions_clients;
+
+    // crée et recupere les frames du jeux
     std::vector<Frame> frames = (*game).getFrames();
+
+    // declare une variable frame
     Frame frame;
+
+    // declare une variable bool pour savoir si on a trouvé la frame
     bool frame_found = false;
 
+    // si il n'y a pas de frame ou si la frame est plus petite que la derniere envoyé + 1
     if (frames.size() == 0 || frames.size() <= _last_tick_send + 1)
         return;
+
+    
     if (frames[_last_tick_send].getTick() == _last_tick_send) {
         frame_found = true;
         frame = frames[_last_tick_send + 1];
@@ -137,10 +147,28 @@ void server::Network::updateClients(int client_id, Game *game)
             }
         }
     }
+
+
     if (!frame_found)
         return;
+
+
     _last_tick_send = frame.getTick();
-    std::vector<char> data = frame.serializeFrame();
+
+    std::vector<char> data = frame.serializeFrames("E_Bullet");
+    
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        struct sockaddr_in cli = client->getAddr();
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    }
+
+    data = frame.serializeFrames("E_Enemy");
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        struct sockaddr_in cli = client->getAddr();
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    }
+
+    data = frame.serializeFrames("E_Player");
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));

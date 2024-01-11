@@ -50,6 +50,7 @@ namespace server
             Frame() = default;
             ~Frame() = default;
             std::vector<char> serializeFrame();
+            std::vector<char> serializeFrames(const std::string &entityType)
     };
 
     class Game
