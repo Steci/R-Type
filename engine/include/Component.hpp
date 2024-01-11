@@ -197,7 +197,7 @@ struct C_AnimationInfo : public Component {
     int _currentFrame = 0;
     int _speed;
     C_AnimationInfo(int x, int y, int maxXframe, int maxYframe, int speed) {
-        _size = {x, y};
+        _size = {static_cast<float>(x), static_cast<float>(y)};
         _maxXframe = maxXframe;
         _maxYframe = maxYframe;
         _speed = speed;

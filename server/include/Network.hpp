@@ -27,7 +27,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <unistd.h>
+#include <io.h>
+#include <process.h>
 #include <bitset>
 #include <fstream>
 #include <algorithm>
