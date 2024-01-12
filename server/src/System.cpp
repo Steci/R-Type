@@ -38,6 +38,7 @@ void S_Collision::update()
     std::vector<int> toRemove;
 
     for (auto& entity1 : _sparseEntities.getAll()) {
+        if (entity1->getComponents().size() > 1) {
         for (auto& entity2 : _sparseEntities.getAll()) {
             if (entity1->getComponents().size() == 0 || entity2->getComponents().size() == 0)
                 continue;
@@ -60,20 +61,22 @@ void S_Collision::update()
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
                         C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity2);
-                        int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
-                        C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
+                        // int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
+                        // C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
                         toRemove.push_back(entity1->getId());
                         toRemove.push_back(entity2->getId());
-                        if (enemyInfo->_type >= 1 || enemyInfo->_type <= 3) {
-                            score->score += 10 * static_cast<int>(enemyInfo->_type);
-                        }
-                        Engine::setScore(_sparseEntities.get(idCreator), score->score);
+                        // if (enemyInfo->_type == 1) {
+                        //     score->score += 10;
+                        // } else if (enemyInfo->_type == 2) {
+                        //     score->score += 20;
+                        // } else {
+                        //     score->score += 30;
+                        // }
+                        // Engine::setScore(_sparseEntities.get(idCreator), score->score);
                     }
                 }
             }
         }
-        if (entity1->getComponents().size() == 0)
-            continue;
         if (typeid(*entity1) == typeid(E_Player)) {
             // check if player is leaving screenWidth or screenHeight
             C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
@@ -107,6 +110,7 @@ void S_Collision::update()
                 printf("Bullet %d destroyed\n", entity1->getId());
                 toRemove.push_back(entity1->getId());
             }
+        }
         }
     }
     for (auto& id : toRemove) {
