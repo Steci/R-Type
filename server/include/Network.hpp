@@ -26,14 +26,14 @@
     #define MMNOSOUND
     #include <winsock2.h>
     #include <ws2tcpip.h>
+    #include <io.h>
+    #include <process.h>
     #define OS "windows"
 #endif
 
 #include <string>
 #include <iostream>
 #include <vector>
-#include <io.h>
-#include <process.h>
 #include <bitset>
 #include <fstream>
 #include <algorithm>
