@@ -88,22 +88,28 @@ namespace client {
     class Menu
     {
         public:
-            Menu() { 
-                _status =  true;
-                _JoinGame = false;
-                _idServerJoin = 0;
-            };
+            Menu() {};
             ~Menu() = default;
 
             void render(int screenWidth);
-            bool getStatusMenu() { return _status; };
-            bool getJoinGame() { return _JoinGame; };
-            int getIdServerJoin() { return _idServerJoin; };
+            bool getStatusMenu() {_mutex_status.lock();bool tmp = _status;_mutex_status.unlock();return tmp;};
+            bool getJoinGame() {_mutex_joinGame.lock();bool tmp = _JoinGame;_mutex_joinGame.unlock();return tmp;};
+            int getIdServerJoin() {_mutex_idServerJoin.lock();int tmp = _idServerJoin;_mutex_idServerJoin.unlock();return tmp;};
+            bool getCreateGame() {_mutex_createGame.lock();bool tmp = _createGame;_mutex_createGame.unlock();return tmp;};
+            void setStatusMenu(bool status) {_mutex_status.lock();_status = status;_mutex_status.unlock();};
+            void setJoinGame(bool joinGame) {_mutex_joinGame.lock();_JoinGame = joinGame;_mutex_joinGame.unlock();};
+            void setIdServerJoin(int idServerJoin) {_mutex_idServerJoin.lock();_idServerJoin = idServerJoin;_mutex_idServerJoin.unlock();};
+            void setCreateGame(bool createGame) {_mutex_createGame.lock();_createGame = createGame;_mutex_createGame.unlock();};
 
         private:
-            bool _status;
-            bool _JoinGame;
-            int _idServerJoin;
+            std::mutex _mutex_status;
+            std::mutex _mutex_joinGame;
+            std::mutex _mutex_createGame;
+            std::mutex _mutex_idServerJoin;
+            bool _status = true;
+            bool _JoinGame = false;
+            bool _createGame = false;
+            int _idServerJoin = 0;
     };
 
     class Game
@@ -113,7 +119,6 @@ namespace client {
         public:
             Game() {
                 _tick = 0;
-                _menu = Menu();
             };
             ~Game();
             void run();
@@ -121,6 +126,7 @@ namespace client {
             void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
             void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
             void createTextures();
+            Menu *getMenu() {return &_menu;};
             // à faire pour rajouter les frame à display
             // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
 
@@ -135,10 +141,10 @@ namespace client {
             std::map<int, Infos> _ennemy_sprites;
             std::map<int, Infos> _player_sprites;
             std::map<int, Infos> _utils_sprites;
-            Menu _menu;
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
             void infoInteraction(int mov, int shoot, int quit, int createGame);
+            Menu _menu;
     };
 }

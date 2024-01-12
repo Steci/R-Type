@@ -145,9 +145,7 @@ namespace client {
             if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
                 DrawRectangleRec(btnCreate, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    //mutex
-                    printf("create part\n");
-                    this->_status = false;
+                    setCreateGame(true);
                     return;
                 }
             } else {
@@ -158,9 +156,9 @@ namespace client {
                     DrawRectangleRec(btnJoin, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
                     //mutex
-                    this->_JoinGame = true;
-                    this->_idServerJoin = parties[selectedParty];
-                    this->_status = false;
+                    // this->_JoinGame = true;
+                    // this->_idServerJoin = parties[selectedParty];
+                    // this->_status = false;
                     printf("Join part\n");
                     return;
                 }
