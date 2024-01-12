@@ -71,7 +71,16 @@ namespace client {
             ~Game();
             void run();
             std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
-            void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
+            void deleteInteraction(int nbr_interaction) {
+                _mutex_interactions.lock();
+                if (!_interactions.empty() && nbr_interaction >= 0 && nbr_interaction < _interactions.size()) {
+                    _interactions.erase(_interactions.begin() + nbr_interaction);
+                } else {
+                    std::cerr << "Error: _interactions is empty." << std::endl;
+                }
+                _mutex_interactions.unlock();
+            };
+            //void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
             void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
             void createTextures();
             // à faire pour rajouter les frame à display
