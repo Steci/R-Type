@@ -38,15 +38,20 @@ void S_Collision::update()
     std::vector<int> toRemove;
 
     for (auto& entity1 : _sparseEntities.getAll()) {
+        printf("Line 1\n");
         for (auto& entity2 : _sparseEntities.getAll()) {
+            printf("Line 2\n");
             if (entity1 != entity2) {
+                printf("Line 3\n");
                 C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
                 C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
                 C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
                 C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
 
                 if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
+                    printf("Line 4\n");
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
+                        printf("Line 5\n");
                         C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
 
@@ -55,8 +60,9 @@ void S_Collision::update()
                     }
                 }
                 else if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
+                    printf("Line 6\n");
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
-                        C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
+                        printf("Line 7\n");
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
                         C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity2);
 
@@ -78,6 +84,7 @@ void S_Collision::update()
             }
         }
         if (typeid(*entity1) == typeid(E_Player)) {
+            printf("Line 8\n");
             // check if player is leaving screenWidth or screenHeight
             C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
             C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
@@ -92,6 +99,7 @@ void S_Collision::update()
                 transform1->_position.y = screenHeight - hitbox1->_size.y;
         }
         if (typeid(*entity1) == typeid(E_Enemy)) {
+            printf("Line 9\n");
             // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
@@ -102,6 +110,7 @@ void S_Collision::update()
             }
         }
         else if (typeid(*entity1) == typeid(E_Bullet)) {
+            printf("Line 10\n");
             // Destroy bullet if it leaves the screen
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
@@ -175,7 +184,16 @@ S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick)
 
 void S_Weapon::shootPlayer(int idCreator)
 {
-    if (_tick - _lastTick < 10) {
+    E_Player* player;
+    for (auto& entity : _sparseEntities.getAll()) {
+        if (typeid(*entity) == typeid(E_Player)) {
+            if (entity->getId() == idCreator) {
+                player = dynamic_cast<E_Player*>(entity.get());
+            }
+        }
+    }
+    int lastTick = player->getLastTick();
+    if (_tick - lastTick < 10) {
         return;
     }
     IEntity& entity = _sparseEntities.get(idCreator);
@@ -192,7 +210,7 @@ void S_Weapon::shootPlayer(int idCreator)
     std::shared_ptr<E_Bullet> bullet = std::make_shared<E_Bullet>(0, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator);
     int id = _sparseEntities.add(bullet);
     bullet->setId(id);
-    _lastTick = _tick;
+    player->setLastTick(_tick);
 }
 
 void S_Weapon::update()
