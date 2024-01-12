@@ -58,9 +58,21 @@ void S_Collision::update()
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
+                        C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity2);
+
+                        int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
+                        C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
 
                         toRemove.push_back(entity1->getId());
                         toRemove.push_back(entity2->getId());
+                        if (enemyInfo->_type == 1) {
+                            score->_score += 10;
+                        } else if (enemyInfo->_type == 2) {
+                            score->_score += 20;
+                        } else {
+                            score->_score += 30;
+                        }
+                        Engine::setScore(_sparseEntities.get(idCreator), score->_score);
                     }
                 }
             }
