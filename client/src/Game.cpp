@@ -149,7 +149,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
             C_Score *score = Engine::getComponentRef<C_Score>(player);
 
-            auto playerShared = std::make_shared<E_Player>(player);
+            auto playerShared = std::make_shared<E_Player>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
             playerShared->setId(id_client);
             int id = _entities.add(playerShared, id_client);
             id_client += 1;
