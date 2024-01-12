@@ -114,29 +114,167 @@ class Entity : public IEntity {
 };
 
 namespace Engine {
-    C_Transform* getTransform(std::shared_ptr<IEntity> entity);
-    C_Damage* getDamage(std::shared_ptr<IEntity> entity);
-    C_Health* getHealth(std::shared_ptr<IEntity> entity);
-    C_Sprite* getSprite(std::shared_ptr<IEntity> entity);
-    C_Hitbox* getHitbox(std::shared_ptr<IEntity> entity);
-    C_Score* getScore(std::shared_ptr<IEntity> entity);
+    /**
+     * @brief Return C_transform component of a specific entity.
+     *
+     * @param entity The entity where we want to retrieve the information.
+     * @return A pointer to the C_Transform component.
+     */
+    C_Transform* getTransform(std::unique_ptr<IEntity> entity);
+
+    /**
+     * @brief Return C_Damage component of a specific entity.
+     *
+     * @param entity The entity where we want to retrieve the information.
+     * @return A pointer to the C_Damage component.
+     */
+    C_Damage* getDamage(std::unique_ptr<IEntity> entity);
+
+    /**
+     * @brief Return C_Health component of a specific entity.
+     *
+     * @param entity The entity where we want to retrieve the information.
+     * @return A pointer to the C_Health component.
+     */
+    C_Health* getHealth(std::unique_ptr<IEntity> entity);
+
+    /**
+     * @brief Return C_Sprite component of a specific entity.
+     *
+     * @param entity The entity where we want to retrieve the information.
+     * @return A pointer to the C_Sprite component.
+     */
+    C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
+
+    /**
+     * @brief Return C_Hitbox component of a specific entity.
+     *
+     * @param entity The entity where we want to retrieve the information.
+     * @return A pointer to the C_Hitbox component.
+     */
+    C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
+
+    /**
+     * @brief Return C_Score component of a specific entity.
+     *
+     * @param entity The entity where we want to retrieve the information.
+     * @return A pointer to the C_Score component.
+     */
+    C_Score* getScore(std::unique_ptr<IEntity> entity);
+
     C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity);
+    /**
+     * @brief Setup the new position on the C_transform component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newPos The newPos is the new Vector2 Position for the C_transform component of the specific adress entity
+     */
     void setTransformPos(IEntity& entity, Vec2 newPos);
+
+    /**
+     * @brief Setup the new size on the C_transform component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newSize The newSize is the new Vector2 size for the C_transform component of the specific adress entity
+     */
     void setTransformSize(IEntity& entity, Vec2 newSize);
+
+    /**
+     * @brief Setup the new velocity on the C_transform component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newVel The newVel is the new Vector2 velocity for the C_transform component of the specific adress entity
+     */
     void setTransformVel(IEntity& entity, Vec2 newVel);
+
+    /**
+     * @brief Setup the new aniamtion on the C_transform component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newAni The newAni is the new animation for the C_transform component of the specific adress entity
+     */
     void setTransformAni(IEntity& entity, int newAni);
+
+    /**
+     * @brief Setup the new damage on the C_Damage component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newDamage The newDamage is the new damage for the C_Damage component of the specific adress entity
+     */
     void setDamageDamage(IEntity& entity, int newDamage);
+
+    /**
+     * @brief Setup the new health on the C_Health component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newHealth The newHealth is the new health for the C_Health component of the specific adress entity
+     */
     void setHealth(IEntity& entity, int newHealth);
+
+    /**
+     * @brief Setup the new asset path on the C_Sprite component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newSpriteName The newSpriteName is the new asset path for the C_Sprite component of the specific adress entity
+     */
     void setSpriteName(IEntity& entity, std::string newSpriteName);
+
+    /**
+     * @brief Setup the new Image on the C_Sprite component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newImage The newImage is the new Image for the C_Sprite component of the specific adress entity
+     */
     void setSpriteImage(IEntity& entity, Image newImage);
+
+    /**
+     * @brief Setup the new Texture on the C_Sprite component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newTexture The newTexture is the new Texture for the C_Sprite component of the specific adress entity
+     */
     void setSpriteTexture(IEntity& entity, Texture2D newTexture);
+
+    /**
+     * @brief Setup the new check collision box on the C_Hitbox component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newHitbox The newHitbox is the new check collision box for the C_Hitbox component of the specific adress entity
+     */
     void setHitboxSize(IEntity& entity, Vec2 newHitbox);
+
+    /**
+     * @brief Setup the new time for the animtaion damage on the C_Hitbox component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newTime The newTime is the new time for the animtaion damage for the C_Hitbox component of the specific adress entity
+     */
     void setHitboxTime(IEntity& entity, int newTime);
+
+    /**
+     * @brief Setup the new status on the C_Hitbox component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newStatus The newStatus is the new status for the C_Hitbox component of the specific adress entity
+     */
     void setHitboxStatus(IEntity& entity, int newStatus);
+
+    /**
+     * @brief Setup the new player score on the C_Score component of the specific adress entity.
+     *
+     * @param entity The adress entity where we want to setup the new informations.
+     * @param newScore The newStatus is the new player score for the C_Score component of the specific adress entity
+     */
     void setScore(IEntity& entity, int newScore);
     void setEnemyInfoType(IEntity& entity, int newType);
 
     template<typename T>
+    /**
+     * @brief Depending on the address of an entity given as a parameter. It will search if the existing component exists in the function. If yes, it casts it and returns it as a pointer, otherwise it returns nullptr.
+     *
+     * @param entity The entity allows you to know on which entity to look for the component in question.
+     * @return A pointer to the component if found, nullptr otherwise.
+     */
     T* getComponentRef(IEntity& entity)
     {
         T* component = dynamic_cast<T*>(entity.getComponentOfType(typeid(T)));

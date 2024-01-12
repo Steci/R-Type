@@ -6,7 +6,9 @@
 */
 
 #pragma once
-
+/**
+ * @brief The class for setup Vector2 for the different components.
+ */
 class Vec2 {
     public:
         float x, y;
