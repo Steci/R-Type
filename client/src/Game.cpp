@@ -39,7 +39,7 @@ namespace client {
             shoot = manager.getSystem<S_EventManager>()->getShoot();
             quit = manager.getSystem<S_EventManager>()->getQuit();
             if (mov != 0 || shoot != 0 || quit != 0)
-                infoInteraction(mov, shoot, quit);
+                infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
             _mutex_frames.lock();
             if (_frames.size() != 0) {
                 current_frame.clearEntities();
@@ -99,7 +99,7 @@ namespace client {
         }
     }
 
-    void Game::infoInteraction(int mov, int shoot, int quit)
+    void Game::infoInteraction(int mov, int shoot, int quit, int createGame)
     {
         Interaction inter;
 
@@ -107,7 +107,7 @@ namespace client {
         _mutex_frames.lock();
         _mutex_interactions.lock();
         if (_frames.size() != 0 && _interactions.size() == 0) {
-            inter.setInteraction(mov, shoot, quit);
+            inter.setInteraction(mov, shoot, quit, createGame);
             _interactions.push_back(inter);
         }
         _mutex_interactions.unlock();
@@ -125,6 +125,11 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         _tick = *reinterpret_cast<const int*>(&(*it));
         // printf("tick = %d\n", _tick);
         it += sizeof(_tick);
+    }
+    if (std::distance(it, serializedData.end()) >= sizeof(_serverId)) {
+        _serverId = *reinterpret_cast<const int*>(&(*it));
+        // printf("serverId = %d\n", _serverId);
+        it += sizeof(_serverId);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
         std::string entityType;
@@ -177,6 +182,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             int id = _entities.add(bulletShared);
             bulletShared->setId(id);
         }
+
         if (isEndMarker(it, serializedData)) {
             break;
         }

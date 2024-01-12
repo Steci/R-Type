@@ -23,30 +23,19 @@
 
 namespace client {
 
-    // cette class va être envoyé au server pour lui dire ce qu'on fait donc toute interraction avec le jeu passe par ici
-    // cette class existe aussi dans le server donc fait gaffe si tu changes un truc faut aussi le changer côté serveur mais à terme elle existera qu'à un endroit (oui j'aurais pu le faire dès le début mais je suis crevé et si je change mtn ça va être un bordel sans nom)
-    class Interaction {
+    class Interaction : public AInteraction{
         public:
-            Interaction() {};
+            Interaction() {
+                _movement = 0;
+                _shoot = 0;
+                _quit = 0;
+                _createGame = 0;
+            };
             ~Interaction() {};
-            //ici laetitia tu mettre l'interaction qui nous intéresse à la valeur qu'on veut et surtout hésite pas à le changer prck c'est que du fonctionel là
-            void setInteraction(int mov = 0, int shoot = 0, int quit = 0) {
-                _movement = mov;
-                _shoot = shoot;
-                _quit = quit;
-            }
-            int getMovement() const {return _movement;};
-            int getShoot() const {return _shoot;};
-            int getQuit() const {return _quit;};
             std::vector<char> serializeInteraction() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Interaction));
             }
-        private:
-            int _movement = 0; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server) !!!!!! jamais négatif !!!!!!
-            int _shoot = 0; // 0 si rien 1 si quelque chose
-            int _quit = 0; // 0 si rien 1 si le client veut quitter
-            int _createGame = 0; // 0 si rien 1 si le client veut créer une game
     };
 
     class Frame : public AFrame {
@@ -94,7 +83,7 @@ namespace client {
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
-            void infoInteraction(int mov, int shoot, int quit);
+            void infoInteraction(int mov, int shoot, int quit, int createGame);
     };
 
 }

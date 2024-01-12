@@ -20,31 +20,26 @@
 
 namespace server
 {
-    class Interaction { // cette class va être envoyé au server pour lui dire ce qu'on fait donc toute interraction avec le jeu passe par ici
+    class Interaction : public AInteraction{
         public:
-            Interaction() {};
+            Interaction() {
+                _movement = -1;
+                _shoot = -1;
+                _quit = -1;
+                _createGame = -1;
+            };
             ~Interaction() {};
-
-            int getMovement() const {return _movement;};
-            int getShoot() const {return _shoot;};
-            int getQuit() const {return _quit;};
-
             int getClientID() const {return _client_id;};
             int getConnect() const {return _connect;};
-            int getCreateGame() const {return _createGame;};
             void setClientID(int clientID) {_client_id = clientID;};
             void setConnect(int connect) {_connect = connect;};
             void deserializeInteraction(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
         private:
-            int _movement = -1; // ici mettre mettre le mouvement qu'on veut et laisser à 0 si rien (par ex 1 pour gauche, 2 pour droite, etc... tu peux mettre ce que tu veux c'est juste des exemple donc si tu veux 40000000 c'est gauche faut juste penser à respecter cette valeur côté server)
-            int _shoot = -1; // 0 si rien 1 si quelque chose
-            int _quit = -1; // 0 si rien 1 si le client veut quitter
-            int _createGame = -1; // 0 si rien 1 si le client veut créer une game
             //etc... rajouter les variables communes au dessus de se commentaire
-            int _connect = -1; // 0 si rien 1 si le client veut se connecter
-            int _client_id;
+            int _connect = -1;
+            int _client_id = -1;
     };
 
     class Frame : public AFrame{

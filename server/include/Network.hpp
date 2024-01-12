@@ -136,7 +136,7 @@ namespace server {
             std::tuple<int, server::Connection> handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
-            void updateClients(int client_id, Game *game);
+            void updateClients(Game *game);
             void checkClass(std::vector<char> buffer);
             int CreateGame(std::vector<int> idNotUsableGame);
 

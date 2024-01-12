@@ -86,7 +86,10 @@ void server::Network::run(Game *game)
     while(_isRunning) {
         client = 0;
         client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
-        updateClients(id, game);
+        // for (int i = 0; i < games.size(); ++i) {
+        //     updateClients(&games[i]);
+        // }
+        updateClients(game);
         if (client < 0) {
             continue;
         }
@@ -95,13 +98,16 @@ void server::Network::run(Game *game)
         if (id != 0 && id != -1) {
             // if (interaction.getCreateGame() == 1) {
             //     for (auto client = _clients.begin(); client != _clients.end(); client++) {
-            //         if (client->getId() == connect.getId()) {
+            //         if (client->getId() == connect.getId() && client->getGameId() == -1) {
             //             Game gameTmp;
             //             gameTmp.setGameId(CreateGame(idNotUsableGame));
             //             idNotUsableGame.push_back(gameTmp.getGameId());
             //             games.push_back(gameTmp);
             //             threads[gameTmp.getGameId()] = std::thread(&Game::run, &games.back());
-
+            //             interaction.setConnect(1);
+            //             games.back().addInteraction(interaction);
+            //             client->setGameId(gameTmp.getGameId());
+            //             break;
             //         }
             //     }
             // }
@@ -111,13 +117,6 @@ void server::Network::run(Game *game)
             interaction.setConnect(1);
             (*game).addInteraction(interaction);
         }
-        // if (id != 84) {
-        //     if (resData == "TICKRATE") {
-        //         std::vector<char> data = game->serialize();
-        //         commandSetTickrate(convert.deserialize(data));
-        //     } else
-        //         manageMessage(resData, id, game);
-        // }
     }
 }
 
@@ -145,7 +144,7 @@ void server::Network::manageClient(std::vector<char> buffer, int client_id, Game
         (*game).addInteraction(interaction);
 }
 
-void server::Network::updateClients(int client_id, Game *game)
+void server::Network::updateClients(Game *game)
 {
     std::vector<std::string> functions_clients;
     std::vector<Frame> frames = (*game).getFrames();
@@ -171,6 +170,10 @@ void server::Network::updateClients(int client_id, Game *game)
     _last_tick_send = frame.getTick();
     std::vector<char> data = frame.serializeFrame();
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        // if (client->getGameId() == (*game).getGameId()) {
+        //     struct sockaddr_in cli = client->getAddr();
+        //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        // }
         struct sockaddr_in cli = client->getAddr();
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }

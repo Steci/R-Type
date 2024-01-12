@@ -5,8 +5,6 @@
 ** Game.cpp
 */
 
-#include <sstream>
-#include <algorithm>
 #include "Game.hpp"
 
 server::Game::Game()
@@ -124,6 +122,7 @@ std::vector<char> server::Frame::serializeFrame()
     std::vector<char> data;
 
     data.insert(data.end(), reinterpret_cast<const char*>(&_tick), reinterpret_cast<const char*>(&_tick) + sizeof(_tick));
+    data.insert(data.end(), reinterpret_cast<const char*>(&_serverId), reinterpret_cast<const char*>(&_serverId) + sizeof(_serverId));
     // printf("tick = %d\n", _tick);
 
     auto playerData = _entities.serializeToVector("E_Player");

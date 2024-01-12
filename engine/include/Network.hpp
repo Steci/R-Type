@@ -43,4 +43,35 @@ class AFrame : public IFrame {
         int _tick;
         // ici mettre les infos de la frame à display
         SparseArray<IEntity> _entities;
+        int _serverId;
+};
+
+class IInteraction {
+    public:
+        virtual void setInteraction(int mov, int shoot, int quit, int createGame) = 0;
+        virtual int getMovement() const = 0;
+        virtual int getShoot() const = 0;
+        virtual int getQuit() const = 0;
+        virtual int getCreateGame() const = 0;
+};
+
+class AInteraction : public IInteraction{
+    public:
+        AInteraction() = default;
+        ~AInteraction() = default;
+        void setInteraction(int mov, int shoot, int quit, int createGame) override {
+            _movement = mov;
+            _shoot = shoot;
+            _quit = quit;
+            _createGame = createGame;
+        };
+        int getMovement() const override {return _movement;};
+        int getShoot() const override {return _shoot;};
+        int getQuit() const override {return _quit;};
+        int getCreateGame() const override {return _createGame;};
+    protected:
+        int _movement = 0;
+        int _shoot = 0;
+        int _quit = 0;
+        int _createGame = 0;
 };
