@@ -41,10 +41,9 @@ int server::Network::fillSocket()
     #endif
 
     #ifdef _WIN64
-        WSADATA wsaData;
         int iResult = 0;
 
-        iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        iResult = WSAStartup(MAKEWORD(2, 2), &_wsaData);
         if (iResult != NO_ERROR) {
             std::cerr << "Error: WSAStartup failed" << std::endl;
             return(84);
@@ -61,6 +60,9 @@ int server::Network::fillSocket()
             std::cerr << "Error: socket options failed" << WSAGetLastError() << std::endl;
             return(84);
         }
+
+        unsigned read_timeout_ms = 10;
+        setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&read_timeout_ms), sizeof(read_timeout_ms));
     #endif
     return 0;
 }
@@ -72,6 +74,9 @@ int server::Network::fillAddr()
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
     _addr.sin_addr.s_addr = INADDR_ANY;
+    #ifdef _WIN64
+        _clientAddrLen = sizeof(SOCKADDR);
+    #endif
     std::cout << "Server IP: " << inet_ntoa(_addr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_addr.sin_port) << std::endl;
     return 0;
@@ -104,7 +109,6 @@ void server::Network::run(Game *game)
         if (client < 0) {
             continue;
         }
-        std::cout << "HEYAAAAA" << std::endl;
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
         if (id != 0 && id != -1) {
@@ -233,10 +237,17 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     }
     connect.setId(_clients.size() + 1);
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
-    sockaddr_in cli = _clients.back().getAddr();
+    struct sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    std::cout << "Client IP: " << inet_ntoa(cli.sin_addr) << std::endl;
+    std::cout << "Client port: " << ntohs(cli.sin_port) << std::endl;
+    #ifdef _WIN64
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    #endif
+    #ifdef linux
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    #endif
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

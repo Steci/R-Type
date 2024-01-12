@@ -65,8 +65,8 @@ namespace server {
                 struct sockaddr_in getAddr() const {return _addr;};
             #endif
             #ifdef _WIN64
-                Client(SOCKADDR_IN addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
-                SOCKADDR_IN getAddr() const {return _addr;};
+                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                struct sockaddr_in getAddr() const {return _addr;};
             #endif
             ~Client() {};
             int getId() const {return _id;};
@@ -81,7 +81,7 @@ namespace server {
                 struct sockaddr_in _addr;
             #endif
             #ifdef _WIN64
-                SOCKADDR_IN _addr;
+                struct sockaddr_in _addr;
             #endif
             int _id;
             int _gameId = -1;
@@ -133,9 +133,10 @@ namespace server {
                 socklen_t _clientAddrLen;
             #endif
             #ifdef _WIN64
-                SOCKADDR_IN _addr;
-                SOCKADDR_IN _clientAddr;
+                struct sockaddr_in _addr;
+                struct sockaddr_in _clientAddr;
                 socklen_t _clientAddrLen;
+                WSADATA _wsaData;
             #endif
             int _tickrate;
             int _last_tick_send = 0;

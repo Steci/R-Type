@@ -16,9 +16,11 @@ client::Network::Network(std::string serverIP, int serverPort): _serverIP(server
 client::Network::~Network()
 {
     #ifdef linux
+        close(_fd);
     #endif
     #ifdef _WIN64
         closesocket(_fd);
+        WSACleanup();
     #endif
 }
 
@@ -35,31 +37,32 @@ int client::Network::fillSocket()
         if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
             close(_fd);
-            return(84);
+            return (84);
         }
     #endif
 
     #ifdef _WIN64
-        WSADATA wsaData;
         int iResult = 0;
 
-        iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        iResult = WSAStartup(MAKEWORD(2, 2), &_wsaData);
         if (iResult != NO_ERROR) {
             std::cerr << "Error: WSAStartup failed" << std::endl;
-            return(84);
+            return (84);
         }
         _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (_fd == INVALID_SOCKET) {
-            std::cerr << "Error: socket creation failed" << std::endl;
-            printf("%d\n", WSAGetLastError());
+            std::cerr << "Error: socket creation failed" << WSAGetLastError() << std::endl;
             closesocket(_fd);
             WSACleanup();
-            return(84);
+            return (84);
         }
         if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(int)) == -1) {
             std::cerr << "Error: socket options failed" << WSAGetLastError() << std::endl;
-            return(84);
+            return (84);
         }
+
+        unsigned read_timeout_ms = 10;
+        setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&read_timeout_ms), sizeof(read_timeout_ms));
     #endif
     return 0;
 }
@@ -79,6 +82,9 @@ int client::Network::fillAddr()
     _serverAddr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
     _serverAddr.sin_port = htons(_serverPort);
     _serverAddr.sin_family = AF_INET;
+    #ifdef _WIN64
+        _serverAddrLen = sizeof(SOCKADDR);
+    #endif
     std::cout << "Server IP: " << inet_ntoa(_serverAddr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_serverAddr.sin_port) << std::endl;
     std::cout << "Client port: " << ntohs(_addr.sin_port) << std::endl;
@@ -98,7 +104,7 @@ void client::Network::run(Game *game)
         #endif
         #ifdef _WIN64
             // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
-            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (SOCKADDR *)&_serverAddr, &_serverAddrLen);
         #endif
         checkInteraction(game);
         if (server == -1) {
@@ -139,10 +145,9 @@ int client::Network::connectCommand()
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         #ifdef _WIN64
-            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
-            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (SOCKADDR *)&_serverAddr, &_serverAddrLen);
             if (server == SOCKET_ERROR) {
-                std::cerr << "Empty..." << std::endl;
+                std::cerr << "Empty... error: " << WSAGetLastError() << std::endl;
             }
         #endif
         if (server != -1) {
