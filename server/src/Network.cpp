@@ -242,12 +242,7 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     std::vector<char> data = connect.serializeConnection();
     std::cout << "Client IP: " << inet_ntoa(cli.sin_addr) << std::endl;
     std::cout << "Client port: " << ntohs(cli.sin_port) << std::endl;
-    #ifdef _WIN64
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    #endif
-    #ifdef linux
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    #endif
+    sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

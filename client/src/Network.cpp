@@ -83,7 +83,7 @@ int client::Network::fillAddr()
     _serverAddr.sin_port = htons(_serverPort);
     _serverAddr.sin_family = AF_INET;
     #ifdef _WIN64
-        _serverAddrLen = sizeof(SOCKADDR);
+        _serverAddrLen = sizeof(_serverAddr);
     #endif
     std::cout << "Server IP: " << inet_ntoa(_serverAddr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_serverAddr.sin_port) << std::endl;
@@ -104,7 +104,7 @@ void client::Network::run(Game *game)
         #endif
         #ifdef _WIN64
             // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
-            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (SOCKADDR *)&_serverAddr, &_serverAddrLen);
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         checkInteraction(game);
         if (server == -1) {
@@ -145,7 +145,7 @@ int client::Network::connectCommand()
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         #ifdef _WIN64
-            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (SOCKADDR *)&_serverAddr, &_serverAddrLen);
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
             if (server == SOCKET_ERROR) {
                 std::cerr << "Empty... error: " << WSAGetLastError() << std::endl;
             }
