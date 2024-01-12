@@ -135,17 +135,35 @@ namespace client {
     {
         Rectangle btnCreate = { screenWidth/2 - 100, 100, 200, 50 };
         Rectangle btnJoin = { screenWidth/2 - 100, 200, 200, 50 };
+
+        std::string errorMessage = "";
+        std::string numberInput = "";
+
+        bool inputActive = false;
+
         const int parties[] = { 178946, 2789456, 34561 };
+
         int selectedParty = -1;
         int hoveredParty = -1;
+
+        Color violet = { 128, 0, 128, 255 };
 
         while (1) {
             BeginDrawing();
             ClearBackground(RAYWHITE);
             if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
-                DrawRectangleRec(btnCreate, GRAY);
+                DrawRectangleRec(btnCreate, violet);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    //mutex
                     setCreateGame(true);
+                    //renvoie de l'erreur c'est il y en a une!
+                    //if (si une erreur setup le message d'erreur) {
+                    //    errorMessage = "bhnjh";
+                    //} else {
+                    //    si ça marche faire ce qui suit!!
+                    //    this->_status = false;
+                    //    return;
+                    //}
                     return;
                 }
             } else {
@@ -155,7 +173,26 @@ namespace client {
                 if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
                     DrawRectangleRec(btnJoin, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
+                    // selection d'une partie
                     //mutex
+                    //renvoie de l'erreur c'est il y en a une!
+                    //if (si une erreur setup le message d'erreur) {
+                    //    errorMessage = "bhnjh";
+                    //} else {
+                    //    si ça marche faire ce qui suit!!
+                    //    this->_JoinGame = true;
+                    //    this->_idServerJoin = parties[selectedParty];
+                    //    this->_status = false;
+                    //    return;
+                    //}
+                } else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && std::stoi(numberInput) > 0) {
+                    // zone text elle peut prendre que des chiffres tqt
+                    //mutex
+                    //renvoie de l'erreur c'est il y en a une!
+                    //if (si une erreur setup le message d'erreur) {
+                    //    errorMessage = "bhnjh";
+                    //} else {
+                    //    si ça marche faire ce qui suit!!
                     // this->_JoinGame = true;
                     // this->_idServerJoin = parties[selectedParty];
                     // this->_status = false;
@@ -167,6 +204,30 @@ namespace client {
         }
         DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
 
+        if (!errorMessage.empty()) {
+            DrawText(errorMessage.c_str(), 10, 10, 20, RED);
+        }
+
+        Rectangle inputRect = { screenWidth/2 - 100, 500, 200, 50 };
+        DrawRectangleRec(inputRect, WHITE);
+        if (CheckCollisionPointRec(GetMousePosition(), inputRect)) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                inputActive = true;
+            }
+        }
+        if (inputActive) {
+            int key = GetCharPressed();
+            while (key > 0) {
+                if ((key >= '0' && key <= '9')) {
+                    numberInput.push_back((char)key);
+                }
+                key = GetCharPressed();
+            }
+            if (IsKeyPressed(KEY_BACKSPACE) && !numberInput.empty()) {
+                numberInput.pop_back();
+            }
+        }
+        DrawText(numberInput.c_str(), inputRect.x + 5, inputRect.y + 5, 20, BLACK);
         for (int i = 0; i < 3; i++) {
             Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
             if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
