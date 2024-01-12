@@ -78,9 +78,6 @@ void E_Player::update()
 void E_Player::render()
 {
     if (IsWindowReady() == true) {
-        C_Score *score = Engine::getComponentRef<C_Score>(*this);
-        std::string scoreText = "Patoune: " + std::to_string(score->_score);
-        DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
         C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
