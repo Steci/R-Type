@@ -43,7 +43,7 @@ class AFrame : public IFrame {
         int getTick() const override {return _tick;};
         void setArray(SparseArray<IEntity> entities) override
         {_entities = entities;};
-        Sparse      Array<IEntity> &getEntities() override {return _entities;};
+        SparseArray<IEntity> &getEntities() override {return _entities;};
     protected:
         int _tick;
         // ici mettre les infos de la frame à display

@@ -6,6 +6,8 @@
 */
 
 #include "Network.hpp"
+#include "Entity.hpp"
+#include "Component.hpp"
 
 client::Network::Network(std::string serverIP, int serverPort): _serverIP(serverIP), _serverPort(serverPort)
 {
@@ -153,15 +155,127 @@ int client::Network::inputCommand(std::string input)
 
 void client::Network::handleCommands(std::vector<char> buffer, Game *game)
 {
+    SparseArray<IEntity> new_entities;
+    SparseArray<IEntity> entities;
     client::Frame frame;
+    // TODO parse entity buffer
+    /*
+    
+    for (auto charact : buffer) {
+        std::cout << charact;
+    }
+    std::cout << std::endl;
+    */
+
+
+
+
+
+
+
+
+
+
+    int tick = 0;
+    auto it = buffer.begin();
+    E_Player player(0, 0, 0, 0);
+    E_Enemy enemy(0, 0, 0, 0, 0);
+    E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
+
+
+     std::cout << "tick : " << tick << std::endl;
+    if (std::distance(it, buffer.end()) >= sizeof(tick)) {
+        std::memcpy(&tick, &it, sizeof(tick));
+        it += sizeof(tick);
+    }
+    std::cout << "tick : " << tick << std::endl;
+
+
+
+    while (it < buffer.end() && !frame.isEndMarker(it, buffer)) {
+        std::string entityType;
+        while (it != buffer.end() && *it != '\0') {
+            entityType.push_back(*it);
+            ++it;
+        }
+        ++it;
+        if (entityType == "E_Player") {
+            size_t size_player = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_Score);
+            player.deserializeFromVector(std::vector<char>(it, it + size_player));
+            it += sizeof(size_player);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(player);
+            C_Health *health = Engine::getComponentRef<C_Health>(player);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
+            C_Score *score = Engine::getComponentRef<C_Score>(player);
+            auto playerShared = std::make_shared<E_Player>(player);
+            new_entities.add(playerShared);
+            //std::cout << ">>>>>>>>>>>>>>>>>>>>>player added" << std::endl;
+        } else if (entityType == "E_Enemy") {
+            size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
+            enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
+            it += sizeof(size_enemy);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
+            C_Health *health = Engine::getComponentRef<C_Health>(enemy);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
+            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
+            auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
+            new_entities.add(enemyShared);
+            //std::cout << ">>>>>>>>>>>>>>>>>>>>>enemy added" << std::endl;
+        } else if (entityType == "E_Bullet") {
+            // size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
+            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(int);
+            bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
+            it += sizeof(bullet);
+            auto bulletShared = std::make_shared<E_Bullet>(bullet);
+            new_entities.add(bulletShared);
+            //std::cout << ">>>>>>>>>>>>>>>>>>>>>bullet added" << std::endl;
+        }
+        if (frame.isEndMarker(it, buffer)) {
+            break;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     // std::cout << "frame received" << std::endl;
-    frame.deserializeFrame(buffer);
+    // frame.deserializeFrame(buffer);
     // std::cout << "frame deserialized" << std::endl;
-    if (frame.getTick() != -1) {
-        game->addFrame(frame);
+    std::cout << "TICK ======= " << tick << std::endl;
+    if (frame.getTick() == -1)
         return;
+    int ii = 0;
+    for (auto fram : game->getFrames()) {
+        std::cout << ">>>>>>>>>>>>>>>>>>>>>frame nb" << ii << std::endl;
+        ii += 1;
+        if (fram.getTick() == tick) {
+            /*
+            entities = fram.getEntities();
+            for (auto entity : new_entities) {
+                entities.add(entity)
+            }
+            frame.setArray(new_entities);
+            */
+            std::cout << ">>>>>>>>>>>>>>>>>>>>>frame already received" <<tick << std::endl;
+            //TODO add entities to the frame
+            return;
+        }
     }
+    //TODO add frame to the game
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>frame added" << std::endl;
+    frame.setTick(tick);
+    frame.setArray(new_entities);
+    game->addFrame(frame);
+    return;
 }
 
 void client::Network::checkInteraction(Game *game)

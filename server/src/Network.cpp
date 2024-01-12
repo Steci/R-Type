@@ -154,25 +154,20 @@ void server::Network::updateClients(int client_id, Game *game)
 
 
     _last_tick_send = frame.getTick();
+     std::cout << "tick send : " <<     _last_tick_send << std::endl;
 
-    std::vector<char> data = frame.serializeFrames("E_Bullet");
+    std::vector<char> bullet = frame.serializeFrames("E_Bullet");
+    std::vector<char> enemy = frame.serializeFrames("E_Enemy");
+    std::vector<char> player = frame.serializeFrames("E_Player");
     
-    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+    for (auto client = _clients.begin(); client != _clients.end(); client++)
+    {
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, bullet.data(), bullet.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, enemy.data(), enemy.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        sendto(_fd, player.data(), player.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     }
-
-    data = frame.serializeFrames("E_Enemy");
-    for (auto client = _clients.begin(); client != _clients.end(); client++) {
-        struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    }
-
-    data = frame.serializeFrames("E_Player");
-    for (auto client = _clients.begin(); client != _clients.end(); client++) {
-        struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    }
+    return;
 }
 
 void server::Network::manageMessage(std::string message, int client_id, Game *game)
