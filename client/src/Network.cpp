@@ -15,7 +15,7 @@ client::Network::Network(std::string serverIP, int serverPort): _serverIP(server
 
 client::Network::~Network()
 {
-    #ifdef linux
+    #ifdef __linux__
         close(_fd);
     #endif
     #ifdef _WIN64
@@ -28,7 +28,7 @@ int client::Network::fillSocket()
 {
     int opt = 1;
 
-    #ifdef linux
+    #ifdef __linux__
         _fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (_fd == -1) {
             std::cerr << "Error: socket creation failed" << std::endl;
@@ -98,9 +98,18 @@ void client::Network::run(Game *game)
     client::Serialize convert;
     std::vector<Game> games;
 
+    std::cerr << "CLIENT RUNNING :D" << std::endl;
     while(_isRunning) {
-        #ifdef linux
+        #ifdef __linux__
             server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == -1) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    continue;
+                } else {
+                    std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
+                    return;
+                }
+            }
         #endif
         #ifdef _WIN64
             // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
@@ -108,7 +117,7 @@ void client::Network::run(Game *game)
         #endif
         checkInteraction(game);
         if (server == -1) {
-            std::cerr << "Error: recvfrom failed" << std::endl;
+            std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
             return;
         } else {
             handleCommands(buffer, game);
@@ -118,11 +127,20 @@ void client::Network::run(Game *game)
 
 int client::Network::bindSocket()
 {
-    if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
-        std::cerr << "Error: socket binding failed" << std::endl;
-        return(84);
-    }
-    return 0;
+    #ifdef __linux__
+        if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
+    #ifdef _WIN64
+        if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
 }
 
 int client::Network::connectCommand()
@@ -138,10 +156,10 @@ int client::Network::connectCommand()
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        if (res == SOCKET_ERROR) {
+        if (res == -1) {
             std::cerr << "Connection failure..." << std::endl;
         }
-        #ifdef linux
+        #ifdef __linux__
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         #ifdef _WIN64

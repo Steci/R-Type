@@ -16,7 +16,7 @@ server::Network::Network(int port, int maxClients): _port(port != 0 ? port : 900
 
 server::Network::~Network()
 {
-    #ifdef linux
+    #ifdef __linux__
     #endif
     #ifdef _WIN64
         closesocket(_fd);
@@ -28,7 +28,7 @@ int server::Network::fillSocket()
     int opt = 1;
 
     _fd = _maxClients;
-    #ifdef linux
+    #ifdef __linux__
         _fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (_fd == -1) {
             std::cerr << "Error: socket creation failed" << std::endl;
@@ -98,7 +98,7 @@ void server::Network::run(Game *game)
     while(_isRunning) {
         client = 0;
 
-        #ifdef linux
+        #ifdef __linux__
             client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
         #endif
         #ifdef _WIN64
@@ -220,11 +220,20 @@ std::string server::Network::handleClientMessage(std::string message, int client
 
 int server::Network::bindSocket()
 {
-    if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
-        std::cerr << "Error: socket binding failed" << std::endl;
-        return(84);
-    }
-    return 0;
+    #ifdef __linux__
+        if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
+    #ifdef _WIN64
+        if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
 }
 
 std::tuple<int, server::Connection> server::Network::handleNewConnection(Connection connect)

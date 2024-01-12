@@ -6,7 +6,7 @@
 */
 
 
-#ifdef linux
+#ifdef __linux__
     #pragma once
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -71,7 +71,7 @@ namespace client {
             int _serverPort;
             bool _isRunning = true;
             int _fd;
-            #ifdef linux
+            #ifdef __linux__
                 struct sockaddr_in _addr;
                 struct sockaddr_in _serverAddr;
                 socklen_t _serverAddrLen;

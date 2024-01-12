@@ -8,7 +8,7 @@
 
 #include "Game.hpp"
 
-#ifdef linux
+#ifdef __linux__
     #pragma once
     #include <sys/socket.h>
     #include <netinet/in.h>
@@ -60,7 +60,7 @@ namespace server {
 
     class Client {
         public:
-            #ifdef linux
+            #ifdef __linux__
                 Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
                 struct sockaddr_in getAddr() const {return _addr;};
             #endif
@@ -77,7 +77,7 @@ namespace server {
             int getGameId() const {return _gameId;};
 
         private:
-            #ifdef linux
+            #ifdef __linux__
                 struct sockaddr_in _addr;
             #endif
             #ifdef _WIN64
@@ -127,7 +127,7 @@ namespace server {
             unsigned int _maxClients;
             bool _isRunning = true;
             int _fd;
-            #ifdef linux
+            #ifdef __linux__
                 struct sockaddr_in _addr;
                 struct sockaddr_in _clientAddr;
                 socklen_t _clientAddrLen;
