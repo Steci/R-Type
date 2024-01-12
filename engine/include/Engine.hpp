@@ -36,26 +36,34 @@ class SparseArray {
          * @param element The element to be added.
          * @param id The optional ID of the element.
          */
-        int add(std::unique_ptr<T> element, int id = -1) {
+        int add(std::shared_ptr<T> element, int id = -1) {
+            if (id == -1) {
+                // Find the first available ID after the first 5
+                for (int i = 5; i < sparse.size(); i++) {
+                    if (sparse[i] == -1) {
+                        id = i;
+                        break;
+                    }
+                }
+                if (id == -1) {
+                    if (sparse.size() < 4) {
+                        id = 5;
+                    } else {
+                        id = sparse.size();
+                    }
+                }
+            }
             if (id >= sparse.size()) {
                 sparse.resize(id + 1, -1);
             }
-            if (id == -1) {
-                // Push back if no ID specified
-                dense.push_back(std::move(element));
-                indices.push_back(dense.size() - 1);
-                return dense.size() - 1;
-            }
             if (sparse[id] == -1) {
-                sparse.push_back(dense.size());
                 sparse[id] = dense.size();
                 dense.push_back(std::move(element));
-                indices.push_back(id);
             } else {
                 // Replace if already exists
                 dense[sparse[id]] = std::move(element);
             }
-            return -1;
+            return id;
         }
 
         /**
@@ -67,20 +75,19 @@ class SparseArray {
          * @param id The ID of the element to be removed.
          */
         void remove(int id) {
-            assert(id < sparse.size() && sparse[id] != -1 && "Invalid ID");
-
-            int denseIndex = sparse[id];
-            int lastIndex = dense.size() - 1;
-            int lastID = indices[lastIndex];
-
-            std::swap(dense[denseIndex], dense[lastIndex]);
-            std::swap(indices[denseIndex], indices[lastIndex]);
-
-            sparse[lastID] = denseIndex;
+            assert(id < sparse.size() && "Invalid ID");
+            // Remove all traces of the element in dense, sparse, and indices!
+            int index = sparse[id];
+            // printf("index remove = %d\n", index);
+            // SparseArray<T> tmp;
+            // tmp.insert(dense.)
+            std::vector<std::shared_ptr<T>> temp;
+            for (auto &element : dense)
+                if (element.get()->getId() != id)
+                    temp.push_back(element);
+            dense = std::move(temp);
+            // std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
             sparse[id] = -1;
-
-            dense.pop_back();
-            indices.pop_back();
         }
 
         /**
@@ -107,14 +114,50 @@ class SparseArray {
             return id < sparse.size() && sparse[id] != -1;
         }
 
-        const std::vector<int>& getAllIndices() const {
-            return indices;
+        /**
+         * @brief Clears the array of all elements.
+         *
+         */
+        void clearEntities() {
+            dense.clear();
+            sparse.clear();
+        }
+
+        /**
+         * @brief Gets the all the elements in the dense array.
+         *
+         * @return The arrary of actual elements
+         */
+        std::vector<std::shared_ptr<T>>& getAll() {
+            return dense;
+        }
+
+        /**
+         * @brief Gets the all the elements in the dense array.
+         *
+         * @return The arrary of indexes
+         */
+        const std::vector<int>& getSparse() const {
+            return sparse;
+        }
+
+        std::vector<char> serializeToVector(const std::string& entityType) {
+            std::vector<char> data;
+
+            for (auto& element : dense) {
+                if (element->getType() == entityType) {
+                    // printf("convert %s\n", element->getType().c_str());
+                    std::string typeHeader = entityType;
+                    data.insert(data.end(), typeHeader.begin(), typeHeader.end());
+                    data.push_back('\0');
+                    auto elementData = element->serializeToVector();
+                    data.insert(data.end(), elementData.begin(), elementData.end());
+                }
+            }
+            return data;
         }
 
     private:
-        std::vector<std::unique_ptr<T>> dense; // Stores actual elements
+        std::vector<std::shared_ptr<T>> dense; // Stores actual elements
         std::vector<int> sparse; // Maps IDs to indices in 'dense'
-        std::vector<int> indices; // Stores original IDs
 };
-
-// TODO : IMPLEMENT RESSOURCE MANAGER

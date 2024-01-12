@@ -9,8 +9,11 @@
 
 int client::Client::run()
 {
+    Game game;
+
     if (_network.connectCommand() == 0) {
-        _network.run();
+        std::thread gameThread = std::thread(&Game::run, &game);
+        _network.run(&game);
     } else {
         return 84;
     }

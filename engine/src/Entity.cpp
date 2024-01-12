@@ -8,7 +8,7 @@
 #include "../include/Engine.hpp"
 
 namespace Engine {
-    C_Transform* getTransform(std::unique_ptr<IEntity> entity)
+    C_Transform* getTransform(std::shared_ptr<IEntity> entity)
     {
         C_Transform* transform = dynamic_cast<C_Transform*>(entity->getComponentOfType(typeid(C_Transform)));
         if (transform) {
@@ -17,7 +17,7 @@ namespace Engine {
         return (nullptr);
     }
 
-    C_Damage* getDamage(std::unique_ptr<IEntity> entity)
+    C_Damage* getDamage(std::shared_ptr<IEntity> entity)
     {
         C_Damage* damage = dynamic_cast<C_Damage*>(entity->getComponentOfType(typeid(C_Damage)));
         if (damage) {
@@ -26,7 +26,7 @@ namespace Engine {
         return (nullptr);
     }
 
-    C_Health* getHealth(std::unique_ptr<IEntity> entity)
+    C_Health* getHealth(std::shared_ptr<IEntity> entity)
     {
         C_Health* health = dynamic_cast<C_Health*>(entity->getComponentOfType(typeid(C_Health)));
         if (health) {
@@ -35,7 +35,7 @@ namespace Engine {
         return (nullptr);
     }
 
-    C_Sprite* getSprite(std::unique_ptr<IEntity> entity)
+    C_Sprite* getSprite(std::shared_ptr<IEntity> entity)
     {
         C_Sprite* sprite = dynamic_cast<C_Sprite*>(entity->getComponentOfType(typeid(C_Sprite)));
         if (sprite) {
@@ -44,11 +44,20 @@ namespace Engine {
         return (nullptr);
     }
 
-    C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity)
+    C_Hitbox* getHitbox(std::shared_ptr<IEntity> entity)
     {
         C_Hitbox* hitbox = dynamic_cast<C_Hitbox*>(entity->getComponentOfType(typeid(C_Hitbox)));
         if (hitbox) {
             return (hitbox);
+        }
+        return (nullptr);
+    }
+
+    C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity)
+    {
+        C_EnemyInfo* ennemyInfo = dynamic_cast<C_EnemyInfo*>(entity->getComponentOfType(typeid(C_EnemyInfo)));
+        if (ennemyInfo) {
+            return (ennemyInfo);
         }
         return (nullptr);
     }
@@ -156,6 +165,14 @@ namespace Engine {
         C_Score* score = dynamic_cast<C_Score*>(entity.getComponentOfType(typeid(C_Score)));
         if (score) {
             score->_score = newScore;
+        }
+    }
+
+    void setEnemyInfoType(IEntity& entity, int newType)
+    {
+        C_EnemyInfo* enemyInfo = dynamic_cast<C_EnemyInfo*>(entity.getComponentOfType(typeid(C_EnemyInfo)));
+        if (enemyInfo) {
+            enemyInfo->_type = newType;
         }
     }
 };

@@ -35,30 +35,24 @@
 #include <netdb.h>
 #include <chrono>
 #include <sstream>
+#include <tuple>
 
 namespace server {
-    class Test {
+    class Serialize {
         public:
-            Test() = default;
-            ~Test() = default;
-            int getTick() const {return _Tick;};
-            int getTickspeed() const {return _Tickspeed;};
-            void setTick(int tick) {_Tick = tick;};
-            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-            std::vector<char> serialize() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Test));
+            Serialize() = default;
+            ~Serialize() = default;
+
+            std::string deserialize(const std::vector<char>& data) {
+                return std::string(data.begin(), data.end());
             }
-            void deserialize(const std::vector<char>& serializedData) {
-                // if (serializedData.size() != sizeof(Test)) {
-                //     throw std::runtime_error("Invalid data size for deserialization");
-                // }
-                *this = *reinterpret_cast<const Test*>(serializedData.data());
+
+            std::vector<char> serialize(const std::string& data) {
+                return std::vector<char>(data.begin(), data.end());
             }
-        private:
-            int _Tick = 10;
-            int _Tickspeed = 1100;
+
     };
+
     class Client {
         public:
             #ifdef linux
@@ -70,14 +64,45 @@ namespace server {
             std::string getName() const {return _name;};
             bool operator==(const Client& other) const;
             Client& operator=(const Client& other);
+            void setGameId(int gameId) {_gameId = gameId;};
+            int getGameId() const {return _gameId;};
 
         private:
             #ifdef linux
                 struct sockaddr_in _addr;
             #endif
             int _id;
+            int _gameId = -1;
             bool _isConnected = true;
             const std::string _name;
+    };
+
+    class Connection {
+        public:
+            Connection() {};
+            ~Connection() {};
+            int getConnect() const {return _connect;};
+            int getConnected() const {return _connected;};
+            void setConnected(int connected) {_connected = connected;};
+            void setId(int id) {_id = id;};
+            int getId() const {return _id;};
+            std::vector<char> serializeConnection() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Connection));
+            }
+            void deserializeConnection(const std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<const Connection*>(serializedData.data());
+            }
+            Connection& operator=(const Connection& other) {
+                _connect = other._connect;
+                _connected = other._connected;
+                _id = other._id;
+                return *this;
+            }
+        private:
+            int _connect;
+            int _connected;
+            int _id;
     };
 
     class Network {
@@ -99,24 +124,28 @@ namespace server {
                 SOCKADDR_IN _addr;
             #endif
             int _tickrate;
+            int _last_tick_send = 0;
             std::vector<Client> _clients;
             Game _game;
-            std::vector<std::string> _commands = {"CONNECT", "QUIT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
+            std::vector<std::string> _commands = {"CONNECT", "QUIT", "INPUT", "UP", "DOWN", "LEFT", "RIGHT", "DEBUG", "SHOOT", "DAMAGE", "SCORE"};
 
             int fillSocket();
             int fillAddr();
             int bindSocket();
-            int handleNewConnection();
-            int handleClient(std::string message);
+            std::tuple<int, server::Connection> handleNewConnection(Connection Connect);
+            std::tuple<int, server::Connection> handleClient(std::vector<char> buffer);
             std::string handleClientMessage(std::string message, int client_id);
             void manageMessage(std::string message, int client_id, Game *game);
-            void updateClients(int client_id, std::string message, Game *game);
+            void updateClients(Game *game);
+            void checkClass(std::vector<char> buffer);
+            int CreateGame(std::vector<int> idNotUsableGame);
 
             // Commands
-            int commandKill();
-            int commandKick(int client_id, std::string message);
-            int commandSetTickrate(std::vector<char> data) const;
-            int commandPing(int client_id) const;
-            int commandError(int client_id, std::string error) const;
+            int commandKill(std::string data);
+            int commandKick(std::string data, int client_id);
+            int commandSetTickrate(std::string data) const;
+            int commandPing(std::string data, int client_id) const;
+            int commandError(std::string data, int client_id) const;
+            void manageClient(std::vector<char> buffer, int client_id, Game *game);
     };
 }
