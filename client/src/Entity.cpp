@@ -163,7 +163,7 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
 
     C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
     if (scoreComponent) {
-        size_t scoreSize = sizeof(scoreComponent->_score);
+        size_t scoreSize = sizeof(scoreComponent->score);
         std::vector<char> scoreData(it, it + scoreSize);
         scoreComponent->deserializeFromVector(scoreData);
         it += scoreSize;

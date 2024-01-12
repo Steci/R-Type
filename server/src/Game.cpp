@@ -26,6 +26,7 @@ bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerI
 void server::Game::run()
 {
     printf("Game started\n");
+    srand(time(NULL));
 
     SystemManager manager;
     SparseArray<IEntity> entities;
@@ -56,6 +57,8 @@ void server::Game::run()
                 }
                 if (interaction.getShoot() == 1){
                     // shoot
+                    if (entities.get(interaction.getClientID()).getComponents().size() == 0)
+                        continue;
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
