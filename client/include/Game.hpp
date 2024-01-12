@@ -75,6 +75,7 @@ namespace client {
             ~Frame() {};
 
             int getTick() const {return _tick;};
+            int getIDServer() const {return _serverId;};
             void clearEntities() {_entities.clearEntities();};
             bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
                 const std::string endMarker = "END";

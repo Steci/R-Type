@@ -50,6 +50,8 @@ void S_Renderer::render()
         }
         std::string scoreText = "Patoune: " + std::to_string(score_total);
         DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
+        std::string idServerText = std::to_string(_idServer);
+        DrawText(idServerText.c_str(), 300, 500, 30, WHITE);
         _parallax.update();
     EndDrawing();
 }

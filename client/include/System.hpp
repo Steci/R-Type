@@ -55,11 +55,13 @@ class S_Renderer : public System {
         void render();
         void update() override;
         void closeWindow();
+        void setIDServer(int new_idServer) {_idServer = new_idServer;};
 
     private:
         int _screenWidth;
         int _screenHeight;
         int _targetFps;
+        int _idServer;
         std::string _windowName;
         S_Parallax _parallax;
 
