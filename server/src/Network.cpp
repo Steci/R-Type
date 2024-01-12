@@ -105,7 +105,7 @@ void server::Network::run(Game *game)
             // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
             client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
         #endif
-        updateClients(id, game);
+        updateClients(game);
         if (client < 0) {
             continue;
         }
