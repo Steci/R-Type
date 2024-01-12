@@ -50,14 +50,6 @@ namespace client {
             auto &entities = current_frame.getEntities();
             const auto& sparseIds = entities.getSparse();
 
-            printf("--------------------\n");
-            for (auto& entity : entities.getAll())
-            {
-                if (entity->getType() == "E_Bullet") {
-                    printf("[%d] SANITY CHECK BULLET POS : X = %f, Y = %f\n\n", entity->getId(), Engine::getComponentRef<C_Transform>(*entity)->_position.x, Engine::getComponentRef<C_Transform>(*entity)->_position.y);
-                }
-            }
-            printf("--------------------\n");
 
             for (int id = 0; id < sparseIds.size(); ++id) {
                 if (sparseIds[id] != -1) {
@@ -84,7 +76,6 @@ namespace client {
                         tmpEntity.addComponent(std::make_unique<C_Sprite>());
                         Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                         Engine::setSpriteTexture(tmpEntity, infos._texture);
-                        printf("\n[%d] POSITION AT GAME FILE : X = %f, Y = %f\n\n", id, Engine::getComponentRef<C_Transform>(tmpEntity)->_position.x, Engine::getComponentRef<C_Transform>(tmpEntity)->_position.y);
                     }
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                 }
@@ -147,37 +138,43 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             size_t size_player = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_Score);
             player.deserializeFromVector(std::vector<char>(it, it + size_player));
             it += sizeof(size_player);
+
             C_Transform *transform = Engine::getComponentRef<C_Transform>(player);
             C_Health *health = Engine::getComponentRef<C_Health>(player);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
             C_Score *score = Engine::getComponentRef<C_Score>(player);
+
             auto playerShared = std::make_shared<E_Player>(player);
             int id = _entities.add(playerShared);
             playerShared->setId(id);
+
         } else if (entityType == "E_Enemy") {
             // printf("deserialize enemy\n");
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
             it += sizeof(size_enemy);
+
             C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
             C_Health *health = Engine::getComponentRef<C_Health>(enemy);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
+
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             int id = _entities.add(enemyShared);
             enemyShared->setId(id);
+
         } else if (entityType == "E_Bullet") {
             // printf("deserialize bullet\n");
-            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
-            bullet.deserializeFromVector(std::vector<char>(it, it + sizeof(bullet)));
-            it += sizeof(bullet);
+            size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox);
+            bullet.deserializeFromVector(std::vector<char>(it, it + size_bullet));
+            it += sizeof(size_bullet);
 
             C_Transform *transform = Engine::getComponentRef<C_Transform>(bullet);
             C_Damage *damage = Engine::getComponentRef<C_Damage>(bullet);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(bullet);
-            auto bulletShared = std::make_shared<E_Bullet>(bullet);
+
+            auto bulletShared = std::make_shared<E_Bullet>(damage->_damage, transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, transform->_velocity.x, transform->_velocity.y, 0);
             int id = _entities.add(bulletShared);
-            printf("\n[%d] POSITION AT SERIALIZE : X = %f, Y = %f\n\n", id, Engine::getComponentRef<C_Transform>(*bulletShared)->_position.x, Engine::getComponentRef<C_Transform>(*bulletShared)->_position.y);
             bulletShared->setId(id);
         }
         if (isEndMarker(it, serializedData)) {
