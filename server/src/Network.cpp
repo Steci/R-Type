@@ -45,7 +45,7 @@ int server::Network::fillSocket()
             std::cerr << "Error: socket creation failed" << std::endl;
             return(84);
         }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
             return(84);
         }
@@ -74,7 +74,7 @@ void server::Network::run(Game *game)
 {
     int client;
     //char buffer[1024];
-    int id;
+    int id = 0;
     Connection connect;
     Interaction interaction;
     std::string message;
@@ -85,7 +85,15 @@ void server::Network::run(Game *game)
 
     while(_isRunning) {
         client = 0;
-        client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+
+        #ifdef linux
+            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        #endif
+        #ifdef _WIN64
+            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
+            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        #endif
+
         updateClients(id, game);
         if (client < 0) {
             continue;

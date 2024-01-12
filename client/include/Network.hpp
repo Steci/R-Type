@@ -5,7 +5,7 @@
 ** Network.hpp
 */
 
-#pragma once
+#pragma comment(lib, "Ws2_32.lib")
 
 #ifdef linux
     #include <sys/socket.h>

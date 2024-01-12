@@ -5,7 +5,7 @@
 ** Network.hpp
 */
 
-#pragma once
+#pragma comment(lib, "Ws2_32.lib")
 
 #include "Game.hpp"
 
@@ -62,6 +62,10 @@ namespace server {
             #ifdef linux
                 Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
                 struct sockaddr_in getAddr() const {return _addr;};
+            #endif
+            #ifdef _WIN64
+                Client(SOCKADDR_IN addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                SOCKADDR_IN getAddr() const {return _addr;};
             #endif
             ~Client() {};
             int getId() const {return _id;};
