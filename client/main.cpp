@@ -11,16 +11,12 @@
 
 int main(int argc, char **argv)
 {
-    std::cout << "HEY DUMMY !";
     ErrorHandling error_handling;
-    std::cout << "HEY MATE !";
     std::vector<std::string> error = error_handling.errorHandling(argc, argv);
-    std::cout << "HEY FRIENDS !";
 
-    std::cout << "HEY FRIENDS !";
     if (error[0] == "84") {
         return (84);
-    } else if (error[0] == "0") {
+    } else if (error[0] == "1") {
         return (0);
     }
     try {

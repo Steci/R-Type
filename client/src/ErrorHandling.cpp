@@ -25,7 +25,7 @@ std::vector<std::string> ErrorHandling::errorHandling(int argc, char **argv)
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "-h") == 0 || std::strcmp(argv[i], "--help") == 0) {
             help();
-            return {"0", serverIP, serverPort};
+            return {"1", serverIP, serverPort};
         } else if (std::strcmp(argv[i], "-i") == 0 || std::strcmp(argv[i], "--ip") == 0) {
             if (i + 1 < argc) {
                 if (checkIP(argv[i + 1]) == 84) {
