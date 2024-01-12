@@ -62,8 +62,8 @@ namespace server
             std::pair<std::string, std::string> parseCommand(const std::string& input);
             std::vector<std::string> getFunctionsClient();
             std::vector<Frame> getFrames() {_mutex_frame.lock();std::vector<Frame> frame = _frames;_mutex_frame.unlock();return frame;};
-            void setGameId(int game_id) {_game_id = game_id;};
-            int getGameId() const {return _game_id;};
+            void setGameId(int gameId) {_gameId = gameId;};
+            int getGameId() const {return _gameId;};
             // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
             Game& operator=(const Game& other)
             {
@@ -74,7 +74,7 @@ namespace server
                 // Copy simple fields
                 _tickSpeed = other._tickSpeed;
                 _tick = other._tick;
-                _game_id = other._game_id;
+                _gameId = other._gameId;
 
                 // For vectors and maps, you can typically use the default copy assignment
                 _interaction_client = other._interaction_client;
@@ -92,7 +92,7 @@ namespace server
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
-            int _game_id = 0;
+            int _gameId = 0;
             std::mutex _mutex;
             std::vector<Interaction> _interaction_client;
             typedef void (*Key)(int button);

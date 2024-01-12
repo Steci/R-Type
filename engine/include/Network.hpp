@@ -14,12 +14,13 @@
 class IFrame {
     public:
         virtual void setTick(int tick) = 0;
+        virtual void setGameId(int gameId) = 0;
+        virtual void setArray(SparseArray<IEntity> entities) = 0;
         virtual bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) = 0;
         virtual bool operator==(const IFrame& other) const = 0;
         virtual bool operator!=(const IFrame& other) const = 0;
         // Frame& operator=(const Frame& other);
         virtual int getTick() const = 0;
-        virtual void setArray(SparseArray<IEntity> entities) = 0;
         virtual SparseArray<IEntity> &getEntities() = 0;
 };
 
@@ -28,6 +29,7 @@ class AFrame : public IFrame {
         AFrame() = default;
         ~AFrame() = default;
         void setTick(int tick) override {_tick = tick;};
+        void setGameId(int gameId) override {_gameId = gameId;};
         bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) override {
             const std::string endMarker = "END";
             return std::distance(it, data.end()) >= endMarker.size() &&
@@ -41,9 +43,9 @@ class AFrame : public IFrame {
         SparseArray<IEntity> &getEntities() override {return _entities;};
     protected:
         int _tick;
+        int _gameId;
         // ici mettre les infos de la frame à display
         SparseArray<IEntity> _entities;
-        int _serverId;
 };
 
 class IInteraction {

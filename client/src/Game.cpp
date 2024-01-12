@@ -127,10 +127,10 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         // printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
-    if (std::distance(it, serializedData.end()) >= sizeof(_serverId)) {
-        _serverId = *reinterpret_cast<const int*>(&(*it));
+    if (std::distance(it, serializedData.end()) >= sizeof(_gameId)) {
+        _gameId = *reinterpret_cast<const int*>(&(*it));
         // printf("serverId = %d\n", _serverId);
-        it += sizeof(_serverId);
+        it += sizeof(_gameId);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
         std::string entityType;

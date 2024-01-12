@@ -98,7 +98,7 @@ void server::Game::fillFrame(SparseArray<IEntity> entities)
     Frame frame;
 
     frame.setArray(entities);
-
+    frame.setGameId(_gameId);
     frame.setTick(_tick);
     _mutex_frame.lock();
     _frames.push_back(frame);
@@ -119,7 +119,7 @@ std::vector<char> server::Frame::serializeFrame()
     std::vector<char> data;
 
     data.insert(data.end(), reinterpret_cast<const char*>(&_tick), reinterpret_cast<const char*>(&_tick) + sizeof(_tick));
-    data.insert(data.end(), reinterpret_cast<const char*>(&_serverId), reinterpret_cast<const char*>(&_serverId) + sizeof(_serverId));
+    data.insert(data.end(), reinterpret_cast<const char*>(&_gameId), reinterpret_cast<const char*>(&_gameId) + sizeof(_gameId));
     // printf("tick = %d\n", _tick);
 
     auto playerData = _entities.serializeToVector("E_Player");
