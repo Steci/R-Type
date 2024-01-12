@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(client_build)
 
+set(CMAKE_C_COMPILER "gcc")
+set(CMAKE_CXX_COMPILER "g++")
+
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wall -Wextra -g3)
 endif(CMAKE_COMPILER_IS_GNUCXX)
@@ -21,7 +24,7 @@ set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
 
 # find_package(netinet REQUIRED)
 
-file(GLOB SOURCES "main.cpp" "src/*.cpp")
+file(GLOB SOURCES "main.cpp" "src/*.cpp" "${CMAKE_SOURCE_DIR}/engine/src/*.cpp")
 add_executable(client_build ${SOURCES})
 
 list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/include")

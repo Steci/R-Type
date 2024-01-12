@@ -36,35 +36,29 @@
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
+#include "Game.hpp"
 
 namespace client {
-    class Test {
+    class Serialize {
         public:
-            Test() = default;
-            ~Test() = default;
-            int getTick() const {return _Tick;};
-            int getTickspeed() const {return _Tickspeed;};
-            void setTick(int tick) {_Tick = tick;};
-            void setTickspeed(int tickspeed) {_Tickspeed = tickspeed;};
-            std::vector<char> serialize() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Test));
+            Serialize() = default;
+            ~Serialize() = default;
+
+            std::string deserialize(const std::vector<char>& data) {
+                return std::string(data.begin(), data.end());
             }
-            void deserialize(const std::vector<char>& serializedData) {
-                // if (serializedData.size() != sizeof(Test)) {
-                //     throw std::runtime_error("Invalid data size for deserialization");
-                // }
-                *this = *reinterpret_cast<const Test*>(serializedData.data());
+
+            std::vector<char> serialize(const std::string& data) {
+                return std::vector<char>(data.begin(), data.end());
             }
-        private:
-            int _Tick = 10;
-            int _Tickspeed = 1000;
+
     };
+
     class Network {
         public:
             Network(std::string serverIP, int serverPort);
             ~Network();
-            void run();
+            void run(Game *game);
             int connectCommand();
         private:
             std::string _serverIP;
@@ -80,18 +74,39 @@ namespace client {
                 SOCKADDR_IN _addr;
             #endif
             int _tickrate;
+            std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR"};
+            std::vector<std::string> _inputs = {"UP", "DOWN", "LEFT", "RIGHT", "SHOOT", "DAMAGE", "SCORE"};
+            int _clientID;
 
             int fillSocket();
             int fillAddr();
             int bindSocket();
             int getRandomPort();
 
+            std::string inputHandle(std::string input);
+
             // Commands Send to the server
-            int disconnectCommand();
-            int pingCommand();
             int inputCommand(std::string input);
 
-            int handleCommands(const char *serverMessage);
+            void handleCommands(std::vector<char> buffer, Game *game);
+
+            void checkInteraction(Game *game);
     };
 
+    class Connection {
+        public:
+            Connection() {};
+            ~Connection() {};
+            int getConnected() const {return _connected;};
+            std::vector<char> serializeConnection() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Connection));
+            }
+            void deserializeConnection(const std::vector<char>& serializedData) {
+                *this = *reinterpret_cast<const Connection*>(serializedData.data());
+            }
+        private:
+            int _connect = 1;
+            int _connected = 0;
+    };
 }

@@ -1,0 +1,89 @@
+/*
+** EPITECH PROJECT, 2023
+** r-type-mirror
+** File description:
+** Game.hpp
+*/
+
+#pragma once
+
+#include "../../engine/include/Engine.hpp"
+#include "../../engine/include/Network.hpp"
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <sstream>
+#include <algorithm>
+#include <map>
+#include "Entity.hpp"
+#include "System.hpp"
+#include "Infos.hpp"
+
+#define TICK_SPEED 66
+
+namespace client {
+
+    class Interaction : public AInteraction{
+        public:
+            Interaction() {
+                _movement = 0;
+                _shoot = 0;
+                _quit = 0;
+                _createGame = 0;
+            };
+            ~Interaction() {};
+            std::vector<char> serializeInteraction() {
+                const char* data = reinterpret_cast<const char*>(this);
+                return std::vector<char>(data, data + sizeof(Interaction));
+            }
+    };
+
+    class Frame : public AFrame {
+        public:
+            Frame() {}; // penser à remplir le constructeur si besoin
+            ~Frame() {}; // penser à remplir le destructeur si besoin
+            int getTick() const {return _tick;};
+            void clearEntities() {_entities.clearEntities();};
+            bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
+                const std::string endMarker = "END";
+                return std::distance(it, data.end()) >= endMarker.size() &&
+                std::equal(endMarker.begin(), endMarker.end(), it);
+            }
+            void deserializeFrame(const std::vector<char>& serializedData);
+    };
+
+    class Game
+    {
+        typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
+
+        public:
+            Game() {
+                _tick = 0;
+            };
+            ~Game();
+            void run();
+            std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
+            void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
+            void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
+            void createTextures();
+            // à faire pour rajouter les frame à display
+            // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
+
+            // il faut refaire toutes ses fonctions pour juste qu'elles récupère l'interraction et qu'elle l'envoi au serv via la class en dessous
+            // pour remplir _interaction il faut lock _mutex puis l'unlock !!!!! si tu oublie l'un des 2 c'est la merde
+
+        private:
+            int _tickSpeed = TICK_SPEED;
+            int _tick;
+            std::mutex _mutex_interactions;
+            std::vector<Interaction> _interactions;
+            std::map<int, Infos> _ennemy_sprites;
+            std::map<int, Infos> _player_sprites;
+            std::map<int, Infos> _utils_sprites;
+            // à faire pour récup les frame du jeu à display
+            std::mutex _mutex_frames;
+            std::vector<Frame> _frames; // ici mettre les frames à display
+            void infoInteraction(int mov, int shoot, int quit, int createGame);
+    };
+
+}

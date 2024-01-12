@@ -62,8 +62,8 @@ int main(void)
     SparseArray<IEntity> arraysE;
     std::string tmp = "../assets/placeholder.png";
 
-    arraysE.add(0, std::make_unique<E_Player>());
-    arraysE.add(1, std::make_unique<E_Enemy>(tmp));
+    arraysE.add(0, std::make_shared<E_Player>());
+    arraysE.add(1, std::make_shared<E_Enemy>(tmp));
 
     auto& playerEntity = arraysE.get(0);
     auto& enemyEntity = arraysE.get(1);

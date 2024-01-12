@@ -37,6 +37,7 @@ class System : public ISystem {
         void update() override = 0;
         void addEntity(IEntity* entity);
         void removeEntity(IEntity* entity);
+        void clearEntities() { _entities.clear(); };
 };
 
 /**

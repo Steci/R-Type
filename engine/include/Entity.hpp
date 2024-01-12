@@ -39,7 +39,7 @@ class IEntity {
          *
          * @param component The component to add.
          */
-        virtual void addComponent(std::unique_ptr<Component> component) = 0;
+        virtual void addComponent(std::shared_ptr<Component> component) = 0;
 
         /**
          * @brief Removes a component from the entity.
@@ -53,7 +53,7 @@ class IEntity {
          *
          * @return A reference to the vector of components.
          */
-        virtual std::vector<std::unique_ptr<Component>>& getComponents() = 0;
+        virtual std::vector<std::shared_ptr<Component>>& getComponents() = 0;
 
         /**
          * @brief Gets a component of a specific type attached to the entity.
@@ -62,14 +62,24 @@ class IEntity {
          * @return A pointer to the component if found, nullptr otherwise.
          */
         virtual Component* getComponentOfType(const std::type_info& ti) = 0;
+
+        virtual std::string getType() const = 0;
+
+        virtual std::vector<char> serializeToVector() = 0;
+        virtual void deserializeFromVector(std::vector<char> data) = 0;
+        virtual void setId(int id) = 0;
+        virtual int getId() const = 0;
 };
 
 class Entity : public IEntity {
     public:
         void update() override = 0;
-        void render() override = 0;
+        void render() override {};
+        std::vector<char> serializeToVector() override {};
+        std::string getType() const override = 0;
+        void deserializeFromVector(std::vector<char> data) override {};
 
-        void addComponent(std::unique_ptr<Component> component) override {
+        void addComponent(std::shared_ptr<Component> component) override {
             components.push_back(std::move(component));
         }
         void removeComponent(Component* component) override {
@@ -80,7 +90,7 @@ class Entity : public IEntity {
                 }
             }
         }
-        std::vector<std::unique_ptr<Component>>& getComponents() override {
+        std::vector<std::shared_ptr<Component>>& getComponents() override {
             return components;
         }
         Component* getComponentOfType(const std::type_info& ti) override {
@@ -91,8 +101,16 @@ class Entity : public IEntity {
             }
             return nullptr;
         }
+        void setId(int id) {
+            _id = id;
+        }
+        int getId() const {
+            return _id;
+        }
+
     private:
-        std::vector<std::unique_ptr<Component>> components;
+        int _id;
+        std::vector<std::shared_ptr<Component>> components;
 };
 
 namespace Engine {
@@ -144,6 +162,7 @@ namespace Engine {
      */
     C_Score* getScore(std::unique_ptr<IEntity> entity);
 
+    C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity);
     /**
      * @brief Setup the new position on the C_transform component of the specific adress entity.
      *
@@ -247,6 +266,7 @@ namespace Engine {
      * @param newScore The newStatus is the new player score for the C_Score component of the specific adress entity
      */
     void setScore(IEntity& entity, int newScore);
+    void setEnemyInfoType(IEntity& entity, int newType);
 
     template<typename T>
     /**
@@ -263,4 +283,12 @@ namespace Engine {
         }
         return (nullptr);
     }
+    //template<typename T>
+    //const T* getComponentRef(const IEntity& entity) {
+    //    T* component = dynamic_cast<const T*>(entity.getComponentOfType(typeid(T)));
+    //    if (component) {
+    //        return (component);
+    //    }
+    //    return (nullptr);
+    //}
 }

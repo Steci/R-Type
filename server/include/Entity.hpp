@@ -5,6 +5,8 @@
 ** Entity.hpp
 */
 
+#pragma once
+
 #include "../../engine/include/Engine.hpp"
 #include "../../engine/include/System.hpp"
 
@@ -18,7 +20,6 @@ class E_Bullet : public Entity {
          *
          * During this constructor the different components that make up the entity will be created
          *
-         * @param path The path is the asset.
          * @param damage The damage is the bullet damage.
          * @param position_x The position_x is the bullet position on the x axe.
          * @param position_y The position_y is the bullet position on the y axe.
@@ -26,10 +27,17 @@ class E_Bullet : public Entity {
          * @param size_y The size_y is the bullet size on the y axe of the entity.
          * @param velocity_x The velocity_x is the bullet velocity on the x axe of the entity.
          * @param velocity_y The velocity_y is the bullet velocity on the y axe of the entity.
+         * @param idCreator The idCreator is this int allows you to know who created this bullet.
          */
-        E_Bullet(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
+        E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y, int idCreator);
+        E_Bullet() = default;
         void update() override {};
-        void render() override;
+        std::string getType() const override;
+        std::vector<char> serializeToVector() override;
+        int getIdCreator() const { return _idCreator; };
+
+    private:
+        int _idCreator;
 };
 
 /**
@@ -42,31 +50,15 @@ class E_Player : public Entity {
          *
          * During this constructor the different components that make up the entity will be created
          *
-         * @param path The path is the asset.
          * @param position_x The position_x is the bullet position on the x axe.
          * @param position_y The position_y is the bullet position on the y axe.
          * @param size_x The size_x is the bullet size on the x axe of the entity.
          * @param size_y The size_y is the bullet size on the y axe of the entity.
          */
-        E_Player(std::string path, int position_x, int position_y, float size_x, float size_y);
+        E_Player(int position_x, int position_y, float size_x, float size_y);
         void update() override;
-        void render() override;
-
-        /**
-         * @brief this function of the class new E_Bullet with params in this entity in the std::vector
-         *
-         * @param path The path is the asset.
-         * @param damage The damage is the bullet damage.
-         * @param position_x The position_x is the bullet position on the x axe.
-         * @param position_y The position_y is the bullet position on the y axe.
-         * @param size_x The size_x is the bullet size on the x axe of the entity.
-         * @param size_y The size_y is the bullet size on the y axe of the entity.
-         * @param velocity_x The velocity_x is the bullet velocity on the x axe of the entity.
-         * @param velocity_y The velocity_y is the bullet velocity on the y axe of the entity.
-         */
-        void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
-    private:
-        std::vector<std::unique_ptr<E_Bullet>> _bullets; /**< The list of E_Bullet classes in this entity. */
+        std::string getType() const override;
+        std::vector<char> serializeToVector() override;
 };
 
 /**
@@ -79,29 +71,14 @@ class E_Enemy : public Entity {
          *
          * During this constructor the different components that make up the entity will be created
          *
-         * @param path The path is the asset.
          * @param position_x The position_x is the bullet position on the x axe.
          * @param position_y The position_y is the bullet position on the y axe.
          * @param size_x The size_x is the bullet size on the x axe of the entity.
          * @param size_y The size_y is the bullet size on the y axe of the entity.
+         * @param tmp The tmp is the enemy type.
          */
-        E_Enemy(std::string path, int position_x, int position_y, float size_x, float size_y);
+        E_Enemy(int position_x, int position_y, float size_x, float size_y, int tmp);
         void update() override;
-        void render() override;
-
-        /**
-         * @brief this function of the class new E_Bullet with params in this entity in the std::vector
-         *
-         * @param path The path is the asset.
-         * @param damage The damage is the bullet damage.
-         * @param position_x The position_x is the bullet position on the x axe.
-         * @param position_y The position_y is the bullet position on the y axe.
-         * @param size_x The size_x is the bullet size on the x axe of the entity.
-         * @param size_y The size_y is the bullet size on the y axe of the entity.
-         * @param velocity_x The velocity_x is the bullet velocity on the x axe of the entity.
-         * @param velocity_y The velocity_y is the bullet velocity on the y axe of the entity.
-         */
-        void newShoot(std::string path, int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y);
-    private:
-        std::vector<std::unique_ptr<E_Bullet>> _bullets; /**< The list of E_Bullet classes in this entity. */
+        std::string getType() const override;
+        std::vector<char> serializeToVector() override;
 };
