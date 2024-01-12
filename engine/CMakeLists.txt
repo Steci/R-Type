@@ -7,7 +7,10 @@ file(GLOB ENGINE_SOURCES
 )
 
 add_library(EngineLib STATIC ${ENGINE_SOURCES})
-target_link_libraries(EngineLib PRIVATE raylib)
+if(WIN32)
+    target_link_libraries(EngineLib PRIVATE winmm.lib)
+endif()
+target_link_libraries(EngineLib PUBLIC raylib)
 
 list(APPEND ENGINE_LIB_INCLUDES "include")
 target_include_directories(EngineLib PUBLIC ${ENGINE_LIB_INCLUDES})
