@@ -92,7 +92,7 @@ namespace server
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
-            int _game_id;
+            int _game_id = 0;
             std::mutex _mutex;
             std::vector<Interaction> _interaction_client;
             typedef void (*Key)(int button);

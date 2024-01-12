@@ -75,3 +75,29 @@ class AInteraction : public IInteraction{
         int _quit = 0;
         int _createGame = 0;
 };
+
+class IProtocole {
+    public:
+        virtual void deserializeProtocole(const std::vector<char>& serializedData) = 0;
+        virtual std::vector<char> serializeProtocole() = 0;
+};
+
+class AProtocole : public IProtocole{
+    public:
+        AProtocole() = default;
+        ~AProtocole() = default;
+        void setPing(int ping) {_ping = ping;};
+        void setPong(int pong) {_pong = pong;};
+        int getPing() const {return _ping;};
+        int getPong() const {return _pong;};
+        void deserializeProtocole(const std::vector<char>& serializedData) override {
+            *this = *reinterpret_cast<const AProtocole*>(serializedData.data());
+        }
+        std::vector<char> serializeProtocole() override {
+            const char* data = reinterpret_cast<const char*>(this);
+            return std::vector<char>(data, data + sizeof(AProtocole));
+        }
+    protected:
+        int _ping = 0;
+        int _pong = 0;
+};

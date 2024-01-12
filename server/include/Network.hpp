@@ -105,6 +105,12 @@ namespace server {
             int _id;
     };
 
+    class Protocole : AProtocole {
+        public:
+            Protocole() {};
+            ~Protocole() {};
+    };
+
     class Network {
         public:
             Network(int port, int maxClients);
