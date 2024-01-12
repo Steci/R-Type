@@ -27,6 +27,7 @@
     #define OS "windows"
 #endif
 
+#include "Game.hpp"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -41,9 +42,9 @@
 #include <cstdlib>
 #include <ctime>
 #include <sstream>
-#include "Game.hpp"
 
 namespace client {
+    class Game;
     class Serialize {
         public:
             Serialize() = default;

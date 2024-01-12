@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/Network.hpp"
+#include "Engine.hpp"
+#include "EngineNetwork.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -22,7 +22,6 @@
 #define TICK_SPEED 66
 
 namespace client {
-
     // cette class va être envoyé au server pour lui dire ce qu'on fait donc toute interraction avec le jeu passe par ici
     // cette class existe aussi dans le server donc fait gaffe si tu changes un truc faut aussi le changer côté serveur mais à terme elle existera qu'à un endroit (oui j'aurais pu le faire dès le début mais je suis crevé et si je change mtn ça va être un bordel sans nom)
     class Interaction {
@@ -63,13 +62,11 @@ namespace client {
             void deserializeFrame(const std::vector<char>& serializedData);
     };
 
-    class Game
-    {
+    class Game {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
 
         public:
-            Game() {
-                _tick = 0;
+            Game(): _tickSpeed(TICK_SPEED), _tick(0) {
             };
             ~Game();
             void run();
@@ -95,7 +92,7 @@ namespace client {
 
 
         private:
-            int _tickSpeed = TICK_SPEED;
+            int _tickSpeed;
             int _tick;
             std::mutex _mutex_interactions;
             std::vector<Interaction> _interactions;

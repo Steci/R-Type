@@ -9,5 +9,5 @@ file(GLOB ENGINE_SOURCES
 add_library(EngineLib STATIC ${ENGINE_SOURCES})
 target_link_libraries(EngineLib PRIVATE raylib)
 
-list(APPEND ENGINE_EXTRA_INCLUDES "include")
-target_include_directories(EngineLib PUBLIC ${ENGINE_EXTRA_INCLUDES})
+list(APPEND ENGINE_LIB_INCLUDES "include")
+target_include_directories(EngineLib PUBLIC ${ENGINE_LIB_INCLUDES})

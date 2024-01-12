@@ -10,7 +10,7 @@
 #include <cassert>
 #include <memory>
 
-#include "Entity.hpp"
+#include "EngineEntity.hpp"
 
 /**
  * @brief A sparse array data structure that maps IDs to elements.

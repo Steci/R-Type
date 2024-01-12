@@ -15,7 +15,7 @@
 #include <list>
 #include <cstring>
 
-#include "Utils.hpp"
+#include "EngineUtils.hpp"
 
 // TODO : Voir avec Axel ce qu'il a mis en Component
 
@@ -40,6 +40,7 @@ struct C_Transform : public Component {
     Vec2 _size; /**< The rotation of the entity. */
     Vec2 _velocity;
     int _animation;
+
     C_Transform(float position_x, float position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
         _position = {position_x, position_y};
         _size = {size_x, size_y};
