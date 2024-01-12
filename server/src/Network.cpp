@@ -220,6 +220,7 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
         }
     }
     connect.setId(_clients.size() + 1);
+    printf("Id Client = %d\n", _clients.size() + 1);
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);

@@ -84,11 +84,8 @@ void server::Game::run()
 
         _functions.clear();
         manager.update();
-        // printf("tick+getClientID+");
         _tick++;
-        // printf("tick = " << _tick);
 
-        //remplir la frame ici
         fillFrame(entities);
         interaction_client.clear();
         std::this_thread::sleep_for(std::chrono::milliseconds(_tickSpeed));
