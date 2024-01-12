@@ -75,7 +75,7 @@ namespace client {
             ~Frame() {};
 
             int getTick() const {return _tick;};
-            int getIDServer() const {return _serverId;};
+            int getIDServer() const {return _gameId;};
             void clearEntities() {_entities.clearEntities();};
             bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
                 const std::string endMarker = "END";
@@ -83,6 +83,13 @@ namespace client {
                 std::equal(endMarker.begin(), endMarker.end(), it);
             }
             void deserializeFrame(const std::vector<char>& serializedData);
+    };
+
+    class Menu
+    {
+        public:
+
+        private:
     };
 
     class Game
@@ -118,5 +125,4 @@ namespace client {
             std::vector<Frame> _frames; // ici mettre les frames à display
             void infoInteraction(int mov, int shoot, int quit, int createGame);
     };
-
 }
