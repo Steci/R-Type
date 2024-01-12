@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/Network.hpp"
+#include "Engine.hpp"
+#include "EngineNetwork.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>

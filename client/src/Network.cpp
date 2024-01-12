@@ -15,13 +15,20 @@ client::Network::Network(std::string serverIP, int serverPort): _serverIP(server
 
 client::Network::~Network()
 {
+    #ifdef __linux__
+        close(_fd);
+    #endif
+    #ifdef _WIN64
+        closesocket(_fd);
+        WSACleanup();
+    #endif
 }
 
 int client::Network::fillSocket()
 {
     int opt = 1;
 
-    #ifdef linux
+    #ifdef __linux__
         _fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (_fd == -1) {
             std::cerr << "Error: socket creation failed" << std::endl;
@@ -29,28 +36,33 @@ int client::Network::fillSocket()
         }
         if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
-            return(84);
+            close(_fd);
+            return (84);
         }
     #endif
 
     #ifdef _WIN64
-        WSADATA wsaData;
-        int iResult;
+        int iResult = 0;
 
-        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-        if (_fd == -1) {
-            std::cerr << "Error: socket creation failed" << std::endl;
-            return(84);
-        }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
-            std::cerr << "Error: socket options failed" << std::endl;
-            return(84);
-        }
-        if (iResult != 0) {
+        iResult = WSAStartup(MAKEWORD(2, 2), &_wsaData);
+        if (iResult != NO_ERROR) {
             std::cerr << "Error: WSAStartup failed" << std::endl;
-            return(84);
+            return (84);
         }
+        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if (_fd == INVALID_SOCKET) {
+            std::cerr << "Error: socket creation failed" << WSAGetLastError() << std::endl;
+            closesocket(_fd);
+            WSACleanup();
+            return (84);
+        }
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(int)) == -1) {
+            std::cerr << "Error: socket options failed" << WSAGetLastError() << std::endl;
+            return (84);
+        }
+
+        unsigned read_timeout_ms = 10;
+        setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&read_timeout_ms), sizeof(read_timeout_ms));
     #endif
     return 0;
 }
@@ -65,13 +77,17 @@ int client::Network::fillAddr()
     std::memset(&_addr, 0, sizeof(_addr));
     std::memset(&_serverAddr, 0, sizeof(_serverAddr));
     _addr.sin_family = AF_INET;
-    _addr.sin_addr.s_addr = INADDR_ANY;
     _addr.sin_port = htons(getRandomPort());
+    _addr.sin_addr.s_addr = INADDR_ANY;
     _serverAddr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
     _serverAddr.sin_port = htons(_serverPort);
+    _serverAddr.sin_family = AF_INET;
+    #ifdef _WIN64
+        _serverAddrLen = sizeof(_serverAddr);
+    #endif
     std::cout << "Server IP: " << inet_ntoa(_serverAddr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_serverAddr.sin_port) << std::endl;
-    std::cout << "CLIENT port: " << ntohs(_addr.sin_port) << std::endl;
+    std::cout << "Client port: " << ntohs(_addr.sin_port) << std::endl;
     return 0;
 }
 
@@ -82,11 +98,26 @@ void client::Network::run(Game *game)
     client::Serialize convert;
     std::vector<Game> games;
 
+    std::cerr << "CLIENT RUNNING :D" << std::endl;
     while(_isRunning) {
-        server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #ifdef __linux__
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == -1) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    continue;
+                } else {
+                    std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
+                    return;
+                }
+            }
+        #endif
+        #ifdef _WIN64
+            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
         checkInteraction(game);
         if (server == -1) {
-            std::cerr << "Error: recvfrom failed" << std::endl;
+            std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
             return;
         } else {
             handleCommands(buffer, game);
@@ -96,11 +127,20 @@ void client::Network::run(Game *game)
 
 int client::Network::bindSocket()
 {
-    if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
-        std::cerr << "Error: socket binding failed" << std::endl;
-        return(84);
-    }
-    return 0;
+    #ifdef __linux__
+        if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
+    #ifdef _WIN64
+        if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
 }
 
 int client::Network::connectCommand()
@@ -112,10 +152,22 @@ int client::Network::connectCommand()
     client::Connection receiveConnection;
     std::vector<char> data = connect.serializeConnection();
     std::vector<char> receiveData(sizeof(client::Connection));
+    int res = 0;
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
-        server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        if (res == -1) {
+            std::cerr << "Connection failure..." << std::endl;
+        }
+        #ifdef __linux__
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
+        #ifdef _WIN64
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == SOCKET_ERROR) {
+                std::cerr << "Empty... error: " << WSAGetLastError() << std::endl;
+            }
+        #endif
         if (server != -1) {
             std::cout << "Info received" << std::endl;
             receiveConnection.deserializeConnection(receiveData);

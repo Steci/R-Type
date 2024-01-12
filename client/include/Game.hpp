@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/Network.hpp"
+#include "Engine.hpp"
+#include "EngineNetwork.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -97,13 +97,21 @@ namespace client {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
 
         public:
-            Game() {
-                _tick = 0;
+            Game(): _tickSpeed(TICK_SPEED), _tick(0) {
             };
             ~Game();
             void run();
             std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
-            void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
+            void deleteInteraction(int nbr_interaction) {
+                _mutex_interactions.lock();
+                if (!_interactions.empty() && nbr_interaction >= 0 && nbr_interaction < _interactions.size()) {
+                    _interactions.erase(_interactions.begin() + nbr_interaction);
+                } else {
+                    std::cerr << "Error: _interactions is empty." << std::endl;
+                }
+                _mutex_interactions.unlock();
+            };
+            //void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
             void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
             void createTextures();
             // à faire pour rajouter les frame à display
@@ -113,7 +121,7 @@ namespace client {
             // pour remplir _interaction il faut lock _mutex puis l'unlock !!!!! si tu oublie l'un des 2 c'est la merde
 
         private:
-            int _tickSpeed = TICK_SPEED;
+            int _tickSpeed;
             int _tick;
             std::mutex _mutex_interactions;
             std::vector<Interaction> _interactions;

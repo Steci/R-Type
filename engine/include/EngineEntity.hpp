@@ -75,7 +75,7 @@ class Entity : public IEntity {
     public:
         void update() override = 0;
         void render() override {};
-        std::vector<char> serializeToVector() override {};
+        std::vector<char> serializeToVector() override {return std::vector<char>();};
         std::string getType() const override = 0;
         void deserializeFromVector(std::vector<char> data) override {};
 

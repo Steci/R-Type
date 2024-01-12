@@ -5,8 +5,8 @@
 ** System.hpp
 */
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/System.hpp"
+#include "Engine.hpp"
+#include "EngineSystem.hpp"
 
 class S_EnemyAI : public System {
     public:

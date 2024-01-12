@@ -1,6 +1,8 @@
-find_path(OPENGL_INCLUDE_DIR GL/gl.h)
+message(STATUS "Install raylib PACKAGES...")
 
-find_package(raylib 5.0 QUIET) # QUIET or REQUIRED
+find_path(OPENGL_INCLUDE_DIR GL/gl.h)
+find_package(raylib 5.0 QUIET)
+
 if (NOT raylib_FOUND)
     include(FetchContent)
     FetchContent_Declare(
