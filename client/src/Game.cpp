@@ -151,6 +151,7 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
 
             auto playerShared = std::make_shared<E_Player>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
             playerShared->setId(id_client);
+            Engine::setScore(*playerShared, score->_score);
             int id = _entities.add(playerShared, id_client);
             id_client += 1;
         } else if (entityType == "E_Enemy") {
