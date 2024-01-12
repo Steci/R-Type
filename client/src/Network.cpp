@@ -29,26 +29,30 @@ int client::Network::fillSocket()
         }
         if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
             std::cerr << "Error: socket options failed" << std::endl;
+            close(_fd);
             return(84);
         }
     #endif
 
     #ifdef _WIN64
         WSADATA wsaData;
-        int iResult;
+        int iResult = 0;
 
-        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-        if (_fd == -1) {
-            std::cerr << "Error: socket creation failed" << std::endl;
-            return(84);
-        }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(opt)) == -1) {
-            std::cerr << "Error: socket options failed" << std::endl;
-            return(84);
-        }
-        if (iResult != 0) {
+        if (iResult != NO_ERROR) {
             std::cerr << "Error: WSAStartup failed" << std::endl;
+            return(84);
+        }
+        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if (_fd == INVALID_SOCKET) {
+            std::cerr << "Error: socket creation failed" << std::endl;
+            printf("%d\n", WSAGetLastError());
+            closesocket(_fd);
+            WSACleanup();
+            return(84);
+        }
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(int)) == -1) {
+            std::cerr << "Error: socket options failed" << WSAGetLastError() << std::endl;
             return(84);
         }
     #endif

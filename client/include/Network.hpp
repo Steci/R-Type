@@ -5,9 +5,9 @@
 ** Network.hpp
 */
 
-#pragma comment(lib, "Ws2_32.lib")
 
 #ifdef linux
+    #pragma once
     #include <sys/socket.h>
     #include <netinet/in.h>
     #include <sys/types.h>
@@ -18,6 +18,7 @@
 #endif
 
 #ifdef _WIN64
+    #pragma comment(lib, "Ws2_32.lib")
     #define NOGDI
     #define NOUSER
     #define MMNOSOUND
