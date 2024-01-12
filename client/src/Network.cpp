@@ -15,6 +15,11 @@ client::Network::Network(std::string serverIP, int serverPort): _serverIP(server
 
 client::Network::~Network()
 {
+    #ifdef linux
+    #endif
+    #ifdef _WIN64
+        closesocket(_fd);
+    #endif
 }
 
 int client::Network::fillSocket()
@@ -69,13 +74,14 @@ int client::Network::fillAddr()
     std::memset(&_addr, 0, sizeof(_addr));
     std::memset(&_serverAddr, 0, sizeof(_serverAddr));
     _addr.sin_family = AF_INET;
-    _addr.sin_addr.s_addr = INADDR_ANY;
     _addr.sin_port = htons(getRandomPort());
+    _addr.sin_addr.s_addr = INADDR_ANY;
     _serverAddr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
     _serverAddr.sin_port = htons(_serverPort);
+    _serverAddr.sin_family = AF_INET;
     std::cout << "Server IP: " << inet_ntoa(_serverAddr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_serverAddr.sin_port) << std::endl;
-    std::cout << "CLIENT port: " << ntohs(_addr.sin_port) << std::endl;
+    std::cout << "Client port: " << ntohs(_addr.sin_port) << std::endl;
     return 0;
 }
 
@@ -87,7 +93,13 @@ void client::Network::run(Game *game)
     std::vector<Game> games;
 
     while(_isRunning) {
-        server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #ifdef linux
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
+        #ifdef _WIN64
+            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
         checkInteraction(game);
         if (server == -1) {
             std::cerr << "Error: recvfrom failed" << std::endl;
@@ -100,7 +112,7 @@ void client::Network::run(Game *game)
 
 int client::Network::bindSocket()
 {
-    if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+    if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
         std::cerr << "Error: socket binding failed" << std::endl;
         return(84);
     }
@@ -116,15 +128,22 @@ int client::Network::connectCommand()
     client::Connection receiveConnection;
     std::vector<char> data = connect.serializeConnection();
     std::vector<char> receiveData(sizeof(client::Connection));
+    int res = 0;
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        if (res == SOCKET_ERROR) {
+            std::cerr << "Connection failure..." << std::endl;
+        }
         #ifdef linux
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         #ifdef _WIN64
             // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == SOCKET_ERROR) {
+                std::cerr << "Empty..." << std::endl;
+            }
         #endif
         if (server != -1) {
             std::cout << "Info received" << std::endl;

@@ -79,7 +79,7 @@ namespace client {
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
                 SOCKADDR_IN _serverAddr;
-                int _serverAddrLen;
+                socklen_t _serverAddrLen;
             #endif
             int _tickrate;
             std::vector<std::string> _commands = {"KILL", "KICK", "SET_TICKRATE", "UPDATE", "ERROR"};

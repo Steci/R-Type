@@ -16,6 +16,11 @@ server::Network::Network(int port, int maxClients): _port(port != 0 ? port : 900
 
 server::Network::~Network()
 {
+    #ifdef linux
+    #endif
+    #ifdef _WIN64
+        closesocket(_fd);
+    #endif
 }
 
 int server::Network::fillSocket()
@@ -69,7 +74,6 @@ int server::Network::fillAddr()
     _addr.sin_addr.s_addr = INADDR_ANY;
     std::cout << "Server IP: " << inet_ntoa(_addr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_addr.sin_port) << std::endl;
-    std::cout << "Server port: " << _addr.sin_port << std::endl;
     return 0;
 }
 
@@ -94,13 +98,13 @@ void server::Network::run(Game *game)
         #endif
         #ifdef _WIN64
             // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
-            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
         #endif
-
         updateClients(id, game);
         if (client < 0) {
             continue;
         }
+        std::cout << "HEYAAAAA" << std::endl;
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
         if (id != 0 && id != -1) {
@@ -212,7 +216,7 @@ std::string server::Network::handleClientMessage(std::string message, int client
 
 int server::Network::bindSocket()
 {
-    if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+    if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
         std::cerr << "Error: socket binding failed" << std::endl;
         return(84);
     }

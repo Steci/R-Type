@@ -135,7 +135,7 @@ namespace server {
             #ifdef _WIN64
                 SOCKADDR_IN _addr;
                 SOCKADDR_IN _clientAddr;
-                int _clientAddrLen;
+                socklen_t _clientAddrLen;
             #endif
             int _tickrate;
             int _last_tick_send = 0;
