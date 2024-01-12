@@ -28,60 +28,76 @@ namespace client {
         int mov;
         int shoot;
         int quit;
+        int withSizeX = 800;
+        int withSizeY = 600;
+        int fps = 60;
+        bool statusMenu = _menu.getStatusMenu();
 
-        manager.addSystem<S_Renderer>(800, 600, 60, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
+        manager.addSystem<S_Renderer>(withSizeX, withSizeY, fps, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
+        manager.addSystem<S_AudioManager>();
         createTextures();
+        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
+        PlayMusicStream(backgroundMusic->second);
         while (1) {
-            manager.getSystem<S_Renderer>()->clearEntities();
-            // printf("Key pressed : %d\n", manager.getSystem<S_EventManager>()->EventKeyPressed(std::list<int>{KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ESCAPE}));
-            mov = manager.getSystem<S_EventManager>()->getMovement();
-            shoot = manager.getSystem<S_EventManager>()->getShoot();
-            quit = manager.getSystem<S_EventManager>()->getQuit();
-            if (mov != 0 || shoot != 0 || quit != 0)
-                infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
-            _mutex_frames.lock();
-            if (_frames.size() != 0) {
-                current_frame.clearEntities();
-                current_frame = _frames.back();
-                _frames.pop_back();
-            }
-            _mutex_frames.unlock();
-            auto &entities = current_frame.getEntities();
-            const auto& sparseIds = entities.getSparse();
-
-
-            for (int id = 0; id < sparseIds.size(); ++id) {
-                if (sparseIds[id] != -1) {
-                    auto& tmpEntity = entities.get(id);
-                    if (typeid(tmpEntity) == typeid(E_Player)) {
-                        auto it = _player_sprites.find(sparseIds[id]);
-                        auto infos = it->second;
-                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                        C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
-                        sprite->setupByTexture(infos._texture);
-                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-
-                    } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
-                        C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
-                        auto it = _ennemy_sprites.find(ennemyInfo->_type);
-                        auto infos = it->second;
-                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        Engine::setSpriteTexture(tmpEntity, infos._texture);
-
-                    } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
-                        auto it = _utils_sprites.find(1);
-                        auto infos = it->second;
-                        tmpEntity.addComponent(std::make_unique<C_Sprite>());
-                        Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                        Engine::setSpriteTexture(tmpEntity, infos._texture);
+            if (statusMenu == true) {
+                _menu.render(withSizeX);
+                statusMenu = _menu.getStatusMenu();
+            } else {
+                manager.getSystem<S_Renderer>()->clearEntities();
+                mov = manager.getSystem<S_EventManager>()->getMovement();
+                shoot = manager.getSystem<S_EventManager>()->getShoot();
+                quit = manager.getSystem<S_EventManager>()->getQuit();
+                if (mov != 0 || shoot != 0 || quit != 0)
+                    if (shoot != 0) {
+                        auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
+                        PlaySound(effect->second);
                     }
-                    manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
-                    manager.getSystem<S_Renderer>()->setIDServer(current_frame.getIDServer());
+                    infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
+                _mutex_frames.lock();
+                if (_frames.size() != 0) {
+                    current_frame.clearEntities();
+                    current_frame = _frames.back();
+                    _frames.pop_back();
                 }
+                _mutex_frames.unlock();
+                UpdateMusicStream(backgroundMusic->second);
+                auto &entities = current_frame.getEntities();
+                const auto& sparseIds = entities.getSparse();
+
+
+                for (int id = 0; id < sparseIds.size(); ++id) {
+                    if (sparseIds[id] != -1) {
+                        auto& tmpEntity = entities.get(id);
+                        if (typeid(tmpEntity) == typeid(E_Player)) {
+                            auto it = _player_sprites.find(sparseIds[id]);
+                            auto infos = it->second;
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
+                            sprite->setupByTexture(infos._texture);
+                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+
+                        } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
+                            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
+                            auto it = _ennemy_sprites.find(ennemyInfo->_type);
+                            auto infos = it->second;
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                            Engine::setSpriteTexture(tmpEntity, infos._texture);
+
+                        } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
+                            auto it = _utils_sprites.find(1);
+                            auto infos = it->second;
+                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
+                            Engine::setSpriteTexture(tmpEntity, infos._texture);
+                        }
+                        manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
+                        manager.getSystem<S_Renderer>()->setIDServer(current_frame.getIDServer());
+                    }
+                }
+                manager.update();
             }
-            manager.update();
         }
     }
 
@@ -113,6 +129,64 @@ namespace client {
         }
         _mutex_interactions.unlock();
         _mutex_frames.unlock();
+    }
+
+    void Menu::render(int screenWidth)
+    {
+        Rectangle btnCreate = { screenWidth/2 - 100, 100, 200, 50 };
+        Rectangle btnJoin = { screenWidth/2 - 100, 200, 200, 50 };
+        const int parties[] = { 178946, 2789456, 34561 };
+        int selectedParty = -1;
+        int hoveredParty = -1;
+
+        while (1) {
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
+            if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
+                DrawRectangleRec(btnCreate, GRAY);
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    //mutex
+                    printf("create part\n");
+                    this->_status = false;
+                    return;
+                }
+            } else {
+                DrawRectangleRec(btnCreate, LIGHTGRAY);
+            }
+                DrawText("Create new part", btnCreate.x + 10, btnCreate.y + 10, 20, BLACK);
+                if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
+                    DrawRectangleRec(btnJoin, GRAY);
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
+                    //mutex
+                    this->_JoinGame = true;
+                    this->_idServerJoin = parties[selectedParty];
+                    this->_status = false;
+                    printf("Join part\n");
+                    return;
+                }
+            } else {
+                DrawRectangleRec(btnJoin, LIGHTGRAY);
+        }
+        DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
+
+        for (int i = 0; i < 3; i++) {
+            Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
+            if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
+                hoveredParty = i;
+                DrawRectangleRec(partyRect, LIGHTGRAY);
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    selectedParty = i;
+                }
+            } else {
+                DrawRectangleRec(partyRect, WHITE);
+            }
+            if (selectedParty == i) {
+                DrawRectangleLinesEx(partyRect, 2, RED);
+            }
+            DrawText(std::to_string(parties[i]).c_str(), partyRect.x + 10, partyRect.y + 10, 20, BLACK);
+        }
+        EndDrawing();
+        }
     }
 }
 

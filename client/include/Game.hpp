@@ -88,8 +88,22 @@ namespace client {
     class Menu
     {
         public:
+            Menu() { 
+                _status =  true;
+                _JoinGame = false;
+                _idServerJoin = 0;
+            };
+            ~Menu() = default;
+
+            void render(int screenWidth);
+            bool getStatusMenu() { return _status; };
+            bool getJoinGame() { return _JoinGame; };
+            int getIdServerJoin() { return _idServerJoin; };
 
         private:
+            bool _status;
+            bool _JoinGame;
+            int _idServerJoin;
     };
 
     class Game
@@ -99,6 +113,7 @@ namespace client {
         public:
             Game() {
                 _tick = 0;
+                _menu = Menu();
             };
             ~Game();
             void run();
@@ -120,6 +135,7 @@ namespace client {
             std::map<int, Infos> _ennemy_sprites;
             std::map<int, Infos> _player_sprites;
             std::map<int, Infos> _utils_sprites;
+            Menu _menu;
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
