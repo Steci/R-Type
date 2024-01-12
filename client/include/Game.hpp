@@ -83,17 +83,6 @@ namespace client {
             // il faut refaire toutes ses fonctions pour juste qu'elles récupère l'interraction et qu'elle l'envoi au serv via la class en dessous
             // pour remplir _interaction il faut lock _mutex puis l'unlock !!!!! si tu oublie l'un des 2 c'est la merde
 
-            void actionUpCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionDownCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionLeftCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionRightCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionQuitCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionConnectCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionShootCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionDamageCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-            void actionScoreCommand(int clientID, SparseArray<IEntity>& entities, Interaction *interaction);
-
-
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
@@ -105,7 +94,6 @@ namespace client {
             // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
             std::vector<Frame> _frames; // ici mettre les frames à display
-            void testInteraction();
             void infoInteraction(int mov, int shoot, int quit);
     };
 

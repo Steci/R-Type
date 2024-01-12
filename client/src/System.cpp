@@ -36,9 +36,15 @@ void S_Renderer::render()
             DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
             DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
         }
-
+        int id = 0;
+        printf("\n\n");
         for (auto& entity : _entities) {
+            printf("||-----ENTITY--%d-----||\n", id);
+            printf("Entity Type : %s\n", entity->getType().c_str());
+            printf("Entity ID : %d\n", entity->getId());
+            printf("X:%f Y:%f\n", Engine::getComponentRef<C_Transform>(*entity)->_position.x, Engine::getComponentRef<C_Transform>(*entity)->_position.y);
             entity->render();
+            id++;
         }
         _parallax.update();
     EndDrawing();
