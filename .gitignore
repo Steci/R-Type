@@ -47,3 +47,7 @@ build/
 HelloWorld
 server_build
 client_build
+
+# documentation
+docs/
+latex/

@@ -17,8 +17,6 @@
 
 #include "Utils.hpp"
 
-// TODO : Voir avec Axel ce qu'il a mis en Component
-
 /**
  * @brief The base class for all components in the engine.
  *
@@ -37,9 +35,9 @@ struct Component {
  */
 struct C_Transform : public Component {
     Vec2 _position; /**< The position of the entity. */
-    Vec2 _size; /**< The rotation of the entity. */
-    Vec2 _velocity;
-    int _animation;
+    Vec2 _size; /**< The size of the entity. */
+    Vec2 _velocity; /**< The velocity of the entity. */
+    int _animation; /**< The animation of the entity. */
     C_Transform(int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
         _position = {position_x, position_y};
         _size = {size_x, size_y};
@@ -88,7 +86,7 @@ struct C_Damage : public Component {
  * @brief The C_Health struct represents a component that stores information about health.
  */
 struct C_Health : public Component {
-    int _health;
+    int _health; /**< The amount of health. */
     C_Health(int health) {
         _health = health;
     }
@@ -105,9 +103,9 @@ struct C_Health : public Component {
  * @brief The C_Sprite struct represents a component that stores information about a sprite.
  */
 struct C_Sprite : public Component {
-    std::string _name;
-    Image _image;
-    Texture2D _texture;
+    std::string _name; /**< The asset path to use. */
+    Image _image; /**< The Image of the asset. */
+    Texture2D _texture; /**< The Texture2D of the asset. */
     C_Sprite() = default;
     void setupByPath(const std::string& imagePath) {
         _image = LoadImage(imagePath.c_str());
@@ -137,9 +135,9 @@ struct C_Sprite : public Component {
  * @brief The C_Hitbox struct represents a component that stores information about a hitbox.
  */
 struct C_Hitbox : public Component {
-    Vec2 _size;
-    int _time;
-    int _status;
+    Vec2 _size; /**< The size of the collision box of this entity. */
+    int _time; /**< The entity key state duration. */
+    int _status; /**< The status of the entity's collision box. */
     C_Hitbox(int x, int y) {
         _size = {x, y};
         _time = 10;
@@ -161,8 +159,11 @@ struct C_Hitbox : public Component {
     }
 };
 
+/**
+ * @brief The C_Score struct represents the score of player during the game.
+ */
 struct C_Score : public Component {
-    int _score;
+    int _score; /**< The amount of score. */
     C_Score() {
         _score = 0;
     }

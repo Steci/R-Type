@@ -78,6 +78,7 @@ namespace client {
                         Engine::setSpriteTexture(tmpEntity, infos._texture);
                     }
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
+                    manager.getSystem<S_Renderer>()->setIDServer(current_frame.getIDServer());
                 }
             }
             manager.update();
@@ -120,16 +121,17 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     E_Player player(0, 0, 0, 0);
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
+    int id_client = 1;
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         _tick = *reinterpret_cast<const int*>(&(*it));
         // printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
-    if (std::distance(it, serializedData.end()) >= sizeof(_serverId)) {
-        _serverId = *reinterpret_cast<const int*>(&(*it));
+    if (std::distance(it, serializedData.end()) >= sizeof(_gameId)) {
+        _gameId = *reinterpret_cast<const int*>(&(*it));
         // printf("serverId = %d\n", _serverId);
-        it += sizeof(_serverId);
+        it += sizeof(_gameId);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
         std::string entityType;
@@ -139,7 +141,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
         }
         ++it;
         if (entityType == "E_Player") {
-            // printf("deserialize player\n");
             size_t size_player = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_Score);
             player.deserializeFromVector(std::vector<char>(it, it + size_player));
             it += sizeof(size_player);
@@ -149,10 +150,11 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
             C_Score *score = Engine::getComponentRef<C_Score>(player);
 
-            auto playerShared = std::make_shared<E_Player>(player);
-            int id = _entities.add(playerShared);
-            playerShared->setId(id);
-
+            auto playerShared = std::make_shared<E_Player>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
+            playerShared->setId(id_client);
+            Engine::setScore(*playerShared, score->_score);
+            int id = _entities.add(playerShared, id_client);
+            id_client += 1;
         } else if (entityType == "E_Enemy") {
             // printf("deserialize enemy\n");
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);

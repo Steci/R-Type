@@ -28,6 +28,8 @@ S_Renderer::S_Renderer(int w, int h, int fps, std::string wName, const std::stri
 
 void S_Renderer::render()
 {
+    int score_total = 0;
+
     BeginDrawing();
         ClearBackground(RAYWHITE);
 
@@ -39,8 +41,17 @@ void S_Renderer::render()
         int id = 0;
         for (auto& entity : _entities) {
             entity->render();
+            std::string type = entity->getType();
+            if (type == "E_Player") {
+                C_Score *score = Engine::getComponentRef<C_Score>(*entity);
+                score_total += score->_score;
+            }
             id++;
         }
+        std::string scoreText = "Patoune: " + std::to_string(score_total);
+        DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
+        std::string idServerText = std::to_string(_idServer);
+        DrawText(idServerText.c_str(), 300, 500, 30, WHITE);
         _parallax.update();
     EndDrawing();
 }

@@ -23,26 +23,59 @@
 
 namespace client {
 
+    /**
+     * @brief The Interaction sends information to the server.
+    */
     class Interaction : public AInteraction{
         public:
+
+            /**
+             * @brief the constructor of the class Interaction in default params.
+             *
+            */
             Interaction() {
                 _movement = 0;
                 _shoot = 0;
                 _quit = 0;
                 _createGame = 0;
             };
+
+            /**
+             * @brief the destructor of the class Interaction by default.
+             *
+            */
             ~Interaction() {};
+
+            /**
+             * @brief allows you to serialize data in the form of std::vector<char>.
+             *
+             * @return std::vector<char> which will be sent to the server.
+            */
             std::vector<char> serializeInteraction() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Interaction));
             }
     };
 
+    /**
+     * @brief The Frame receives information to the server.
+    */
     class Frame : public AFrame {
         public:
-            Frame() {}; // penser à remplir le constructeur si besoin
-            ~Frame() {}; // penser à remplir le destructeur si besoin
+            /**
+             * @brief the constructor of the class Frame in default.
+             *
+            */
+            Frame() {};
+
+            /**
+             * @brief the destructor of the class Frame by default.
+             *
+            */
+            ~Frame() {};
+
             int getTick() const {return _tick;};
+            int getIDServer() const {return _gameId;};
             void clearEntities() {_entities.clearEntities();};
             bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
                 const std::string endMarker = "END";
@@ -50,6 +83,13 @@ namespace client {
                 std::equal(endMarker.begin(), endMarker.end(), it);
             }
             void deserializeFrame(const std::vector<char>& serializedData);
+    };
+
+    class Menu
+    {
+        public:
+
+        private:
     };
 
     class Game
@@ -85,5 +125,4 @@ namespace client {
             std::vector<Frame> _frames; // ici mettre les frames à display
             void infoInteraction(int mov, int shoot, int quit, int createGame);
     };
-
 }

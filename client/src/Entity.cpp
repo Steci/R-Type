@@ -24,13 +24,10 @@ std::string E_Bullet::getType() const {
 void E_Bullet::render()
 {
     if (IsWindowReady() == true) {
-        // Check if C_Sprite component exists
         if (this->getComponents().size() > 2) {
             C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
             Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
             Rectangle sourceRec = { 127.0f, 0.0f, 20, 20};
-            // printf("SourceRec Infos : %f, %f, %f, %f\n", sourceRec.x, sourceRec.y, sourceRec.width, sourceRec.height);
-            // printf("Transform Infos : %f, %f, %f, %f\n", transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
             DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
         }
     }
@@ -81,9 +78,6 @@ void E_Player::update()
 void E_Player::render()
 {
     if (IsWindowReady() == true) {
-        C_Score *score = Engine::getComponentRef<C_Score>(*this);
-        std::string scoreText = "Score: " + std::to_string(score->_score);
-        DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
         C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
