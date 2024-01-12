@@ -36,7 +36,7 @@ set(VCPKG_INSTALLED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed" CACHE STRI
 if(WIN32)
     set(CMAKE_GENERATOR "Visual Studio 16 2019" CACHE STRING "CMake generator" FORCE)
     set(VCPKG_TARGET_TRIPLET x64-windows)
-    #add_compile_options(-Wall)
+    add_compile_options(-Wall)
 else()
     set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
     set(VCPKG_TARGET_TRIPLET x64-linux)
