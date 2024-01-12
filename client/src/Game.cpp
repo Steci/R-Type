@@ -78,6 +78,7 @@ namespace client {
                         Engine::setSpriteTexture(tmpEntity, infos._texture);
                     }
                     manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
+                    manager.getSystem<S_Renderer>()->setIDServer(current_frame.getIDServer());
                 }
             }
             manager.update();
