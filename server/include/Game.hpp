@@ -33,6 +33,7 @@ namespace server
             int getConnect() const {return _connect;};
             void setClientID(int clientID) {_client_id = clientID;};
             void setConnect(int connect) {_connect = connect;};
+            void setMovement(int newMov) {_movement = newMov;};
             void setGameId(int gameId) {_game_id = gameId;};
             int getGameId() const {return _game_id;};
             void deserializeInteraction(const std::vector<char>& serializedData) {

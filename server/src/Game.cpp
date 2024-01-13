@@ -37,6 +37,7 @@ void server::Game::run()
     manager.addSystem<S_Weapon>(entities, _tick);
 
     int numClientID = 0;
+    bool startGame = false;
 
     while (true) {
         _mutex.lock();
@@ -48,56 +49,46 @@ void server::Game::run()
         if (interaction_client.size() > 0) {
             for (auto interaction : interaction_client) {
                 for (auto entity : entities.getAll()) {
-                    // if (interaction.getShoot() == 1 && entity->getType() == "E_Player")
-                        // printf("Bullet with client id %d and game id %d\n", interaction.getClientID(), entity->getIdServer());
                     if (entity->getType() == "E_Player" && interaction.getClientID() == entity->getIdServer()) {
-                        // printf("set interraction with client id %d\n", entity->getId());
                         interaction.setClientID(entity->getId());
                         break;
                     }
                 }
-                // Here, interaction reactions
                 if (interaction.getConnect() == 1) {
                     printf("New Player with ID : %d\n", interaction.getClientID());
                     std::shared_ptr<E_Player> player = std::make_shared<E_Player>(50, 50, 33.2, 17.2);
-                    entities.add(player, interaction.getClientID());
                     player->setId(getAvailaibleId());
                     player->setIdServer(interaction.getClientID());
+                    entities.add(player, player.get()->getId());
                     setAvailaibleId(player->getId() + 1);
+                    startGame = true;
+                    interaction.setMovement(0);
                 }
-                // // printf("1\n");
-                if (interaction.getShoot() == 1){
+                if (interaction.getShoot() == 1 && startGame == true){
                     // shoot
-                    printf("Player %d shoot\n", interaction.getClientID());
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
-                // printf("\n");
-                // // printf("2\n");
-                // if (interaction.getMovement() == 1){
-                //     // go up
-                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                //     transform->_position.y -= 8;
-                // }
-                // // printf("3\n");
-                // if (interaction.getMovement() == 2){
-                //     // go right
-                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                //     transform->_position.x += 8;
-                // }
-                // // printf("4\n");
-                // if (interaction.getMovement() == 3){
-                //     // go down
-                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                //     transform->_position.y += 8;
-                // }
-                // // printf("5\n");
-                // if (interaction.getMovement() == 4){
-                //     // go left
-                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                //     transform->_position.x -= 8;
-                // }
-                // // printf("6\n");
+                if (interaction.getMovement() == 1 && startGame == true){
+                    // go up
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.y -= 8;
+                }
+                if (interaction.getMovement() == 2 && startGame == true){
+                    // go right
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.x += 8;
+                }
+                if (interaction.getMovement() == 3 && startGame == true){
+                    // go down
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.y += 8;
+                }
+                if (interaction.getMovement() == 4 && startGame == true){
+                    // go left
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    transform->_position.x -= 8;
+                }
             }
         }
 
