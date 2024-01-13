@@ -6,6 +6,7 @@
 */
 
 #include "Network.hpp"
+#include <stdio.h>
 
 server::Network::Network(int port, int maxClients): _port(port != 0 ? port : 9001), _maxClients(maxClients != 0 ? maxClients : 4)
 {
@@ -100,10 +101,17 @@ void server::Network::run(Game *game)
 
         #ifdef __linux__
             client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+            if (client == -1) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    continue;
+                } else {
+                    std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
+                    return;
+                }
+            }
         #endif
         #ifdef _WIN64
-            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
-            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
+            client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
         #endif
         updateClients(game);
         if (client < 0) {
@@ -155,9 +163,10 @@ void server::Network::manageClient(std::vector<char> buffer, int client_id, Game
 
     interaction.deserializeInteraction(buffer);
     interaction.setClientID(client_id);
-    // std::cout << "Interaction: " << interaction.getMovement() << std::endl;
-    if (interaction.getMovement() != -1)
+    if (interaction.getMovement() != -1) {
+        //printf("Interaction : %i\n", interaction.getMovement());
         (*game).addInteraction(interaction);
+    }
 }
 
 void server::Network::updateClients(Game *game)
@@ -185,13 +194,23 @@ void server::Network::updateClients(Game *game)
         return;
     _last_tick_send = frame.getTick();
     std::vector<char> data = frame.serializeFrame();
+
+    FILE *f = fopen("server_message.bin", "w");
+    fwrite(data.data(), data.size(), 1, f);
+    fflush(f);
+    fclose(f);
+
+    int res = 0;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         // if (client->getGameId() == (*game).getGameId()) {
         //     struct sockaddr_in cli = client->getAddr();
         //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         // }
         struct sockaddr_in cli = client->getAddr();
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        if (res == -1) {
+            std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
+        }
     }
 }
 
@@ -247,12 +266,13 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     connect.setId(_clients.size() + 1);
     printf("Id Client = %d\n", _clients.size() + 1);
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
-    struct sockaddr_in cli = _clients.back().getAddr();
+    sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    std::cout << "Client IP: " << inet_ntoa(cli.sin_addr) << std::endl;
-    std::cout << "Client port: " << ntohs(cli.sin_port) << std::endl;
-    sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    int res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    if (res == -1) {
+        std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
+    }
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

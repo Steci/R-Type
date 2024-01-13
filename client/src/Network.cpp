@@ -94,7 +94,7 @@ int client::Network::fillAddr()
 void client::Network::run(Game *game)
 {
     int server = 0;
-    std::vector<char> buffer(1024);
+    std::vector<char> buffer(4096);
     client::Serialize convert;
     std::vector<Game> games;
 
@@ -112,16 +112,28 @@ void client::Network::run(Game *game)
             }
         #endif
         #ifdef _WIN64
-            // si probleme de non bloquant ca peut etre le MSG_PEEK ! Si c'est ca changer en autre chose
-            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            server = recvfrom(_fd, buffer.data(), buffer.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == SOCKET_ERROR ) {
+                int wsa_error = WSAGetLastError();
+                if (wsa_error == WSAEWOULDBLOCK || wsa_error == WSAETIMEDOUT) {
+                    continue;
+                } else {
+                    std::cerr << "Error: recvfrom failed - " << wsa_error << std::endl;
+                    return;
+                }
+            }
         #endif
+
+        FILE *f = fopen("client_message.bin", "w");
+        fwrite(buffer.data(), buffer.size(), 1, f);
+        fflush(f);
+        fclose(f);
+
+        int tick = 0;
+        std::memcpy(&tick, buffer.data(), sizeof(tick));
+        printf("Tick Receive = 0x%x\n", tick);
         checkInteraction(game);
-        if (server == -1) {
-            std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
-            return;
-        } else {
-            handleCommands(buffer, game);
-        }
+        handleCommands(buffer, game);
     }
 }
 
@@ -163,13 +175,14 @@ int client::Network::connectCommand()
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         #ifdef _WIN64
-            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_PEEK, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-            if (server == SOCKET_ERROR) {
-                std::cerr << "Empty... error: " << WSAGetLastError() << std::endl;
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == SOCKET_ERROR ) {
+                std::cerr << "Error: recvfrom failed - " << WSAGetLastError() << std::endl;
             }
         #endif
         if (server != -1) {
             std::cout << "Info received" << std::endl;
+
             receiveConnection.deserializeConnection(receiveData);
             if (receiveConnection.getConnected() == 1) {
                 std::cout << "Successfully connected with the server." << std::endl;
@@ -210,6 +223,7 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
 
     // std::cout << "frame received" << std::endl;
     frame.deserializeFrame(buffer);
+
     // std::cout << "frame deserialized" << std::endl;
     if (frame.getTick() != -1) {
         game->addFrame(frame);
@@ -221,10 +235,15 @@ void client::Network::checkInteraction(Game *game)
 {
     std::vector<Interaction> interactions = game->getInteractions();
     std::vector<char> data;
+    int res = 0;
 
     if (interactions.size() > 0) {
+        std::cout << "There is an interaction or more : " << interactions.size() << std::endl;
         data = interactions[0].serializeInteraction();
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
+        if (res == -1) {
+            std::cerr << "Sendto Interaction failure..." << std::endl;
+        }
         game->deleteInteraction(1);
     }
 }

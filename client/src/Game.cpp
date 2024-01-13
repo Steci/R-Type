@@ -5,7 +5,13 @@
 ** Game.cpp
 */
 
-#include "../include/Game.hpp"
+#include "Game.hpp"
+#ifdef _WIN64
+    #define NOGDI
+    #define NOUSER
+    #define MMNOSOUND
+    #include <winsock2.h>
+#endif
 
 namespace client {
     void Game::createTextures()
@@ -122,10 +128,16 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
     int id_client = 1;
+    size_t offset = 0;
+    int uwu = 0;
+
+    std::memcpy(&uwu, serializedData.data() + offset, sizeof(uwu));
+    offset += sizeof(uwu);
+    //printf("uwu = %d\n", uwu);
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
-        _tick = *reinterpret_cast<const int*>(&(*it));
-        // printf("tick = %d\n", _tick);
+        std::memcpy(&_tick, &(*it), sizeof(_tick));
+        //printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
     if (std::distance(it, serializedData.end()) >= sizeof(_gameId)) {
