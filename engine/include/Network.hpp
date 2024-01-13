@@ -103,3 +103,41 @@ class AProtocole : public IProtocole{
         int _ping = 0;
         int _pong = 0;
 };
+
+class IConnection {
+    public:
+        virtual int getConnect() const = 0;
+        virtual int getConnected() const = 0;
+        virtual int getCreateGame() const = 0;
+        virtual void setCreateGame(int createGame) = 0;
+        virtual void setConnected(int connected) = 0;
+        virtual int getId() const = 0;
+        virtual void setId(int id) = 0;
+        virtual void setJoinGame(int joinGame) = 0;
+        virtual int getJoinGame() const = 0;
+        virtual std::vector<char> serializeConnection() = 0;
+        virtual void deserializeConnection(std::vector<char> data) = 0;
+};
+
+class AConnection : public IConnection {
+    public:
+        AConnection() = default;
+        ~AConnection() = default;
+        int getConnect() const override {return _connect;};
+        int getConnected() const override {return _connected;};
+        int getCreateGame() const override {return _createGame;};
+        void setCreateGame(int createGame) override {_createGame = createGame;};
+        void setConnected(int connected) override {_connected = connected;};
+        void setId(int id) override {_id = id;};
+        int getId() const override {return _id;};
+        void setJoinGame(int joinGame) override {_JoinGame = joinGame;};
+        int getJoinGame() const override {return _JoinGame;};
+        std::vector<char> serializeConnection() override;
+        void deserializeConnection(std::vector<char> data) override;
+    protected:
+        int _createGame;
+        int _connect;
+        int _connected;
+        int _JoinGame;
+        int _id;
+};

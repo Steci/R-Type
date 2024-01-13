@@ -37,8 +37,8 @@ namespace client {
         manager.addSystem<S_EventManager>();
         manager.addSystem<S_AudioManager>();
         createTextures();
-        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
-        PlayMusicStream(backgroundMusic->second);
+        // auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
+        // PlayMusicStream(backgroundMusic->second);
         while (1) {
             if (statusMenu == true) {
                 _menu.render(withSizeX);
@@ -50,8 +50,8 @@ namespace client {
                 quit = manager.getSystem<S_EventManager>()->getQuit();
                 if (mov != 0 || shoot != 0 || quit != 0)
                     if (shoot != 0) {
-                        auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-                        PlaySound(effect->second);
+                        // auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
+                        // PlaySound(effect->second);
                     }
                     infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
                 _mutex_frames.lock();
@@ -61,7 +61,7 @@ namespace client {
                     _frames.pop_back();
                 }
                 _mutex_frames.unlock();
-                UpdateMusicStream(backgroundMusic->second);
+                // UpdateMusicStream(backgroundMusic->second);
                 auto &entities = current_frame.getEntities();
                 const auto& sparseIds = entities.getSparse();
 
@@ -156,7 +156,9 @@ namespace client {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     //mutex
                     setCreateGame(true);
-                    //renvoie de l'erreur c'est il y en a une!
+                    // fix cette partie elle se joue en boucle quand on clique pk?
+
+                    //récupère une erreur dans _error s'il y en a une, utilisé getError() pour la récupérer (ça gère les mutex pour toi)
                     //if (si une erreur setup le message d'erreur) {
                     //    errorMessage = "bhnjh";
                     //} else {

@@ -64,6 +64,8 @@ namespace server
             std::vector<Frame> getFrames() {_mutex_frame.lock();std::vector<Frame> frame = _frames;_mutex_frame.unlock();return frame;};
             void setGameId(int gameId) {_gameId = gameId;};
             int getGameId() const {return _gameId;};
+            void setLastTickSend(int tick) {_mutex_tick_send.lock();_last_tick_send = tick;_mutex_tick_send.unlock();};
+            int getLastTickSend() const {return _last_tick_send;};
             // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
             Game& operator=(const Game& other)
             {
@@ -92,7 +94,9 @@ namespace server
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
-            int _gameId = 0;
+            std::mutex _mutex_tick_send;
+            int _last_tick_send = 0;
+            int _gameId;
             std::mutex _mutex;
             std::vector<Interaction> _interaction_client;
             typedef void (*Key)(int button);

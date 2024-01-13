@@ -96,20 +96,24 @@ namespace client {
             bool getJoinGame() {_mutex_joinGame.lock();bool tmp = _JoinGame;_mutex_joinGame.unlock();return tmp;};
             int getIdServerJoin() {_mutex_idServerJoin.lock();int tmp = _idServerJoin;_mutex_idServerJoin.unlock();return tmp;};
             bool getCreateGame() {_mutex_createGame.lock();bool tmp = _createGame;_mutex_createGame.unlock();return tmp;};
+            std::string getError() {_mutex_error.lock();std::string tmp = _error;_mutex_error.unlock();return tmp;};
             void setStatusMenu(bool status) {_mutex_status.lock();_status = status;_mutex_status.unlock();};
             void setJoinGame(bool joinGame) {_mutex_joinGame.lock();_JoinGame = joinGame;_mutex_joinGame.unlock();};
             void setIdServerJoin(int idServerJoin) {_mutex_idServerJoin.lock();_idServerJoin = idServerJoin;_mutex_idServerJoin.unlock();};
             void setCreateGame(bool createGame) {_mutex_createGame.lock();_createGame = createGame;_mutex_createGame.unlock();};
+            void setError(std::string error) {_mutex_error.lock();_error = error;_mutex_error.unlock();};
 
         private:
             std::mutex _mutex_status;
             std::mutex _mutex_joinGame;
             std::mutex _mutex_createGame;
             std::mutex _mutex_idServerJoin;
+            std::mutex _mutex_error;
             bool _status = true;
             bool _JoinGame = false;
             bool _createGame = false;
             int _idServerJoin = 0;
+            std::string _error = "";
     };
 
     class Game

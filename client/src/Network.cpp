@@ -83,8 +83,11 @@ void client::Network::run(Game *game)
     std::vector<Game> games;
 
     while((*game).getMenu()->getStatusMenu()) {
-        if ((*game).getMenu()->getCreateGame() && connectCommand() == 0) {
+        if ((*game).getMenu()->getCreateGame() && connectCommand(1) == 0) {
             (*game).getMenu()->setStatusMenu(false);
+        } else if ((*game).getMenu()->getCreateGame()) {
+            (*game).getMenu()->setError("Error: Connection failed");
+            (*game).getMenu()->setCreateGame(false);
         }
     }
     while(_isRunning) {
@@ -108,13 +111,14 @@ int client::Network::bindSocket()
     return 0;
 }
 
-int client::Network::connectCommand()
+int client::Network::connectCommand(int createGame, int joinGame, int gameId)
 {
     int server;
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
     client::Connection connect;
     client::Connection receiveConnection;
+    connect.setCreateGame(createGame);
     std::vector<char> data = connect.serializeConnection();
     std::vector<char> receiveData(sizeof(client::Connection));
 
@@ -122,7 +126,6 @@ int client::Network::connectCommand()
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
-            std::cout << "Info received" << std::endl;
             receiveConnection.deserializeConnection(receiveData);
             if (receiveConnection.getConnected() == 1) {
                 std::cout << "Successfully connected with the server." << std::endl;

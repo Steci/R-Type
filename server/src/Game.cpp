@@ -54,31 +54,37 @@ void server::Game::run()
                     entities.add(player, interaction.getClientID());
                     player->setId(interaction.getClientID());
                 }
-                if (interaction.getShoot() == 1){
-                    // shoot
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
-                }
-                if (interaction.getMovement() == 1){
-                    // go up
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.y -= 8;
-                }
-                if (interaction.getMovement() == 2){
-                    // go right
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x += 8;
-                }
-                if (interaction.getMovement() == 3){
-                    // go down
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.y += 8;
-                }
-                if (interaction.getMovement() == 4){
-                    // go left
-                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x -= 8;
-                }
+                // printf("1\n");
+                // if (interaction.getShoot() == 1){
+                //     // shoot
+                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                //     manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
+                // }
+                // printf("2\n");
+                // if (interaction.getMovement() == 1){
+                //     // go up
+                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                //     transform->_position.y -= 8;
+                // }
+                // printf("3\n");
+                // if (interaction.getMovement() == 2){
+                //     // go right
+                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                //     transform->_position.x += 8;
+                // }
+                // printf("4\n");
+                // if (interaction.getMovement() == 3){
+                //     // go down
+                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                //     transform->_position.y += 8;
+                // }
+                // printf("5\n");
+                // if (interaction.getMovement() == 4){
+                //     // go left
+                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                //     transform->_position.x -= 8;
+                // }
+                // printf("6\n");
             }
         }
 

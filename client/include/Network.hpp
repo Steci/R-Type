@@ -59,7 +59,7 @@ namespace client {
             Network(std::string serverIP, int serverPort);
             ~Network();
             void run(Game *game);
-            int connectCommand();
+            int connectCommand(int createGame = 0, int joinGame = 0, int gameId = 0);
         private:
             std::string _serverIP;
             int _serverPort;
@@ -93,20 +93,9 @@ namespace client {
             void checkInteraction(Game *game);
     };
 
-    class Connection {
+    class Connection : public AConnection {
         public:
             Connection() {};
             ~Connection() {};
-            int getConnected() const {return _connected;};
-            std::vector<char> serializeConnection() {
-                const char* data = reinterpret_cast<const char*>(this);
-                return std::vector<char>(data, data + sizeof(Connection));
-            }
-            void deserializeConnection(const std::vector<char>& serializedData) {
-                *this = *reinterpret_cast<const Connection*>(serializedData.data());
-            }
-        private:
-            int _connect = 1;
-            int _connected = 0;
     };
 }
