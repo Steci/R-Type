@@ -157,7 +157,10 @@ namespace client {
                     //mutex
                     setCreateGame(true);
                     // fix cette partie elle se joue en boucle quand on clique pk?
-
+                    if(errorMessage.empty()) {
+                        this->_status = false;
+                        return;
+                    }
                     //récupère une erreur dans _error s'il y en a une, utilisé getError() pour la récupérer (ça gère les mutex pour toi)
                     //if (si une erreur setup le message d'erreur) {
                     //    errorMessage = "bhnjh";
