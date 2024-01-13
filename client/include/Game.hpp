@@ -97,13 +97,13 @@ namespace client {
             int getIdServerJoin() {_mutex_idServerJoin.lock();int tmp = _idServerJoin;_mutex_idServerJoin.unlock();return tmp;};
             bool getCreateGame() {_mutex_createGame.lock();bool tmp = _createGame;_mutex_createGame.unlock();return tmp;};
             std::string getError() {_mutex_error.lock();std::string tmp = _error;_mutex_error.unlock();return tmp;};
+            std::vector<int> getIdGames() {_mutex_idGames.lock();std::vector<int> tmp = _idGames;_mutex_idGames.unlock();return tmp;};
             void setStatusMenu(bool status) {_mutex_status.lock();_status = status;_mutex_status.unlock();};
             void setJoinGame(bool joinGame) {_mutex_joinGame.lock();_JoinGame = joinGame;_mutex_joinGame.unlock();};
             void setIdServerJoin(int idServerJoin) {_mutex_idServerJoin.lock();_idServerJoin = idServerJoin;_mutex_idServerJoin.unlock();};
             void setCreateGame(bool createGame) {_mutex_createGame.lock();_createGame = createGame;_mutex_createGame.unlock();};
             void setError(std::string error) {_mutex_error.lock();_error = error;_mutex_error.unlock();};
             void setIdGames(std::vector<int> idGames) {_mutex_idGames.lock();_idGames = idGames;_mutex_idGames.unlock();};
-            std::vector<int> getIdGames() {_mutex_idGames.lock();std::vector<int> tmp = _idGames;_mutex_idGames.unlock();return tmp;};
 
         private:
             std::mutex _mutex_status;

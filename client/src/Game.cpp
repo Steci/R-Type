@@ -135,13 +135,14 @@ namespace client {
     {
         Rectangle btnCreate = { screenWidth/2 - 100, 100, 200, 50 };
         Rectangle btnJoin = { screenWidth/2 - 100, 200, 200, 50 };
+        Rectangle btnSearch = { screenWidth/2 - 100, 300, 200, 50 };
 
         std::string errorMessage = "";
         std::string numberInput = "";
 
         bool inputActive = false;
 
-        const int parties[] = { 178946, 2789456, 34561 };
+        std::vector<int> nbrPlayer = getIdGames();
 
         int selectedParty = -1;
         int hoveredParty = -1;
@@ -151,41 +152,27 @@ namespace client {
         while (1) {
             BeginDrawing();
             ClearBackground(RAYWHITE);
-            std::vector<int> idGames = getIdGames();
-            if (idGames.size() > 0) {
-                for (auto id : idGames) {
-                    printf("id: %d\n", id);
-                }
-            }
             if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
                 DrawRectangleRec(btnCreate, violet);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    //mutex
                     setCreateGame(true);
-                    // fix cette partie elle se joue en boucle quand on clique pk?
                     if(errorMessage.empty()) {
                         this->_status = false;
                         return;
                     }
-                    //récupère une erreur dans _error s'il y en a une, utilisé getError() pour la récupérer (ça gère les mutex pour toi)
-                    //if (si une erreur setup le message d'erreur) {
-                    //    errorMessage = "bhnjh";
-                    //} else {
-                    //    si ça marche faire ce qui suit!!
-                    //    this->_status = false;
-                    //    return;
-                    //}
-                    return;
                 }
             } else {
                 DrawRectangleRec(btnCreate, LIGHTGRAY);
             }
-                DrawText("Create new part", btnCreate.x + 10, btnCreate.y + 10, 20, BLACK);
-                if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
-                    DrawRectangleRec(btnJoin, GRAY);
+            DrawText("Create new part", btnCreate.x + 10, btnCreate.y + 10, 20, BLACK);
+
+            if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
+                DrawRectangleRec(btnJoin, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
                     printf("Join part\n");
-                    setJoinGame(true);
+                    if(errorMessage.empty()) {
+                        this->_status = false;
+                    }
                     // selection d'une partie
                     //mutex
                     //renvoie de l'erreur c'est il y en a une!
@@ -212,52 +199,67 @@ namespace client {
                 //    printf("Join part\n");
                 //    return;
                 //}
-            } else {
-                DrawRectangleRec(btnJoin, LIGHTGRAY);
-        }
-        DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
+                } else {
+                    DrawRectangleRec(btnJoin, LIGHTGRAY);
+            }
+            DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
 
-        if (!errorMessage.empty()) {
-            DrawText(errorMessage.c_str(), 10, 10, 20, RED);
-        }
-
-        Rectangle inputRect = { screenWidth/2 - 100, 500, 200, 50 };
-        DrawRectangleRec(inputRect, WHITE);
-        if (CheckCollisionPointRec(GetMousePosition(), inputRect)) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                inputActive = true;
-            }
-        }
-        if (inputActive) {
-            int key = GetCharPressed();
-            while (key > 0) {
-                if ((key >= '0' && key <= '9')) {
-                    numberInput.push_back((char)key);
-                }
-                key = GetCharPressed();
-            }
-            if (IsKeyPressed(KEY_BACKSPACE) && !numberInput.empty()) {
-                numberInput.pop_back();
-            }
-        }
-        DrawText(numberInput.c_str(), inputRect.x + 5, inputRect.y + 5, 20, BLACK);
-        for (int i = 0; i < 3; i++) {
-            Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
-            if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
-                hoveredParty = i;
-                DrawRectangleRec(partyRect, LIGHTGRAY);
+            if (CheckCollisionPointRec(GetMousePosition(), btnSearch)) {
+                DrawRectangleRec(btnSearch, violet);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    selectedParty = i;
+                    setJoinGame(true);
+                    if(errorMessage.empty()) {
+                        this->_status = false;
+                    } else {
+                        nbrPlayer = getIdGames();
+                    }
                 }
             } else {
-                DrawRectangleRec(partyRect, WHITE);
+                DrawRectangleRec(btnSearch, LIGHTGRAY);
             }
-            if (selectedParty == i) {
-                DrawRectangleLinesEx(partyRect, 2, RED);
+            DrawText("Search part", btnSearch.x + 10, btnSearch.y + 10, 20, BLACK);
+
+            if (!errorMessage.empty()) {
+                DrawText(errorMessage.c_str(), 10, 10, 20, RED);
             }
-            DrawText(std::to_string(parties[i]).c_str(), partyRect.x + 10, partyRect.y + 10, 20, BLACK);
-        }
-        EndDrawing();
+
+            Rectangle inputRect = { screenWidth/2 - 100, 500, 200, 50 };
+            DrawRectangleRec(inputRect, WHITE);
+            if (CheckCollisionPointRec(GetMousePosition(), inputRect)) {
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    inputActive = true;
+                }
+            }
+            if (inputActive) {
+                int key = GetCharPressed();
+                while (key > 0) {
+                    if ((key >= '0' && key <= '9')) {
+                        numberInput.push_back((char)key);
+                    }
+                    key = GetCharPressed();
+                }
+                if (IsKeyPressed(KEY_BACKSPACE) && !numberInput.empty()) {
+                    numberInput.pop_back();
+                }
+            }
+            DrawText(numberInput.c_str(), inputRect.x + 5, inputRect.y + 5, 20, BLACK);
+            for (int i = 0; i < nbrPlayer.size(); i++) {
+                Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
+                if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
+                    hoveredParty = i;
+                    DrawRectangleRec(partyRect, LIGHTGRAY);
+                    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        selectedParty = i;
+                    }
+                } else {
+                    DrawRectangleRec(partyRect, WHITE);
+                }
+                if (selectedParty == i) {
+                    DrawRectangleLinesEx(partyRect, 2, RED);
+                }
+                DrawText(std::to_string(nbrPlayer[i]).c_str(), partyRect.x + 10, partyRect.y + 10, 20, BLACK);
+            }
+            EndDrawing();
         }
     }
 }
