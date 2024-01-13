@@ -75,9 +75,7 @@ int server::Network::fillAddr()
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
     _addr.sin_addr.s_addr = INADDR_ANY;
-    #ifdef _WIN64
-        _clientAddrLen = sizeof(SOCKADDR);
-    #endif
+    _clientAddrLen = sizeof(_clientAddr);
     std::cout << "Server IP: " << inet_ntoa(_addr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_addr.sin_port) << std::endl;
     return 0;
@@ -91,7 +89,7 @@ void server::Network::run(Game *game)
     Connection connect;
     Interaction interaction;
     std::string message;
-    std::vector<char> buffer(1024);
+    std::vector<char> buffer(4096);
     std::vector<Game> games;
     std::vector<int> idNotUsableGame;
     std::map<int, std::thread> threads;
@@ -112,6 +110,9 @@ void server::Network::run(Game *game)
         #endif
         #ifdef _WIN64
             client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
+            if (client == SOCKET_ERROR ) {
+                std::cerr << "Error: recvfrom failed - " << WSAGetLastError() << std::endl;
+            }
         #endif
         updateClients(game);
         if (client < 0) {
@@ -203,9 +204,16 @@ void server::Network::updateClients(Game *game)
         // }
         struct sockaddr_in cli = client->getAddr();
         res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-        if (res == -1) {
-            std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
-        }
+        #ifdef __linux__
+            if (res == -1) {
+                std::cerr << "Connection failure..." << std::endl;
+            }
+        #endif
+        #ifdef _WIN64
+            if (res == -1) {
+                std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
+            }
+        #endif
     }
 }
 
@@ -265,9 +273,11 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
     int res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    if (res == -1) {
-        std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
-    }
+    #ifdef _WIN64
+        if (res == -1) {
+            std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
+        }
+    #endif
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

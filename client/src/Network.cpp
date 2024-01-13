@@ -82,9 +82,7 @@ int client::Network::fillAddr()
     _serverAddr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
     _serverAddr.sin_port = htons(_serverPort);
     _serverAddr.sin_family = AF_INET;
-    #ifdef _WIN64
-        _serverAddrLen = sizeof(_serverAddr);
-    #endif
+    _serverAddrLen = sizeof(_serverAddr);
     std::cout << "Server IP: " << inet_ntoa(_serverAddr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_serverAddr.sin_port) << std::endl;
     std::cout << "Client port: " << ntohs(_addr.sin_port) << std::endl;
@@ -98,17 +96,15 @@ void client::Network::run(Game *game)
     client::Serialize convert;
     std::vector<Game> games;
 
-    std::cerr << "CLIENT RUNNING :D" << std::endl;
-    while(_isRunning) {
+    while (_isRunning) {
+        server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #ifdef __linux__
-            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
             if (server == -1) {
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
                     continue;
-                } else {
-                    std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
-                    return;
                 }
+                std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
+                return;
             }
         #endif
         #ifdef _WIN64
@@ -164,6 +160,13 @@ int client::Network::connectCommand()
         }
         #ifdef __linux__
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+            if (server == -1) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    continue;
+                } else {
+                    std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
+                }
+            }
         #endif
         #ifdef _WIN64
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
@@ -214,7 +217,6 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
 
     // std::cout << "frame received" << std::endl;
     frame.deserializeFrame(buffer);
-
     // std::cout << "frame deserialized" << std::endl;
     if (frame.getTick() != -1) {
         game->addFrame(frame);
