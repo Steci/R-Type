@@ -77,6 +77,13 @@ namespace client {
             void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
             std::vector<Frame> getFrames() {_mutex_frames.lock();_mutex_frames.unlock();return _frames;};
             void createTextures();
+            bool setFrame(int index, Frame frame) {
+                if (index < _frames.size()) {
+                    _frames[index] = frame;
+                    return true;
+                }
+                return false;
+            }
             // à faire pour rajouter les frame à display
             // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
 

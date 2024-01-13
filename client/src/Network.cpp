@@ -158,39 +158,22 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
     SparseArray<IEntity> new_entities;
     SparseArray<IEntity> entities;
     client::Frame frame;
-    // TODO parse entity buffer
-    /*
-    
-    for (auto charact : buffer) {
-        std::cout << charact;
-    }
-    std::cout << std::endl;
-    */
-
-
-
-
-
-
-
-
-
-
     int tick = 0;
     auto it = buffer.begin();
     E_Player player(0, 0, 0, 0);
     E_Enemy enemy(0, 0, 0, 0, 0);
     E_Bullet bullet(0, 0, 0, 0, 0, 0, 0, 0);
 
+    std::cout << "buffer :";
+    for (auto c : buffer) {
+        std::cout << c;
+    }
+    std::cout << std::endl;
 
-     std::cout << "tick : " << tick << std::endl;
     if (std::distance(it, buffer.end()) >= sizeof(tick)) {
         std::memcpy(&tick, &it, sizeof(tick));
         it += sizeof(tick);
     }
-    std::cout << "tick : " << tick << std::endl;
-
-
 
     while (it < buffer.end() && !frame.isEndMarker(it, buffer)) {
         std::string entityType;
@@ -209,7 +192,7 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
             C_Score *score = Engine::getComponentRef<C_Score>(player);
             auto playerShared = std::make_shared<E_Player>(player);
             new_entities.add(playerShared);
-            //std::cout << ">>>>>>>>>>>>>>>>>>>>>player added" << std::endl;
+            std::cout << ">>>>>>>>>>>>>>>>>>>>>player added" << std::endl;
         } else if (entityType == "E_Enemy") {
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
@@ -220,7 +203,7 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             new_entities.add(enemyShared);
-            //std::cout << ">>>>>>>>>>>>>>>>>>>>>enemy added" << std::endl;
+            std::cout << ">>>>>>>>>>>>>>>>>>>>>enemy added" << std::endl;
         } else if (entityType == "E_Bullet") {
             // size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox) + sizeof(int);
             size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(int);
@@ -228,7 +211,7 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
             it += sizeof(bullet);
             auto bulletShared = std::make_shared<E_Bullet>(bullet);
             new_entities.add(bulletShared);
-            //std::cout << ">>>>>>>>>>>>>>>>>>>>>bullet added" << std::endl;
+            std::cout << ">>>>>>>>>>>>>>>>>>>>>bullet added" << std::endl;
         }
         if (frame.isEndMarker(it, buffer)) {
             break;
@@ -254,17 +237,24 @@ void client::Network::handleCommands(std::vector<char> buffer, Game *game)
     if (frame.getTick() == -1)
         return;
     int ii = 0;
-    for (auto fram : game->getFrames()) {
+
+    std::vector<client::Frame> frames_game = game->getFrames();
+
+    for (int i = 0; i < frames_game.size(); i++) {
         std::cout << ">>>>>>>>>>>>>>>>>>>>>frame nb" << ii << std::endl;
         ii += 1;
-        if (fram.getTick() == tick) {
-            /*
-            entities = fram.getEntities();
-            for (auto entity : new_entities) {
-                entities.add(entity)
+        if (frames_game[i].getTick() == tick) {
+            
+            entities = frames_game[i].getEntities();
+
+
+            for (auto entity : new_entities.getAll()) {
+                entities.add(entity);
             }
-            frame.setArray(new_entities);
-            */
+            frame.setArray(entities);
+            game->setFrame(i, frame);
+            
+            
             std::cout << ">>>>>>>>>>>>>>>>>>>>>frame already received" <<tick << std::endl;
             //TODO add entities to the frame
             return;
