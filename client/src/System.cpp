@@ -44,7 +44,7 @@ void S_Renderer::render()
             std::string type = entity->getType();
             if (type == "E_Player") {
                 C_Score *score = Engine::getComponentRef<C_Score>(*entity);
-                score_total += score->_score;
+                score_total += score->score;
             }
             id++;
         }

@@ -66,6 +66,13 @@ namespace server
             int getGameId() const {return _gameId;};
             void setLastTickSend(int tick) {_mutex_tick_send.lock();_last_tick_send = tick;_mutex_tick_send.unlock();};
             int getLastTickSend() const {return _last_tick_send;};
+            void setAvailaibleId(int id) {
+                if (id > 4)
+                    _avalaible_id = -1;
+                else
+                    _avalaible_id = id;
+            };
+            int getAvailaibleId() const {return _avalaible_id;};
             // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
             Game& operator=(const Game& other)
             {
@@ -107,5 +114,6 @@ namespace server
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
             void fillFrame(SparseArray<IEntity> entities);
+            int _avalaible_id = 1;
     };
 }

@@ -69,6 +69,8 @@ class IEntity {
         virtual void deserializeFromVector(std::vector<char> data) = 0;
         virtual void setId(int id) = 0;
         virtual int getId() const = 0;
+        virtual void setIdServer(int id) = 0;
+        virtual int getIdServer() const = 0;
 };
 
 class Entity : public IEntity {
@@ -108,8 +110,17 @@ class Entity : public IEntity {
             return _id;
         }
 
+        void setIdServer(int id) {
+            _idServer = id;
+        }
+
+        int getIdServer() const {
+            return _idServer;
+        }
+
     private:
         int _id;
+        int _idServer;
         std::vector<std::shared_ptr<Component>> components;
 };
 
@@ -120,7 +131,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Transform component.
      */
-    C_Transform* getTransform(std::unique_ptr<IEntity> entity);
+    C_Transform* getTransform(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Damage component of a specific entity.
@@ -128,7 +139,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Damage component.
      */
-    C_Damage* getDamage(std::unique_ptr<IEntity> entity);
+    C_Damage* getDamage(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Health component of a specific entity.
@@ -136,7 +147,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Health component.
      */
-    C_Health* getHealth(std::unique_ptr<IEntity> entity);
+    C_Health* getHealth(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Sprite component of a specific entity.
@@ -144,7 +155,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Sprite component.
      */
-    C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
+    C_Sprite* getSprite(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Hitbox component of a specific entity.
@@ -152,7 +163,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Hitbox component.
      */
-    C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
+    C_Hitbox* getHitbox(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Score component of a specific entity.
@@ -160,7 +171,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Score component.
      */
-    C_Score* getScore(std::unique_ptr<IEntity> entity);
+    C_Score* getScore(std::shared_ptr<IEntity> entity);
 
     C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity);
     /**

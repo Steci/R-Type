@@ -56,22 +56,33 @@ void S_Collision::update()
                 }
                 else if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
+                        printf("2\n");
                         C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
+                        printf("3\n");
                         C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity2);
+                        printf("4\n");
 
                         int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
+                        printf("idCreator = %d\n", idCreator);
                         C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
+                        printf("6\n");
 
+                        printf("7\n");
+                        printf("remove entity1 %d\n", entity1->getId());
                         toRemove.push_back(entity1->getId());
+                        printf("remove entity2 %d\n", entity2->getId());
                         toRemove.push_back(entity2->getId());
+                        printf("8\n");
                         if (enemyInfo->_type == 1) {
-                            score->_score += 10;
+                            score->score += 10;
                         } else if (enemyInfo->_type == 2) {
-                            score->_score += 20;
+                            score->score += 20;
                         } else {
-                            score->_score += 30;
+                            score->score += 30;
                         }
-                        Engine::setScore(_sparseEntities.get(idCreator), score->_score);
+                        printf("9\n");
+                        Engine::setScore(_sparseEntities.get(idCreator), score->score);
+                        printf("10\n");
                     }
                 }
             }
