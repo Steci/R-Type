@@ -26,6 +26,7 @@ bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerI
 void server::Game::run()
 {
     printf("Game started\n");
+    srand(time(NULL));
 
     SystemManager manager;
     SparseArray<IEntity> entities;
