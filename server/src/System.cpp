@@ -145,13 +145,13 @@ void S_EnemyAI::update()
             }
             if (enemyInfo->_type == 2) {
                 // the enemy will move in a sinusoid pattern
-                transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
-                transform->_position.y = 20 * sin(transform->_position.x / (30 * TICK_SPEED / DESIRED_SPEED)) + transform->_position.y;
-            }
-            if (enemyInfo->_type == 3) {
-                // the enemy will move in a sinusoid pattern but smaller and faster
                 transform->_position.x -= (11 * TICK_SPEED) / DESIRED_SPEED;
                 transform->_position.y = 10 * sin(transform->_position.x / (20 * TICK_SPEED / DESIRED_SPEED)) + transform->_position.y;
+            }
+            if (enemyInfo->_type == 3) {
+                // the enemy will move in a sinusoid pattern but bigger and faster
+                transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
+                transform->_position.y = 20 * sin(transform->_position.x / (30 * TICK_SPEED / DESIRED_SPEED)) + transform->_position.y;
             }
         }
     }
