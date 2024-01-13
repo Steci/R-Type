@@ -123,15 +123,6 @@ void client::Network::run(Game *game)
                 }
             }
         #endif
-
-        FILE *f = fopen("client_message.bin", "w");
-        fwrite(buffer.data(), buffer.size(), 1, f);
-        fflush(f);
-        fclose(f);
-
-        int tick = 0;
-        std::memcpy(&tick, buffer.data(), sizeof(tick));
-        printf("Tick Receive = 0x%x\n", tick);
         checkInteraction(game);
         handleCommands(buffer, game);
     }
@@ -238,7 +229,6 @@ void client::Network::checkInteraction(Game *game)
     int res = 0;
 
     if (interactions.size() > 0) {
-        std::cout << "There is an interaction or more : " << interactions.size() << std::endl;
         data = interactions[0].serializeInteraction();
         res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         if (res == -1) {

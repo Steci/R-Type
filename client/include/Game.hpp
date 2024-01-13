@@ -85,7 +85,6 @@ namespace client {
                     _interactions.erase(_interactions.begin() + nbr_interaction);
                 } else {
                     _interactions.clear();
-                    std::cerr << "Error: _interactions is empty." << std::endl;
                 }
                 _mutex_interactions.unlock();
             };

@@ -195,11 +195,6 @@ void server::Network::updateClients(Game *game)
     _last_tick_send = frame.getTick();
     std::vector<char> data = frame.serializeFrame();
 
-    FILE *f = fopen("server_message.bin", "w");
-    fwrite(data.data(), data.size(), 1, f);
-    fflush(f);
-    fclose(f);
-
     int res = 0;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         // if (client->getGameId() == (*game).getGameId()) {

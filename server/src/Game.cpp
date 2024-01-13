@@ -119,12 +119,6 @@ std::vector<char> server::Frame::serializeFrame()
     std::vector<char> data;
     data.insert(data.end(), reinterpret_cast<const char*>(&_tick), reinterpret_cast<const char*>(&_tick) + sizeof(_tick));
     data.insert(data.end(), reinterpret_cast<const char*>(&_gameId), reinterpret_cast<const char*>(&_gameId) + sizeof(_gameId));
-    int tick = 0;
-    int gameID = 0;
-    std::memcpy(&tick, data.data(), sizeof(tick));
-    printf("old tick = %d, after tick = %d\n", _tick, tick);
-    std::memcpy(&gameID, data.data() + sizeof(_tick), sizeof(gameID));
-    printf("old gameID = %d, after gameID = %d\n", _gameId, gameID);
 
     auto playerData = _entities.serializeToVector("E_Player");
     data.insert(data.end(), playerData.begin(), playerData.end());
