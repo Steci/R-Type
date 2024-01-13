@@ -149,11 +149,18 @@ int server::Network::CreateGame(std::vector<int> idNotUsableGame)
 server::Interaction server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)
 {
     Interaction interaction;
+    bool right_game = false;
 
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        if (client->getId() == client_id && client->getGameId() == (*game).getGameId()) {
+            right_game = true;
+            break;
+        }
+    }
     interaction.deserializeInteraction(buffer);
     interaction.setClientID(client_id);
     // std::cout << "Interaction: " << interaction.getMovement() << std::endl;
-    if (interaction.getMovement() != -1 && interaction.getCreateGame() != 1)
+    if (interaction.getMovement() != -1 && interaction.getCreateGame() != 1 && right_game)
         (*game).addInteraction(interaction);
     return interaction;
 }

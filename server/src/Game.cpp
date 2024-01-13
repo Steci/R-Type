@@ -48,7 +48,10 @@ void server::Game::run()
         if (interaction_client.size() > 0) {
             for (auto interaction : interaction_client) {
                 for (auto entity : entities.getAll()) {
+                    // if (interaction.getShoot() == 1 && entity->getType() == "E_Player")
+                        // printf("Bullet with client id %d and game id %d\n", interaction.getClientID(), entity->getIdServer());
                     if (entity->getType() == "E_Player" && interaction.getClientID() == entity->getIdServer()) {
+                        // printf("set interraction with client id %d\n", entity->getId());
                         interaction.setClientID(entity->getId());
                         break;
                     }
@@ -63,11 +66,13 @@ void server::Game::run()
                     setAvailaibleId(player->getId() + 1);
                 }
                 // // printf("1\n");
-                // if (interaction.getShoot() == 1){
-                //     // shoot
-                //     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                //     manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
-                // }
+                if (interaction.getShoot() == 1){
+                    // shoot
+                    printf("Player %d shoot\n", interaction.getClientID());
+                    C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
+                }
+                // printf("\n");
                 // // printf("2\n");
                 // if (interaction.getMovement() == 1){
                 //     // go up

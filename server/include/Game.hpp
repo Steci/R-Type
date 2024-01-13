@@ -33,6 +33,8 @@ namespace server
             int getConnect() const {return _connect;};
             void setClientID(int clientID) {_client_id = clientID;};
             void setConnect(int connect) {_connect = connect;};
+            void setGameId(int gameId) {_game_id = gameId;};
+            int getGameId() const {return _game_id;};
             void deserializeInteraction(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
@@ -40,6 +42,7 @@ namespace server
             //etc... rajouter les variables communes au dessus de se commentaire
             int _connect = -1;
             int _client_id = -1;
+            int _game_id = -1;
     };
 
     class Frame : public AFrame{
