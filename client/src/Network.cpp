@@ -82,11 +82,12 @@ void client::Network::run(Game *game)
     client::Serialize convert;
     std::vector<Game> games;
 
-    while((*game).getMenu()->getStatusMenu()) {
-        if ((*game).getMenu()->getCreateGame() && connectCommand() == 0) {
-            (*game).getMenu()->setStatusMenu(false);
-        }
-    }
+    //while((*game).getMenu()->getStatusMenu()) {
+        //if ((*game).getMenu()->getCreateGame() && connectCommand() == 0) {
+        //    (*game).getMenu()->setStatusMenu(false);
+        //}
+    //}
+    connectCommand();
     while(_isRunning) {
         server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_WAITALL, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         checkInteraction(game);

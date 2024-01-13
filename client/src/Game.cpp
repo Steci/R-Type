@@ -40,10 +40,10 @@ namespace client {
         auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
         PlayMusicStream(backgroundMusic->second);
         while (1) {
-            if (statusMenu == true) {
-                _menu.render(withSizeX);
-                statusMenu = _menu.getStatusMenu();
-            } else {
+            //if (statusMenu == true) {
+            //    _menu.render(withSizeX);
+            //    statusMenu = _menu.getStatusMenu();
+            //} else {
                 manager.getSystem<S_Renderer>()->clearEntities();
                 mov = manager.getSystem<S_EventManager>()->getMovement();
                 shoot = manager.getSystem<S_EventManager>()->getShoot();
@@ -72,7 +72,7 @@ namespace client {
                         if (typeid(tmpEntity) == typeid(E_Player)) {
                             auto it = _player_sprites.find(sparseIds[id]);
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            tmpEntity.addComponent(std::make_shared<C_Sprite>());
                             C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
                             sprite->setupByTexture(infos._texture);
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
@@ -81,14 +81,14 @@ namespace client {
                             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
                             auto it = _ennemy_sprites.find(ennemyInfo->_type);
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            tmpEntity.addComponent(std::make_shared<C_Sprite>());
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                             Engine::setSpriteTexture(tmpEntity, infos._texture);
 
                         } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
                             auto it = _utils_sprites.find(1);
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_unique<C_Sprite>());
+                            tmpEntity.addComponent(std::make_shared<C_Sprite>());
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
                             Engine::setSpriteTexture(tmpEntity, infos._texture);
                         }
@@ -97,7 +97,7 @@ namespace client {
                     }
                 }
                 manager.update();
-            }
+            //}
         }
     }
 
@@ -185,7 +185,7 @@ namespace client {
                     //    this->_status = false;
                     //    return;
                     //}
-                } else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && std::stoi(numberInput) > 0) {
+                } //else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && std::stoi(numberInput) > 0) {
                     // zone text elle peut prendre que des chiffres tqt
                     //mutex
                     //renvoie de l'erreur c'est il y en a une!
@@ -196,9 +196,9 @@ namespace client {
                     // this->_JoinGame = true;
                     // this->_idServerJoin = parties[selectedParty];
                     // this->_status = false;
-                    printf("Join part\n");
-                    return;
-                }
+                //    printf("Join part\n");
+                //    return;
+                //}
             } else {
                 DrawRectangleRec(btnJoin, LIGHTGRAY);
         }
