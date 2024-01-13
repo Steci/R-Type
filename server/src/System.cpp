@@ -38,7 +38,6 @@ void S_Collision::update()
     std::vector<int> toRemove;
 
     for (auto& entity1 : _sparseEntities.getAll()) {
-        if (entity1->getComponents().size() > 1) {
         for (auto& entity2 : _sparseEntities.getAll()) {
             if (entity1->getComponents().size() == 0 || entity2->getComponents().size() == 0)
                 continue;
@@ -50,8 +49,6 @@ void S_Collision::update()
 
                 if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
-                        C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
-                        C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
 
                         transform1->_position.x -= 50;
                         toRemove.push_back(entity2->getId());
@@ -59,12 +56,10 @@ void S_Collision::update()
                 }
                 else if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
-                        C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
-                        C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity2);
                         // int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
                         // C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
-                        toRemove.push_back(entity1->getId());
                         toRemove.push_back(entity2->getId());
+                        toRemove.push_back(entity1->getId());
                         // if (enemyInfo->_type == 1) {
                         //     score->score += 10;
                         // } else if (enemyInfo->_type == 2) {
@@ -111,9 +106,11 @@ void S_Collision::update()
                 toRemove.push_back(entity1->getId());
             }
         }
-        }
     }
-    for (auto& id : toRemove) {
+    for (int id : toRemove) {
+        if (id >= 0 && id <= 4) {
+            continue;
+        }
         _sparseEntities.remove(id);
     }
 }
