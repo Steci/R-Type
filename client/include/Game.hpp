@@ -102,6 +102,8 @@ namespace client {
             void setIdServerJoin(int idServerJoin) {_mutex_idServerJoin.lock();_idServerJoin = idServerJoin;_mutex_idServerJoin.unlock();};
             void setCreateGame(bool createGame) {_mutex_createGame.lock();_createGame = createGame;_mutex_createGame.unlock();};
             void setError(std::string error) {_mutex_error.lock();_error = error;_mutex_error.unlock();};
+            void setIdGames(std::vector<int> idGames) {_mutex_idGames.lock();_idGames = idGames;_mutex_idGames.unlock();};
+            std::vector<int> getIdGames() {_mutex_idGames.lock();std::vector<int> tmp = _idGames;_mutex_idGames.unlock();return tmp;};
 
         private:
             std::mutex _mutex_status;
@@ -109,10 +111,12 @@ namespace client {
             std::mutex _mutex_createGame;
             std::mutex _mutex_idServerJoin;
             std::mutex _mutex_error;
+            std::mutex _mutex_idGames;
             bool _status = true;
             bool _JoinGame = false;
             bool _createGame = false;
             int _idServerJoin = 0;
+            std::vector<int> _idGames;
             std::string _error = "";
     };
 

@@ -151,6 +151,12 @@ namespace client {
         while (1) {
             BeginDrawing();
             ClearBackground(RAYWHITE);
+            std::vector<int> idGames = getIdGames();
+            if (idGames.size() > 0) {
+                for (auto id : idGames) {
+                    printf("id: %d\n", id);
+                }
+            }
             if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
                 DrawRectangleRec(btnCreate, violet);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -175,6 +181,8 @@ namespace client {
                 if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
                     DrawRectangleRec(btnJoin, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
+                    printf("Join part\n");
+                    setJoinGame(true);
                     // selection d'une partie
                     //mutex
                     //renvoie de l'erreur c'est il y en a une!

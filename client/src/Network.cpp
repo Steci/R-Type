@@ -83,11 +83,16 @@ void client::Network::run(Game *game)
     std::vector<Game> games;
 
     while((*game).getMenu()->getStatusMenu()) {
-        if ((*game).getMenu()->getCreateGame() && connectCommand(1) == 0) {
+        if ((*game).getMenu()->getCreateGame() && connectCommand(game, 1) == 0) {
             (*game).getMenu()->setStatusMenu(false);
         } else if ((*game).getMenu()->getCreateGame()) {
             (*game).getMenu()->setError("Error: Connection failed");
             (*game).getMenu()->setCreateGame(false);
+        } else if ((*game).getMenu()->getJoinGame() && connectCommand(game, 0, 0, (*game).getMenu()->getIdServerJoin()) == 0) {
+            (*game).getMenu()->setStatusMenu(false);
+        } else if ((*game).getMenu()->getJoinGame()) {
+            (*game).getMenu()->setError("Error: Connection failed");
+            (*game).getMenu()->setJoinGame(false);
         }
     }
     while(_isRunning) {
@@ -111,7 +116,7 @@ int client::Network::bindSocket()
     return 0;
 }
 
-int client::Network::connectCommand(int createGame, int joinGame, int gameId)
+int client::Network::connectCommand(Game *game, int createGame, int joinGame, int gameId)
 {
     int server;
     auto startTime = std::chrono::high_resolution_clock::now();
@@ -119,6 +124,8 @@ int client::Network::connectCommand(int createGame, int joinGame, int gameId)
     client::Connection connect;
     client::Connection receiveConnection;
     connect.setCreateGame(createGame);
+    connect.setJoinGame(joinGame);
+    connect.setGameId(gameId);
     std::vector<char> data = connect.serializeConnection();
     std::vector<char> receiveData(sizeof(client::Connection));
 
@@ -130,6 +137,9 @@ int client::Network::connectCommand(int createGame, int joinGame, int gameId)
             if (receiveConnection.getConnected() == 1) {
                 std::cout << "Successfully connected with the server." << std::endl;
                 return 0;
+            } else if (receiveConnection.getJoinGame() == 2) {
+                (*game).getMenu()->setIdGames(receiveConnection.getGameIds());
+                return 1;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

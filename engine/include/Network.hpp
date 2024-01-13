@@ -115,6 +115,10 @@ class IConnection {
         virtual void setId(int id) = 0;
         virtual void setJoinGame(int joinGame) = 0;
         virtual int getJoinGame() const = 0;
+        virtual void setGameId(int gameId) = 0;
+        virtual int getGameId() const = 0;
+        virtual void setGameIds(std::vector<int> gameIds) = 0;
+        virtual std::vector<int> getGameIds() const = 0;
         virtual std::vector<char> serializeConnection() = 0;
         virtual void deserializeConnection(std::vector<char> data) = 0;
 };
@@ -132,6 +136,10 @@ class AConnection : public IConnection {
         int getId() const override {return _id;};
         void setJoinGame(int joinGame) override {_JoinGame = joinGame;};
         int getJoinGame() const override {return _JoinGame;};
+        void setGameId(int gameId) override {_gameId = gameId;};
+        int getGameId() const override {return _gameId;};
+        void setGameIds(std::vector<int> gameIds) override {_gameIds = gameIds;};
+        std::vector<int> getGameIds() const override {return _gameIds;};
         std::vector<char> serializeConnection() override;
         void deserializeConnection(std::vector<char> data) override;
     protected:
@@ -140,4 +148,6 @@ class AConnection : public IConnection {
         int _connected;
         int _JoinGame;
         int _id;
+        int _gameId;
+        std::vector<int> _gameIds;
 };

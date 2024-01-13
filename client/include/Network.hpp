@@ -59,7 +59,7 @@ namespace client {
             Network(std::string serverIP, int serverPort);
             ~Network();
             void run(Game *game);
-            int connectCommand(int createGame = 0, int joinGame = 0, int gameId = 0);
+            int connectCommand(Game *game, int createGame = -1, int joinGame = -1, int gameId = -1);
         private:
             std::string _serverIP;
             int _serverPort;

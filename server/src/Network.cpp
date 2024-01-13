@@ -116,6 +116,35 @@ void server::Network::run()
                         break;
                     }
                 }
+            } else if (connect.getJoinGame() == 1 && connect.getGameId() != -1) {
+                for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                    if (client->getId() == connect.getId()) {
+                        for (auto game = games.begin(); game != games.end(); game++) {
+                            if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() != -1) {
+                                client->setGameId(connect.getGameId());
+                                interaction.setClientID(connect.getId());
+                                interaction.setConnect(1);
+                                game->get()->addInteraction(interaction);
+                                break;
+                            } else if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() == -1) {
+                                connect.setJoinGame(-1);
+                                auto data = connect.serializeConnection();
+                                sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            } else if (connect.getJoinGame() == 1 && connect.getGameId() == -1) {
+                std::vector<int> idServers;
+                for (auto game = games.begin(); game != games.end(); game++) {
+                    idServers.push_back(game->get()->getGameId());
+                }
+                connect.setGameIds(idServers);
+                connect.setJoinGame(2);
+                auto data = connect.serializeConnection();
+                sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
             }
             if (id == 0) {
                 interaction.setClientID(connect.getId());
