@@ -157,7 +157,7 @@ namespace client {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     setCreateGame(true);
                     if(errorMessage.empty()) {
-                        this->_status = false;
+                        setStatusMenu(false);
                         return;
                     }
                 }
@@ -169,9 +169,8 @@ namespace client {
             if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
                 DrawRectangleRec(btnJoin, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
-                    printf("Join part\n");
                     if(errorMessage.empty()) {
-                        this->_status = false;
+                        setStatusMenu(false);
                     }
                     // selection d'une partie
                     //mutex
@@ -208,8 +207,9 @@ namespace client {
                 DrawRectangleRec(btnSearch, violet);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     setJoinGame(true);
+                    printf("search\n");
                     if(errorMessage.empty()) {
-                        this->_status = false;
+                        setStatusMenu(false);
                     } else {
                         nbrPlayer = getIdGames();
                     }

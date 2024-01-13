@@ -88,7 +88,7 @@ void client::Network::run(Game *game)
         } else if ((*game).getMenu()->getCreateGame()) {
             (*game).getMenu()->setError("Error: Connection failed");
             (*game).getMenu()->setCreateGame(false);
-        } else if ((*game).getMenu()->getJoinGame() && connectCommand(game, 0, 0, (*game).getMenu()->getIdServerJoin()) == 0) {
+        } else if ((*game).getMenu()->getJoinGame() && connectCommand(game, 0, 1, (*game).getMenu()->getIdServerJoin()) == 0) {
             (*game).getMenu()->setStatusMenu(false);
         } else if ((*game).getMenu()->getJoinGame()) {
             (*game).getMenu()->setError("Error: Connection failed");
@@ -127,7 +127,7 @@ int client::Network::connectCommand(Game *game, int createGame, int joinGame, in
     connect.setJoinGame(joinGame);
     connect.setGameId(gameId);
     std::vector<char> data = connect.serializeConnection();
-    std::vector<char> receiveData(sizeof(client::Connection));
+    std::vector<char> receiveData(1024);
 
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));

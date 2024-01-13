@@ -142,7 +142,9 @@ void server::Network::run()
                     idServers.push_back(game->get()->getGameId());
                 }
                 connect.setGameIds(idServers);
+                connect.setConnected(0);
                 connect.setJoinGame(2);
+                id = 0;
                 auto data = connect.serializeConnection();
                 sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
             }
@@ -265,7 +267,8 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    if (connect.getJoinGame() == -1)
+        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

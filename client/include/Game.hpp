@@ -115,7 +115,7 @@ namespace client {
             bool _status = true;
             bool _JoinGame = false;
             bool _createGame = false;
-            int _idServerJoin = 0;
+            int _idServerJoin = -1;
             std::vector<int> _idGames;
             std::string _error = "";
     };
