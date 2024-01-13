@@ -39,6 +39,7 @@ void server::Game::run()
 
     int numClientID = 0;
     bool startGame = false;
+    int firingSpeed = manager.getSystem<S_Weapon>()->getFiringSpeed();
 
     while (true) {
         _mutex.lock();
@@ -73,22 +74,22 @@ void server::Game::run()
                 if (interaction.getMovement() == 1 && startGame == true){
                     // go up
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.y -= 8;
+                    transform->_position.y -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
                 if (interaction.getMovement() == 2 && startGame == true){
                     // go right
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x += 8;
+                    transform->_position.x += (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
                 if (interaction.getMovement() == 3 && startGame == true){
                     // go down
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.y += 8;
+                    transform->_position.y += (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
                 if (interaction.getMovement() == 4 && startGame == true){
                     // go left
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x -= 8;
+                    transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
             }
         }

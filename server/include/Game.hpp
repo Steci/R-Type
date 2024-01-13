@@ -16,7 +16,9 @@
 #include "Entity.hpp"
 #include "System.hpp"
 
-#define TICK_SPEED 66
+#define TICK_SPEED 30
+#define DESIRED_SPEED 60
+
 
 namespace server
 {
