@@ -199,25 +199,28 @@ S_Weapon::S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick)
 
 void S_Weapon::shootPlayer(int idCreator)
 {
-    E_Player* player;
+    E_Player* player = nullptr;
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Player)) {
             if (entity->getId() == idCreator) {
                 player = dynamic_cast<E_Player*>(entity.get());
+                break;
             }
         }
+    }
+    if (player == nullptr) {
+        return;
     }
     int lastTick = player->getLastTick();
     if (_tick - lastTick < (_firingSpeed * TICK_SPEED) / DESIRED_SPEED) {
         return;
     }
     IEntity& entity = _sparseEntities.get(idCreator);
-    if (&entity == nullptr) {
+    C_Transform* transform = Engine::getComponentRef<C_Transform>(entity);
+
+    if (transform == nullptr) {
         return;
     }
-    C_Transform* transform = Engine::getComponentRef<C_Transform>(entity);
-    if (transform == nullptr)
-        return;
     // create bullet with player position info
     int xpos = transform->_position.x + transform->_size.x;
     int ypos = transform->_position.y + transform->_size.y / 2;

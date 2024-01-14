@@ -113,7 +113,7 @@ namespace client {
             std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
             void deleteInteraction(int nbr_interaction) {
                 _mutex_interactions.lock();
-                if (!_interactions.empty() && nbr_interaction < _interactions.size()) {
+                if (!_interactions.empty() && nbr_interaction < static_cast<int>(_interactions.size())) {
                     _interactions.erase(_interactions.begin() + nbr_interaction);
                 } else {
                     _interactions.clear();
