@@ -166,9 +166,9 @@ S_Spawner::S_Spawner(SparseArray<IEntity> &sparseEntities)
 
 void S_Spawner::update()
 {
-    int random = rand() % 100;
+    int random = rand() % 200;
 
-    if (random == 1 || random == 90) {
+    if (random == 1 || random == 200) {
         int random2 = rand() % 3;
         int random4 = rand() % 600;
         int random5 = rand() % 3 + 1;
@@ -178,7 +178,7 @@ void S_Spawner::update()
         enemy->setId(id);
         printf("Creating Enemy ID: %d with type %d\n", id, random2);
     }
-    if (random == 50) {
+    if (random == 100) {
         // spawn a small group of random type enemies
         int randomType = rand() % 3 + 1;
         int randomY = rand() % (randomType != 1 ? 400 : 600);
