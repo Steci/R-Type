@@ -129,15 +129,18 @@ int client::Network::connectCommand(Game *game, int createGame, int joinGame, in
     std::vector<char> data = connect.serializeConnection();
     std::vector<char> receiveData(1024);
 
+    printf("create game = %d, join game = %d, game id = %d\n", createGame, joinGame, gameId);
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         if (server != -1) {
             receiveConnection.deserializeConnection(receiveData);
+            printf("receive connected = %d, join game = %d\n", receiveConnection.getConnected(), receiveConnection.getJoinGame());
             if (receiveConnection.getConnected() == 1) {
                 std::cout << "Successfully connected with the server." << std::endl;
                 return 0;
             } else if (receiveConnection.getJoinGame() == 2) {
+                printf("get info\n");
                 (*game).getMenu()->setIdGames(receiveConnection.getGameIds());
                 return 1;
             }

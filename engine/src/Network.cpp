@@ -14,7 +14,7 @@ std::vector<char> AConnection::serializeConnection() {
     data.insert(data.end(), reinterpret_cast<char*>(&_createGame), reinterpret_cast<char*>(&_createGame) + sizeof(_createGame));
     data.insert(data.end(), reinterpret_cast<char*>(&_JoinGame), reinterpret_cast<char*>(&_JoinGame) + sizeof(_JoinGame));
     data.insert(data.end(), reinterpret_cast<char*>(&_gameId), reinterpret_cast<char*>(&_gameId) + sizeof(_gameId));
-    char end = '\0';
+    int end = -1;
     for (int id : _gameIds) {
         data.insert(data.end(), reinterpret_cast<char*>(&id), reinterpret_cast<char*>(&id) + sizeof(id));
     }
@@ -34,7 +34,7 @@ void AConnection::deserializeConnection(std::vector<char> data) {
     size += sizeof(_JoinGame);
     std::memcpy(&_gameId, data.data() + size, sizeof(_gameId));
     size += sizeof(_gameId);
-    while (size < data.size() && data[size] != '\0') {
+    while (size < data.size() && data[size] != -1) {
         int gameId;
         if (size + sizeof(gameId) <= data.size()) {
             std::memcpy(&gameId, data.data() + size, sizeof(gameId));

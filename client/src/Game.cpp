@@ -128,8 +128,7 @@ namespace client {
     void Menu::render(int screenWidth)
     {
         Rectangle btnCreate = { screenWidth/2 - 100, 100, 200, 50 };
-        Rectangle btnJoin = { screenWidth/2 - 100, 200, 200, 50 };
-        Rectangle btnSearch = { screenWidth/2 - 100, 300, 200, 50 };
+        Rectangle btnSearch = { screenWidth/2 - 100, 200, 200, 50 };
 
         std::string errorMessage = "";
 
@@ -156,20 +155,6 @@ namespace client {
         }
         DrawText("Create new part", btnCreate.x + 10, btnCreate.y + 10, 20, BLACK);
 
-        if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
-            DrawRectangleRec(btnJoin, GRAY);
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && getSelectedParty() != -1) {
-                if(errorMessage.empty()) {
-                    setIdServerJoin(getSelectedParty());
-                    setStatusMenu(false);
-                    return;
-                }
-            }
-        } else {
-            DrawRectangleRec(btnJoin, LIGHTGRAY);
-        }
-        DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
-
         if (CheckCollisionPointRec(GetMousePosition(), btnSearch)) {
             DrawRectangleRec(btnSearch, violet);
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -192,6 +177,8 @@ namespace client {
                 DrawRectangleRec(partyRect, LIGHTGRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     setSelectedParty(i);
+                    setIdServerJoin(getSelectedParty());
+                    setJoinGame(true);
                 }
             } else {
                 DrawRectangleRec(partyRect, WHITE);

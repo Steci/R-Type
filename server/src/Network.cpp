@@ -118,13 +118,20 @@ void server::Network::run()
                 }
             } else if (connect.getJoinGame() == 1 && connect.getGameId() != -1) {
                 for (auto client = _clients.begin(); client != _clients.end(); client++) {
-                    if (client->getId() == connect.getId()) {
+                    if (client->getId() == id && client->getGameId() == -1) {
                         for (auto game = games.begin(); game != games.end(); game++) {
                             if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() != -1) {
+                                printf("add client to game %d\n", connect.getGameId());
                                 client->setGameId(connect.getGameId());
-                                interaction.setClientID(connect.getId());
+                                interaction.setClientID(id);
                                 interaction.setConnect(1);
                                 game->get()->addInteraction(interaction);
+                                connect.setJoinGame(0);
+                                connect.setConnected(1);
+                                auto data = connect.serializeConnection();
+                                Connection connect2;
+                                connect2.deserializeConnection(data);
+                                sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
                                 break;
                             } else if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() == -1) {
                                 connect.setJoinGame(-1);
@@ -134,6 +141,10 @@ void server::Network::run()
                             }
                         }
                         break;
+                    } else if (client->getId() == id && client->getGameId() != -1) {
+                        connect.setJoinGame(-1);
+                        auto data = connect.serializeConnection();
+                        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
                     }
                 }
             } else if (connect.getJoinGame() == 1 && connect.getGameId() == -1) {
@@ -146,6 +157,7 @@ void server::Network::run()
                 connect.setJoinGame(2);
                 id = 0;
                 auto data = connect.serializeConnection();
+                printf("send info ids\n");
                 sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
             }
             if (id == 0) {
