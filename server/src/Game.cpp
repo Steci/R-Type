@@ -34,7 +34,7 @@ void server::Game::run()
 
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
-    // manager.addSystem<S_Spawner>(entities);
+    manager.addSystem<S_Spawner>(entities);
     manager.addSystem<S_Weapon>(entities, _tick);
 
     int numClientID = 0;
