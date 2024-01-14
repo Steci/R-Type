@@ -101,6 +101,14 @@ void server::Network::run()
             for (auto game = games.begin(); game != games.end(); game++) {
                 interaction = manageClient(buffer, id, game->get());
             }
+            if (interaction.getQuit() == 1) {
+                for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                    if (client->getId() == id) {
+                        _clients.erase(client);
+                        break;
+                    }
+                }
+            }
             if (connect.getCreateGame() == 1) {
                 for (auto client = _clients.begin(); client != _clients.end(); client++) {
                     if (client->getId() == connect.getId() && client->getGameId() == -1) {
