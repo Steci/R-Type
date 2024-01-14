@@ -200,6 +200,8 @@ namespace client {
                     DrawRectangleRec(partyRect, LIGHTGRAY);
                     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         selectedParty = i;
+                        setIdServerJoin(nbrPlayer[i]);
+                        setJoinGame(true);
                     }
                 } else {
                     DrawRectangleRec(partyRect, WHITE);
