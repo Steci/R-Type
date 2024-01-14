@@ -138,11 +138,8 @@ namespace client {
         Rectangle btnSearch = { screenWidth/2 - 100, 300, 200, 50 };
 
         std::string errorMessage = "";
-        std::string numberInput = "";
 
-        bool inputActive = false;
-
-        std::vector<int> nbrPlayer = getIdGames();
+        std::vector<int> nbrPlayer;
 
         int selectedParty = -1;
         int hoveredParty = -1;
@@ -150,6 +147,7 @@ namespace client {
         Color violet = { 128, 0, 128, 255 };
 
         while (1) {
+            nbrPlayer = getIdGames();
             BeginDrawing();
             ClearBackground(RAYWHITE);
             if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
@@ -170,36 +168,13 @@ namespace client {
                 DrawRectangleRec(btnJoin, GRAY);
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
                     if(errorMessage.empty()) {
+                        setIdServerJoin(selectedParty);
                         setStatusMenu(false);
+                        return;
                     }
-                    // selection d'une partie
-                    //mutex
-                    //renvoie de l'erreur c'est il y en a une!
-                    //if (si une erreur setup le message d'erreur) {
-                    //    errorMessage = "bhnjh";
-                    //} else {
-                    //    si ça marche faire ce qui suit!!
-                    //    this->_JoinGame = true;
-                    //    this->_idServerJoin = parties[selectedParty];
-                    //    this->_status = false;
-                    //    return;
-                    //}
-                } //else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && std::stoi(numberInput) > 0) {
-                    // zone text elle peut prendre que des chiffres tqt
-                    //mutex
-                    //renvoie de l'erreur c'est il y en a une!
-                    //if (si une erreur setup le message d'erreur) {
-                    //    errorMessage = "bhnjh";
-                    //} else {
-                    //    si ça marche faire ce qui suit!!
-                    // this->_JoinGame = true;
-                    // this->_idServerJoin = parties[selectedParty];
-                    // this->_status = false;
-                //    printf("Join part\n");
-                //    return;
-                //}
-                } else {
-                    DrawRectangleRec(btnJoin, LIGHTGRAY);
+                }
+            } else {
+                DrawRectangleRec(btnJoin, LIGHTGRAY);
             }
             DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
 
@@ -208,11 +183,6 @@ namespace client {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     setJoinGame(true);
                     printf("search\n");
-                    if(errorMessage.empty()) {
-                        setStatusMenu(false);
-                    } else {
-                        nbrPlayer = getIdGames();
-                    }
                 }
             } else {
                 DrawRectangleRec(btnSearch, LIGHTGRAY);
@@ -223,26 +193,6 @@ namespace client {
                 DrawText(errorMessage.c_str(), 10, 10, 20, RED);
             }
 
-            Rectangle inputRect = { screenWidth/2 - 100, 500, 200, 50 };
-            DrawRectangleRec(inputRect, WHITE);
-            if (CheckCollisionPointRec(GetMousePosition(), inputRect)) {
-                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    inputActive = true;
-                }
-            }
-            if (inputActive) {
-                int key = GetCharPressed();
-                while (key > 0) {
-                    if ((key >= '0' && key <= '9')) {
-                        numberInput.push_back((char)key);
-                    }
-                    key = GetCharPressed();
-                }
-                if (IsKeyPressed(KEY_BACKSPACE) && !numberInput.empty()) {
-                    numberInput.pop_back();
-                }
-            }
-            DrawText(numberInput.c_str(), inputRect.x + 5, inputRect.y + 5, 20, BLACK);
             for (int i = 0; i < nbrPlayer.size(); i++) {
                 Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
                 if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
