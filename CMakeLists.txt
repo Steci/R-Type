@@ -16,7 +16,7 @@ FetchContent_MakeAvailable(vcpkg)
 
 
 if(WIN32)
-    set(CMAKE_GENERATOR "Visual Studio 16 2019" CACHE STRING "CMake generator" FORCE)
+    set(CMAKE_GENERATOR "Visual Studio 17 2022" CACHE STRING "CMake generator" FORCE)
     set(VCPKG_TARGET_TRIPLET x64-windows-static-md)
     add_compile_options(-Wall)
 else()

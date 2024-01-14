@@ -14,17 +14,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Install vcpkg
-      run: |
-        git clone https://github.com/microsoft/vcpkg.git
-        cd vcpkg
-        bootstrap-vcpkg.bat
-
-    - name: Install dependencies with vcpkg
-      run: |
-        cd ..
-        vcpkg/vcpkg install --triplet x64-windows --overlay-triplets
-
     - name: Configure with CMake
       run: cmake .
 
