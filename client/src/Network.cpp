@@ -97,17 +97,8 @@ void client::Network::run(Game *game)
     std::vector<Game> games;
 
     while (_isRunning) {
-        server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #ifdef __linux__
-            if (server == -1) {
-                if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                    checkInteraction(game);
-                    handleCommands(buffer, game);
-                    continue;
-                }
-                std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
-                return;
-            }
+            server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
         #ifdef _WIN64
             server = recvfrom(_fd, buffer.data(), buffer.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
@@ -119,9 +110,9 @@ void client::Network::run(Game *game)
                 std::cerr << "Error: recvfrom failed - " << wsa_error << std::endl;
                 return;
             }
-            checkInteraction(game);
-            handleCommands(buffer, game);
         #endif
+        checkInteraction(game);
+        handleCommands(buffer, game);
     }
 }
 
