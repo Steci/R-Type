@@ -207,7 +207,6 @@ namespace client {
              * 
              * @param game is the game.
              */
-             */
             void checkInteraction(Game *game);
     };
 

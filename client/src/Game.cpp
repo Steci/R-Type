@@ -269,7 +269,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             enemyShared->setId(id);
 
         } else if (entityType == "E_Bullet") {
-            // printf("deserialize bullet\n");
             size_t size_bullet = sizeof(C_Transform) + sizeof(C_Damage) + sizeof(C_Hitbox);
             bullet.deserializeFromVector(std::vector<char>(it, it + size_bullet));
             it += sizeof(size_bullet);
@@ -278,8 +277,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Damage *damage = Engine::getComponentRef<C_Damage>(bullet);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(bullet);
 
-            if (transform == nullptr || damage == nullptr || hitbox == nullptr)
-                continue;
             auto bulletShared = std::make_shared<E_Bullet>(damage->_damage, transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, transform->_velocity.x, transform->_velocity.y, 0);
             int id = _entities.add(bulletShared);
             bulletShared->setId(id);
