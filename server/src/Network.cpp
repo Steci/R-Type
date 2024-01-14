@@ -99,20 +99,9 @@ void server::Network::run(Game *game)
 
         #ifdef __linux__
             client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
-            if (client == -1) {
-                if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                    continue;
-                } else {
-                    std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
-                    return;
-                }
-            }
         #endif
         #ifdef _WIN64
             client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
-            if (client == SOCKET_ERROR ) {
-                std::cerr << "Error: recvfrom failed - " << WSAGetLastError() << std::endl;
-            }
         #endif
         updateClients(game);
         if (client < 0) {
@@ -206,7 +195,8 @@ void server::Network::updateClients(Game *game)
         #ifdef __linux__
             res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
             if (res == -1) {
-                std::cerr << "Connection failure..." << std::endl;
+                perror("sendto");
+                std::cerr << "Send failure..." << std::endl;
             }
         #endif
         #ifdef _WIN64

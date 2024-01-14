@@ -29,7 +29,7 @@ int client::Network::fillSocket()
     int opt = 1;
 
     #ifdef __linux__
-        _fd = socket(AF_INET, SOCK_DGRAM, 0);
+        _fd = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, 0);
         if (_fd == -1) {
             std::cerr << "Error: socket creation failed" << std::endl;
             return(84);
@@ -102,14 +102,6 @@ void client::Network::run(Game *game)
         #endif
         #ifdef _WIN64
             server = recvfrom(_fd, buffer.data(), buffer.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-            if (server == SOCKET_ERROR ) {
-                int wsa_error = WSAGetLastError();
-                if (wsa_error == WSAEWOULDBLOCK || wsa_error == WSAETIMEDOUT) {
-                    continue;
-                }
-                std::cerr << "Error: recvfrom failed - " << wsa_error << std::endl;
-                return;
-            }
         #endif
         checkInteraction(game);
         handleCommands(buffer, game);
