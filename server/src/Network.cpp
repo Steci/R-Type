@@ -111,6 +111,9 @@ void server::Network::run()
                         threads[gameTmp->getGameId()] = std::thread(&Game::run, gameTmp.get());
                         gameTmp->addInteraction(interaction);
                         client->setGameId(gameTmp->getGameId());
+                        connect.setConnected(1);
+                        auto data = connect.serializeConnection();
+                        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
                         connect.setJoinGame(gameTmp->getGameId());
                         games.push_back(std::move(gameTmp));
                         break;
@@ -126,11 +129,10 @@ void server::Network::run()
                                 interaction.setClientID(id);
                                 interaction.setConnect(1);
                                 game->get()->addInteraction(interaction);
-                                connect.setJoinGame(0);
+                                connect.setJoinGame(-1);
                                 connect.setConnected(1);
                                 auto data = connect.serializeConnection();
-                                Connection connect2;
-                                connect2.deserializeConnection(data);
+                                printf("send join game info\n");
                                 sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
                                 break;
                             } else if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() == -1) {
@@ -279,8 +281,8 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    if (connect.getJoinGame() == -1)
-        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+    // if (connect.getJoinGame() == -1)
+    //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

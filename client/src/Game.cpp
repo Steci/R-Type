@@ -48,12 +48,13 @@ namespace client {
                 mov = manager.getSystem<S_EventManager>()->getMovement();
                 shoot = manager.getSystem<S_EventManager>()->getShoot();
                 quit = manager.getSystem<S_EventManager>()->getQuit();
-                if (mov != 0 || shoot != 0 || quit != 0)
+                if (mov != 0 || shoot != 0 || quit != 0) {
                     if (shoot != 0) {
                         // auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
                         // PlaySound(effect->second);
                     }
                     infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
+                }
                 _mutex_frames.lock();
                 if (_frames.size() != 0) {
                     current_frame.clearEntities();
