@@ -65,8 +65,6 @@ void S_Collision::update()
 
                         int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
                         C_Score* score = Engine::getComponentRef<C_Score>(&_sparseEntities.get(idCreator));
-                        if (damage1 == nullptr || enemyInfo == nullptr || score == nullptr)
-                            continue;
                         toRemove.push_back(entity1->getId());
                         toRemove.push_back(entity2->getId());
                         if (enemyInfo && enemyInfo->_type == 1 && score) {
