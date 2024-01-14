@@ -11,9 +11,10 @@
 
 void ErrorHandling::help()
 {
-    std::cout << "USAGE: ./r-type_server [OPTIONS]" << std::endl;
+    std::cout << "USAGE: ./client_build [OPTIONS]" << std::endl;
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "\t-h, --help\t\t\tDisplay this help message" << std::endl;
+    std::cout << "\t-i, --ip=IP\t\t\tSet server IP" << std::endl;
     std::cout << "\t-p, --port=PORT\t\t\tSet the port of the server" << std::endl;
 }
 

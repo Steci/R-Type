@@ -150,6 +150,7 @@ void server::Network::run()
                         for (auto game = games.begin(); game != games.end(); game++) {
                             if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() != -1) {
                                 printf("add client to game %d\n", connect.getGameId());
+                                std::cout << "NEW CLIENT ID " << id << std::endl;
                                 client->setGameId(connect.getGameId());
                                 interaction.setClientID(id);
                                 interaction.setConnect(1);

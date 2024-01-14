@@ -45,11 +45,15 @@ void S_Collision::update()
                 C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
                 C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
 
+                if (hitbox1 == nullptr || hitbox2 == nullptr || transform1 == nullptr || transform2 == nullptr)
+                    continue;
                 if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
                         C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
                         C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
 
+                        if (health1 == nullptr || health2 == nullptr)
+                            continue;
                         transform1->_position.x -= 50;
                         toRemove.push_back(entity2->getId());
                     }
@@ -61,14 +65,15 @@ void S_Collision::update()
 
                         int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
                         C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
-
+                        if (damage1 == nullptr || enemyInfo == nullptr || score == nullptr)
+                            continue;
                         toRemove.push_back(entity1->getId());
                         toRemove.push_back(entity2->getId());
-                        if (enemyInfo->_type == 1) {
+                        if (enemyInfo && enemyInfo->_type == 1 && score) {
                             score->score += 10;
-                        } else if (enemyInfo->_type == 2) {
+                        } else if (enemyInfo && enemyInfo->_type == 2 && score) {
                             score->score += 20;
-                        } else {
+                        } else if (score) {
                             score->score += 30;
                         }
                         Engine::setScore(_sparseEntities.get(idCreator), score->score);
@@ -81,6 +86,8 @@ void S_Collision::update()
             C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
             C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
 
+            if (transform1 == nullptr || hitbox1 == nullptr)
+                continue;
             if (transform1->_position.x < 0)
                 transform1->_position.x = 0;
             if (transform1->_position.x + hitbox1->_size.x > screenWidth)
@@ -94,6 +101,8 @@ void S_Collision::update()
             // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
+            if (transform == nullptr)
+                continue;
             if (transform->_position.x <= -100.0) {
                 int id = entity1->getId();
                 printf("Enemy %d destroyed (POS X:%f Y:%f)\n", id, transform->_position.x, transform->_position.y);
@@ -104,6 +113,8 @@ void S_Collision::update()
             // Destroy bullet if it leaves the screen
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
 
+            if (transform == nullptr)
+                continue;
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
                 // printf("Bullet %d destroyed\n", entity1->getId());
                 printf("Bullet %d destroyed\n", entity1->getId());
@@ -128,6 +139,8 @@ void S_EnemyAI::update()
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
             C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity);
 
+            if (transform == nullptr || enemyInfo == nullptr)
+                return;
             if (enemyInfo->_type == 1) {
                 // straight line
                 transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
@@ -203,6 +216,8 @@ void S_Weapon::shootPlayer(int idCreator)
         return;
     }
     C_Transform* transform = Engine::getComponentRef<C_Transform>(entity);
+    if (transform == nullptr)
+        return;
     // create bullet with player position info
     int xpos = transform->_position.x + transform->_size.x;
     int ypos = transform->_position.y + transform->_size.y / 2;
@@ -222,6 +237,8 @@ void S_Weapon::update()
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Player)) {
             C_Score* score = Engine::getComponentRef<C_Score>(*entity);
+            if (score == nullptr)
+                continue;
             if (score->score >= 1000) {
                 score->score -= 1000;
                 Engine::setScore(*entity, score->score);
@@ -232,6 +249,8 @@ void S_Weapon::update()
         if (typeid(*entity) == typeid(E_Bullet)) {
             C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
 
+            if (transform == nullptr)
+                continue;
             transform->_position.x = static_cast<float>(transform->_position.x + ((transform->_velocity.x * TICK_SPEED) / DESIRED_SPEED));
             transform->_position.y = static_cast<float>(transform->_position.y + ((transform->_velocity.y * TICK_SPEED) / DESIRED_SPEED));
             // printf("Bullet %d position : %f %f\n", denseIndex[i], transform->_position.x, transform->_position.y);
