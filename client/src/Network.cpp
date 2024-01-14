@@ -89,7 +89,7 @@ int client::Network::fillAddr()
     return 0;
 }
 
-void client::Network::run(Game *game)
+void client::Network::run(Game *game, std::thread *gameThread)
 {
     int server = 0;
     std::vector<char> buffer(4096);
@@ -119,6 +119,7 @@ void client::Network::run(Game *game)
         checkInteraction(game);
         handleCommands(buffer, game);
     }
+    gameThread->join();
 }
 
 int client::Network::bindSocket()
@@ -244,6 +245,10 @@ void client::Network::checkInteraction(Game *game)
         if (res == -1) {
             std::cerr << "Sendto Interaction failure..." << std::endl;
         }
+        if (interactions[0].getQuit() == 1) {
+            _isRunning = false;
+        }
+            //exit(0);
         game->deleteInteraction(1);
     }
 }

@@ -51,6 +51,7 @@ namespace client {
                _menu.render(withSizeX);
                statusMenu = _menu.getStatusMenu();
                 if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose()) {
+                    std::cerr << "Thread Game voit que ca va soon arreter (in menu)" << std::endl;
                     manager.getSystem<S_Renderer>()->setStatusGame(true);
                 }
             } else {
@@ -106,6 +107,9 @@ namespace client {
                         manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                         manager.getSystem<S_Renderer>()->setIDServer(current_frame.getIDServer());
                     }
+                }
+                if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose()) {
+                    manager.getSystem<S_Renderer>()->setStatusGame(true);
                 }
                 manager.update();
             }

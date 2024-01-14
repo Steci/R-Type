@@ -259,7 +259,6 @@ void server::Network::updateClients(std::unique_ptr<Game> *game)
     (*game)->setLastTickSend(frame.getTick());
     std::vector<char> data = frame.serializeFrame();
 
-    int res = 0;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         // printf("client game id = %d, game id = %d, with id %d\n", client->getGameId(), (*game)->getGameId(), client->getId());
         if (client->getGameId() == (*game)->getGameId()) {
@@ -312,9 +311,10 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
         }
     }
     connect.setId(_clients.size() + 1);
-    printf("Id Client = %d\n", _clients.size() + 1);
+    printf("Id Client = %ld\n", _clients.size() + 1);
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
+    cli = cli;
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
     // if (connect.getJoinGame() == -1)
@@ -390,6 +390,7 @@ int server::Network::commandPing(std::string data, int client_id) const
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::string pingRes = std::to_string(duration.count());
+    data = data;
 
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (client->getId() == client_id) {
