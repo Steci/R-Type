@@ -101,6 +101,8 @@ void client::Network::run(Game *game)
         #ifdef __linux__
             if (server == -1) {
                 if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    checkInteraction(game);
+                    handleCommands(buffer, game);
                     continue;
                 }
                 std::cerr << "Error: recvfrom failed - " << strerror(errno) << std::endl;
@@ -113,14 +115,13 @@ void client::Network::run(Game *game)
                 int wsa_error = WSAGetLastError();
                 if (wsa_error == WSAEWOULDBLOCK || wsa_error == WSAETIMEDOUT) {
                     continue;
-                } else {
-                    std::cerr << "Error: recvfrom failed - " << wsa_error << std::endl;
-                    return;
                 }
+                std::cerr << "Error: recvfrom failed - " << wsa_error << std::endl;
+                return;
             }
+            checkInteraction(game);
+            handleCommands(buffer, game);
         #endif
-        checkInteraction(game);
-        handleCommands(buffer, game);
     }
 }
 

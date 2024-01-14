@@ -203,13 +203,14 @@ void server::Network::updateClients(Game *game)
         //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         // }
         struct sockaddr_in cli = client->getAddr();
-        res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         #ifdef __linux__
+            res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
             if (res == -1) {
                 std::cerr << "Connection failure..." << std::endl;
             }
         #endif
         #ifdef _WIN64
+            res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
             if (res == -1) {
                 std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
             }
