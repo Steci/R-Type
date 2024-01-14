@@ -3,7 +3,7 @@
 ## Authors
 Théo Villemer
 Léa Guillemard
-Guillaume Son nom de famille est casse couilles (Clement--Boniel-Veyron)
+Guillaume (Clement--Boniel-Veyron)
 Laetitia Bousch
 Malek Gatoufi
 
@@ -48,3 +48,7 @@ Read Connection part from the Client to server.
 There is 2 variables:
 - int _tick (a number equal or greater than 0) send the tick X to the client to know which frame is it
 - SparseArray\<IEntity\> a list of every entity in the game
+
+## Developpers
+| [<img src="https://github.com/Genex440.png?size=85" width=85><br><sub>Théo Villemer</sub>](https://github.com/Genex440) | [<img src="https://github.com/Steci.png?size=85" width=85><br><sub>Léa Guillemard</sub>](https://github.com/Steci) | [<img src="https://github.com/Chasfory.png?size=85" width=85><br><sub>Laetitia Bousch</sub>](https://github.com/Chasfory) | [<img src="https://github.com/Kapwiing.png?size=85" width=85><br><sub>Guillaume Clément--Boniel-Veyron</sub>](https://github.com/Kapwiing) | [<img src="https://github.com/Lekmax-77.png?size=85" width=85><br><sub>Malek Gatoufi</sub>](https://github.com/Lekmax-77)
+| :---: | :---: | :---: | :---: | :---:
