@@ -44,8 +44,14 @@ namespace client {
         manager.addSystem<S_EventManager>();
         manager.addSystem<S_AudioManager>();
         createTextures();
-        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
-        PlayMusicStream(backgroundMusic->second);
+        auto& audioManager = *manager.getSystem<S_AudioManager>();
+        auto& backgroundMusicMap = audioManager.getBackgroundMusic();
+        auto themeIterator = backgroundMusicMap.find("THEME");
+
+        if (themeIterator != backgroundMusicMap.end()) {
+            auto& themeMusic = themeIterator->second;
+            PlayMusicStream(themeMusic);
+        }
         while (manager.getSystem<S_Renderer>()->getStatusGame() != true) {
             if (statusMenu == true) {
                _menu.render(withSizeX);
@@ -61,8 +67,13 @@ namespace client {
                 quit = manager.getSystem<S_EventManager>()->getQuit();
                 if (mov != 0 || shoot != 0 || quit != 0) {
                     if (shoot != 0) {
-                        auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-                        PlaySound(effect->second);
+                      auto& audioManager = *manager.getSystem<S_AudioManager>();
+                        auto& soundEffectMap = audioManager.getSoundEffect();
+                        auto shootIterator = soundEffectMap.find("SHOOT");
+                        if (shootIterator != soundEffectMap.end()) {
+                            auto& shootSound = shootIterator->second;
+                            PlaySound(shootSound);
+                        }
                     }
                     infoInteraction(mov, shoot, quit, 0);
                 }
@@ -73,7 +84,8 @@ namespace client {
                     _frames.pop_back();
                 }
                 _mutex_frames.unlock();
-                UpdateMusicStream(backgroundMusic->second);
+                auto& themeMusic = themeIterator->second;
+                UpdateMusicStream(themeMusic);
                 auto &entities = current_frame.getEntities();
                 const auto& sparseIds = entities.getSparse();
 
