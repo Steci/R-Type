@@ -66,11 +66,11 @@ void server::Game::run()
                     startGame = true;
                     interaction.setMovement(0);
                 }
-                // if (interaction.getQuit() == 1) {
-                //     printf("Player with ID : %d quit\n", interaction.getClientID());
-                //     entities.remove(interaction.getClientID());
-                //     interaction.setMovement(0);
-                // }
+                if (interaction.getQuit() == 1) {
+                    printf("Player with ID : %d quit\n", interaction.getClientID());
+                    entities.remove(interaction.getClientID());
+                    interaction.setMovement(0);
+                }
                 if (interaction.getShoot() == 1 && startGame == true){
                     // shoot
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));

@@ -256,7 +256,6 @@ void client::Network::checkInteraction(Game *game)
         if (interactions[0].getQuit() == 1) {
             _isRunning = false;
         }
-            //exit(0);
         game->deleteInteraction(1);
     }
 }
