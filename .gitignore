@@ -47,7 +47,11 @@ build/
 HelloWorld
 server_build
 client_build
-
-# documentation
-docs/
-latex/
+log
+*.vcxproj*
+x64
+vcpkg_installed/
+.vs/
+Debug/
+*.dir
+*.sln

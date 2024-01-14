@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/System.hpp"
+#include "Engine.hpp"
+#include "EngineSystem.hpp"
 
 /**
  * @brief The E_Bullet class is the bullet entity.
@@ -30,10 +30,38 @@ class E_Bullet : public Entity {
          * @param idCreator The idCreator is this int allows you to know who created this bullet.
          */
         E_Bullet(int damage, int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y, int idCreator);
+        
+        /**
+         * @brief Construct a new e bullet object
+         * 
+         */
         E_Bullet() = default;
+
+        /**
+         * @brief is the update of the bullet
+         * 
+         */
         void update() override {};
+
+        /**
+         * @brief Get the Type object
+         * 
+         * @return std::string is the type of the entity
+         */
         std::string getType() const override;
+
+        /**
+         * @brief serialize the entity to a vector
+         * 
+         * @return std::vector<char> is the vector of the entity
+         */
         std::vector<char> serializeToVector() override;
+
+        /**
+         * @brief Get the Id Creator object
+         * 
+         * @return int is the id of the creator
+         */
         int getIdCreator() const { return _idCreator; };
 
     private:
@@ -57,10 +85,39 @@ class E_Player : public Entity {
          * @param _lastTick The _lastTick is the last tick when the player shot
          */
         E_Player(int position_x, int position_y, float size_x, float size_y);
+
+        /**
+         * @brief is the update of the player
+         * 
+         */
         void update() override;
+
+        /**
+         * @brief Get the Type object
+         * 
+         * @return std::string is the type of the entity
+         */
         std::string getType() const override;
+
+        /**
+         * @brief serialize the entity to a vector
+         * 
+         * @return std::vector<char> is the vector of the entity
+         */
         std::vector<char> serializeToVector() override;
+
+        /**
+         * @brief Get the Last Tick object
+         * 
+         * @return int is the last tick when the player shot
+         */
         int getLastTick() const { return _lastTick; };
+
+        /**
+         * @brief Set the Last Tick object
+         * 
+         * @param lastTick is the last tick when the player shot
+         */
         void setLastTick(int lastTick) { _lastTick = lastTick; };
     private:
         int _lastTick = 0;
@@ -83,7 +140,24 @@ class E_Enemy : public Entity {
          * @param tmp The tmp is the enemy type.
          */
         E_Enemy(int position_x, int position_y, float size_x, float size_y, int tmp);
+
+        /**
+         * @brief is the update of the enemy
+         * 
+         */
         void update() override;
+
+        /**
+         * @brief Get the Type object
+         * 
+         * @return std::string is the type of the entity
+         */
         std::string getType() const override;
+
+        /**
+         * @brief serialize the entity to a vector
+         * 
+         * @return std::vector<char> is the vector of the entity
+         */
         std::vector<char> serializeToVector() override;
 };

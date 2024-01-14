@@ -14,8 +14,11 @@ int main(int argc, char **argv)
     ErrorHandling error_handling;
     std::vector<std::string> error = error_handling.errorHandling(argc, argv);
 
-    if (error[0] == "84")
+    if (error[0] == "84") {
         return (84);
+    } else if (error[0] == "1") {
+        return (0);
+    }
     try {
         client::Client client(error[1], std::atoi(error[2].c_str()));
         return client.run();

@@ -10,7 +10,7 @@
 #include <cassert>
 #include <memory>
 
-#include "Entity.hpp"
+#include "EngineEntity.hpp"
 
 /**
  * @brief A sparse array data structure that maps IDs to elements.
@@ -38,7 +38,6 @@ class SparseArray {
          */
         int add(std::shared_ptr<T> element, int id = -1) {
             if (id == -1) {
-                // Find the first available ID after the first 5
                 for (int i = 5; i < sparse.size(); i++) {
                     if (sparse[i] == -1) {
                         id = i;
@@ -78,15 +77,11 @@ class SparseArray {
             assert(id < sparse.size() && "Invalid ID");
             // Remove all traces of the element in dense, sparse, and indices!
             int index = sparse[id];
-            // printf("index remove = %d\n", index);
-            // SparseArray<T> tmp;
-            // tmp.insert(dense.)
             std::vector<std::shared_ptr<T>> temp;
             for (auto &element : dense)
                 if (element.get()->getId() != id)
                     temp.push_back(element);
             dense = std::move(temp);
-            // std::cout << "Taille de dense après remove: " << dense.size() << std::endl;
             sparse[id] = -1;
         }
 

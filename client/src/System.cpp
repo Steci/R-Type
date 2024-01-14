@@ -35,38 +35,37 @@ void S_Renderer::render()
 
         // Parallax Draw
         for (int i = 0; i < _parallax.getBackgrounds().size(); i++) {
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
+            Vector2 temp = { _parallax.getScrolling()[i], 0.0f };
+            Vector2 pemt = { (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0.0f };
+            DrawTextureEx(_parallax.getBackgrounds()[i], temp, 0.0f, _parallax.getScale(), WHITE);
+            DrawTextureEx(_parallax.getBackgrounds()[i], pemt, 0.0f, _parallax.getScale(), WHITE);
         }
         int id = 0;
         for (auto& entity : _entities) {
             entity->render();
             std::string type = entity->getType();
             if (type == "E_Player") {
-                C_Score *score = Engine::getComponentRef<C_Score>(*entity);
-                score_total += score->_score;
+                C_Score *score = Engine::getComponentRef<C_Score>(entity);
+                if (score == nullptr)
+                    continue;
+                score_total += score->score;
             }
             id++;
         }
         std::string scoreText = "Patoune: " + std::to_string(score_total);
         DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
         std::string idServerText = std::to_string(_idServer);
-        DrawText(idServerText.c_str(), 300, 500, 30, WHITE);
+        DrawText(idServerText.c_str(), 20, 550, 30, WHITE);
         _parallax.update();
     EndDrawing();
 }
 
 void S_Renderer::update()
 {
-    if (IsKeyPressed(KEY_ESCAPE))
-        closeWindow();
+    if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose())
+        setStatusGame(true);
     if (!WindowShouldClose())
         render();
-}
-
-void S_Renderer::closeWindow()
-{
-    CloseWindow();
 }
 
 int S_EventManager::EventKeyPressed(std::list<int> keys)
@@ -76,6 +75,7 @@ int S_EventManager::EventKeyPressed(std::list<int> keys)
             return key;
         }
     }
+    return -1;
 }
 
 int S_EventManager::getMovement()

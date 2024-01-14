@@ -18,6 +18,9 @@
  */
 class IEntity {
     public:
+        /**
+         * @brief Destructor for the IEntity class.
+         */
         virtual ~IEntity() = default;
 
         /**
@@ -63,25 +66,140 @@ class IEntity {
          */
         virtual Component* getComponentOfType(const std::type_info& ti) = 0;
 
+        /**
+         * @brief Gets the type of the entity.
+         *
+         * @return The type of the entity as a string.
+         */
         virtual std::string getType() const = 0;
 
+        /**
+         * @brief Serializes the entity to a vector of characters.
+         *
+         * @return The serialized entity as a vector of characters.
+         */
         virtual std::vector<char> serializeToVector() = 0;
+
+        /**
+         * @brief Deserializes the entity from a vector of characters.
+         *
+         * @param data The vector of characters containing the serialized entity.
+         */
         virtual void deserializeFromVector(std::vector<char> data) = 0;
+
+        /**
+         * @brief Sets the ID of the entity.
+         *
+         * @param id The ID to set.
+         */
         virtual void setId(int id) = 0;
+
+        /**
+         * @brief Gets the ID of the entity.
+         *
+         * @return The ID of the entity.
+         */
         virtual int getId() const = 0;
+
+        /**
+         * @brief Sets the server ID of the entity.
+         *
+         * @param id The server ID to set.
+         */
+        virtual void setIdServer(int id) = 0;
+
+        /**
+         * @brief Gets the server ID of the entity.
+         *
+         * @return The server ID of the entity.
+         */
+        virtual int getIdServer() const = 0;
+
+        virtual bool operator==(const IEntity& other) const = 0;
 };
 
+/**
+ * @brief The Entity class represents an entity in the game.
+ *
+ * This class is an abstract base class that provides common functionality for game entities.
+ * It defines pure virtual functions for updating, rendering, serializing, deserializing, and getting the type of the entity.
+ * It also provides functions for adding and removing components, getting the components, and getting/setting the entity's ID.
+ */
+/**
+ * @brief The Entity class represents a game entity.
+ *
+ * This class is an abstract base class that defines the common interface and functionality for all game entities.
+ * It provides methods for updating, rendering, serializing, deserializing, and managing components of an entity.
+ * Each entity has a unique ID and an ID assigned by the server.
+ */
 class Entity : public IEntity {
     public:
+        /**
+         * @brief Updates the entity.
+         *
+         * This pure virtual function is called to update the state of the entity.
+         * Subclasses must implement this function to define the specific behavior of the entity during an update.
+         */
         void update() override = 0;
+
+        /**
+         * @brief Renders the entity.
+         *
+         * This function is called to render the entity.
+         * Subclasses can override this function to define the specific rendering behavior of the entity.
+         */
         void render() override {};
-        std::vector<char> serializeToVector() override {};
+
+        /**
+         * @brief Serializes the entity to a vector of characters.
+         *
+         * This function is called to serialize the entity into a vector of characters.
+         * Subclasses can override this function to define the specific serialization behavior of the entity.
+         *
+         * @return The serialized entity as a vector of characters.
+         */
+        std::vector<char> serializeToVector() override {return std::vector<char>();};
+
+        /**
+         * @brief Returns the type of the entity.
+         *
+         * This pure virtual function is called to get the type of the entity.
+         * Subclasses must implement this function to return the specific type of the entity.
+         *
+         * @return The type of the entity as a string.
+         */
         std::string getType() const override = 0;
+
+        /**
+         * @brief Deserializes the entity from a vector of characters.
+         *
+         * This function is called to deserialize the entity from a vector of characters.
+         * Subclasses can override this function to define the specific deserialization behavior of the entity.
+         *
+         * @param data The vector of characters containing the serialized entity.
+         */
         void deserializeFromVector(std::vector<char> data) override {};
 
+        /**
+         * @brief Adds a component to the entity.
+         *
+         * This function is called to add a component to the entity.
+         * The component is moved into the entity's list of components.
+         *
+         * @param component The component to add.
+         */
         void addComponent(std::shared_ptr<Component> component) override {
             components.push_back(std::move(component));
         }
+
+        /**
+         * @brief Removes a component from the entity.
+         *
+         * This function is called to remove a component from the entity.
+         * The component is searched for in the entity's list of components and removed if found.
+         *
+         * @param component The component to remove.
+         */
         void removeComponent(Component* component) override {
             for (auto it = components.begin(); it != components.end(); it++) {
                 if (it->get() == component) {
@@ -90,9 +208,27 @@ class Entity : public IEntity {
                 }
             }
         }
+
+        /**
+         * @brief Returns the list of components of the entity.
+         *
+         * This function is called to get the list of components of the entity.
+         *
+         * @return The list of components of the entity.
+         */
         std::vector<std::shared_ptr<Component>>& getComponents() override {
             return components;
         }
+
+        /**
+         * @brief Returns a component of the specified type.
+         *
+         * This function is called to get a component of the specified type from the entity.
+         * The type is compared using the typeid operator.
+         *
+         * @param ti The type_info object representing the type of the component.
+         * @return A pointer to the component of the specified type, or nullptr if not found.
+         */
         Component* getComponentOfType(const std::type_info& ti) override {
             for (auto& component : components) {
                 if (typeid(*component) == ti) {
@@ -101,16 +237,71 @@ class Entity : public IEntity {
             }
             return nullptr;
         }
+
+        /**
+         * @brief Sets the ID of the entity.
+         *
+         * This function is called to set the ID of the entity.
+         *
+         * @param id The ID to set.
+         */
         void setId(int id) {
             _id = id;
         }
+
+        /**
+         * @brief Returns the ID of the entity.
+         *
+         * This function is called to get the ID of the entity.
+         *
+         * @return The ID of the entity.
+         */
         int getId() const {
             return _id;
         }
 
+        /**
+         * @brief Sets the server ID of the entity.
+         *
+         * This function is called to set the server ID of the entity.
+         *
+         * @param id The server ID to set.
+         */
+        void setIdServer(int id) {
+            _idServer = id;
+        }
+
+        /**
+         * @brief Returns the server ID of the entity.
+         *
+         * This function is called to get the server ID of the entity.
+         *
+         * @return The server ID of the entity.
+         */
+        int getIdServer() const {
+            return _idServer;
+        }
+
+        bool operator==(const IEntity& other) const override {
+            const Entity* otherEntity = dynamic_cast<const Entity*>(&other);
+            if (!otherEntity) {
+                return false;
+            }
+            if (_id != otherEntity->_id || _idServer != otherEntity->_idServer) {
+                return false;
+            }
+            for (size_t i = 0; i < components.size(); ++i) {
+                if (typeid(*components[i]) != typeid(*otherEntity->components[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     private:
-        int _id;
-        std::vector<std::shared_ptr<Component>> components;
+        int _id; // The ID of the entity
+        int _idServer; // The ID assigned by the server
+        std::vector<std::shared_ptr<Component>> components; // The list of components of the entity
 };
 
 namespace Engine {
@@ -120,7 +311,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Transform component.
      */
-    C_Transform* getTransform(std::unique_ptr<IEntity> entity);
+    C_Transform* getTransform(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Damage component of a specific entity.
@@ -128,7 +319,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Damage component.
      */
-    C_Damage* getDamage(std::unique_ptr<IEntity> entity);
+    C_Damage* getDamage(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Health component of a specific entity.
@@ -136,7 +327,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Health component.
      */
-    C_Health* getHealth(std::unique_ptr<IEntity> entity);
+    C_Health* getHealth(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Sprite component of a specific entity.
@@ -144,7 +335,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Sprite component.
      */
-    C_Sprite* getSprite(std::unique_ptr<IEntity> entity);
+    C_Sprite* getSprite(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Hitbox component of a specific entity.
@@ -152,7 +343,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Hitbox component.
      */
-    C_Hitbox* getHitbox(std::unique_ptr<IEntity> entity);
+    C_Hitbox* getHitbox(std::shared_ptr<IEntity> entity);
 
     /**
      * @brief Return C_Score component of a specific entity.
@@ -160,7 +351,7 @@ namespace Engine {
      * @param entity The entity where we want to retrieve the information.
      * @return A pointer to the C_Score component.
      */
-    C_Score* getScore(std::unique_ptr<IEntity> entity);
+    C_Score* getScore(std::shared_ptr<IEntity> entity);
 
     C_EnemyInfo* getEnemyInfo(std::shared_ptr<IEntity> entity);
     /**
@@ -275,13 +466,14 @@ namespace Engine {
      * @param entity The entity allows you to know on which entity to look for the component in question.
      * @return A pointer to the component if found, nullptr otherwise.
      */
-    T* getComponentRef(IEntity& entity)
-    {
-        T* component = dynamic_cast<T*>(entity.getComponentOfType(typeid(T)));
-        if (component) {
-            return (component);
+    T* getComponentRef(IEntity* entity) {
+        auto tmp = entity->getComponentOfType(typeid(T));
+        if (tmp == nullptr) {
+            return nullptr;
         }
-        return (nullptr);
+
+        T* component = dynamic_cast<T*>(tmp);
+        return component;
     }
     //template<typename T>
     //const T* getComponentRef(const IEntity& entity) {

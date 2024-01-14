@@ -5,7 +5,7 @@
 ** Entity.cpp
 */
 
-#include "../include/Engine.hpp"
+#include "Engine.hpp"
 
 namespace Engine {
     C_Transform* getTransform(std::shared_ptr<IEntity> entity)
@@ -164,7 +164,7 @@ namespace Engine {
     {
         C_Score* score = dynamic_cast<C_Score*>(entity.getComponentOfType(typeid(C_Score)));
         if (score) {
-            score->_score = newScore;
+            score->score = newScore;
         }
     }
 

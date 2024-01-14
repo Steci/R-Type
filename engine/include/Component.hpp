@@ -15,7 +15,7 @@
 #include <list>
 #include <cstring>
 
-#include "Utils.hpp"
+#include "EngineUtils.hpp"
 
 /**
  * @brief The base class for all components in the engine.
@@ -38,7 +38,7 @@ struct C_Transform : public Component {
     Vec2 _size; /**< The size of the entity. */
     Vec2 _velocity; /**< The velocity of the entity. */
     int _animation; /**< The animation of the entity. */
-    C_Transform(int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
+    C_Transform(float position_x, float position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
         _position = {position_x, position_y};
         _size = {size_x, size_y};
         _velocity.x = velocity_x;
@@ -63,6 +63,10 @@ struct C_Transform : public Component {
         _velocity.deserializeFromVector(std::vector<char>(data.begin() + sizeof(_position) + sizeof(_size), data.begin() + sizeof(_position) + sizeof(_size) + sizeof(_velocity)));
         std::memcpy(&_animation, data.data() + sizeof(_position) + sizeof(_size) + sizeof(_velocity), sizeof(_animation));
     }
+    bool operator==(const C_Transform& other) const {
+        return _position == other._position && _size == other._size && 
+           _velocity == other._velocity && _animation == other._animation;
+    }
 };
 
 /**
@@ -80,6 +84,9 @@ struct C_Damage : public Component {
     void deserializeFromVector(const std::vector<char>& data) {
         std::memcpy(&_damage, data.data(), sizeof(_damage));
     }
+    bool operator==(const C_Damage& other) const {
+        return _damage == other._damage;
+    }
 };
 
 /**
@@ -96,6 +103,9 @@ struct C_Health : public Component {
     }
     void deserializeFromVector(const std::vector<char>& data) {
         std::memcpy(&_health, data.data(), sizeof(_health));
+    }
+    bool operator==(const C_Health& other) const {
+        return _health == other._health;
     }
 };
 
@@ -129,6 +139,9 @@ struct C_Sprite : public Component {
     void deserializeFromVector(const std::vector<char>& data) {
         _name = std::string(data.begin(), data.end());
     }
+    bool operator==(const C_Sprite& other) const {
+        return _name == other._name;
+    }
 };
 
 /**
@@ -138,7 +151,7 @@ struct C_Hitbox : public Component {
     Vec2 _size; /**< The size of the collision box of this entity. */
     int _time; /**< The entity key state duration. */
     int _status; /**< The status of the entity's collision box. */
-    C_Hitbox(int x, int y) {
+    C_Hitbox(float x, float y) {
         _size = {x, y};
         _time = 10;
         _status = 0;
@@ -157,22 +170,28 @@ struct C_Hitbox : public Component {
         std::memcpy(&_time, data.data() + sizeof(_size), sizeof(_time));
         std::memcpy(&_status, data.data() + sizeof(_size) + sizeof(_time), sizeof(_status));
     }
+    bool operator==(const C_Hitbox& other) const {
+        return _size == other._size && _time == other._time && _status == other._status;
+    }
 };
 
 /**
  * @brief The C_Score struct represents the score of player during the game.
  */
 struct C_Score : public Component {
-    int _score; /**< The amount of score. */
+    int score; /**< The amount of score. */
     C_Score() {
-        _score = 0;
+        score = 0;
     }
     ~C_Score() = default;
     std::vector<char> serializeToVector() const {
-        return std::vector<char>(reinterpret_cast<const char*>(&_score), reinterpret_cast<const char*>(&_score) + sizeof(_score));
+        return std::vector<char>(reinterpret_cast<const char*>(&score), reinterpret_cast<const char*>(&score) + sizeof(score));
     }
     void deserializeFromVector(const std::vector<char>& data) {
-        std::memcpy(&_score, data.data(), sizeof(_score));
+        std::memcpy(&score, data.data(), sizeof(score));
+    }
+    bool operator==(const C_Score& other) const {
+        return score == other.score;
     }
 };
 
@@ -188,6 +207,9 @@ struct C_EnemyInfo : public Component {
     void deserializeFromVector(const std::vector<char>& data) {
         std::memcpy(&_type, data.data(), sizeof(_type));
     }
+    bool operator==(const C_EnemyInfo& other) const {
+        return _type == other._type;
+    }
 };
 
 struct C_AnimationInfo : public Component {
@@ -198,7 +220,7 @@ struct C_AnimationInfo : public Component {
     int _currentFrame = 0;
     int _speed;
     C_AnimationInfo(int x, int y, int maxXframe, int maxYframe, int speed) {
-        _size = {x, y};
+        _size = {static_cast<float>(x), static_cast<float>(y)};
         _maxXframe = maxXframe;
         _maxYframe = maxYframe;
         _speed = speed;
@@ -216,5 +238,9 @@ struct C_AnimationInfo : public Component {
         std::memcpy(&_size, data.data(), sizeof(_size));
         std::memcpy(&_maxXframe, data.data() + sizeof(_size), sizeof(_maxXframe));
         std::memcpy(&_maxYframe, data.data() + sizeof(_size) + sizeof(_maxXframe), sizeof(_maxYframe));
+    }
+    bool operator==(const C_AnimationInfo& other) const {
+        return _size == other._size && _maxXframe == other._maxXframe && 
+               _maxYframe == other._maxYframe && _speed == other._speed;
     }
 };

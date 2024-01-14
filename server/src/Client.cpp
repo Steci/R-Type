@@ -14,7 +14,9 @@ bool server::Client::operator==(const Client& other) const
 
 server::Client& server::Client::operator=(const Client& other)
 {
-    _addr = other.getAddr();
-    _id = other.getId();
+    if (this != &other) {
+        _addr = other.getAddr();
+        _id = other.getId();
+    }
     return *this;
 }

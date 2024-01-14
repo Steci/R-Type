@@ -11,9 +11,10 @@
 
 void ErrorHandling::help()
 {
-    std::cout << "USAGE: ./r-type_server [OPTIONS]" << std::endl;
+    std::cout << "USAGE: ./client_build [OPTIONS]" << std::endl;
     std::cout << "OPTIONS:" << std::endl;
     std::cout << "\t-h, --help\t\t\tDisplay this help message" << std::endl;
+    std::cout << "\t-i, --ip=IP\t\t\tSet server IP" << std::endl;
     std::cout << "\t-p, --port=PORT\t\t\tSet the port of the server" << std::endl;
 }
 
@@ -25,7 +26,7 @@ std::vector<std::string> ErrorHandling::errorHandling(int argc, char **argv)
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "-h") == 0 || std::strcmp(argv[i], "--help") == 0) {
             help();
-            exit(0);
+            return {"1", serverIP, serverPort};
         } else if (std::strcmp(argv[i], "-i") == 0 || std::strcmp(argv[i], "--ip") == 0) {
             if (i + 1 < argc) {
                 if (checkIP(argv[i + 1]) == 84) {
