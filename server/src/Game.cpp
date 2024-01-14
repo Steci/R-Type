@@ -134,10 +134,8 @@ std::vector<std::string> server::Game::getFunctionsClient()
 std::vector<char> server::Frame::serializeFrame()
 {
     std::vector<char> data;
-
     data.insert(data.end(), reinterpret_cast<const char*>(&_tick), reinterpret_cast<const char*>(&_tick) + sizeof(_tick));
     data.insert(data.end(), reinterpret_cast<const char*>(&_gameId), reinterpret_cast<const char*>(&_gameId) + sizeof(_gameId));
-    // printf("tick = %d\n", _tick);
 
     auto playerData = _entities.serializeToVector("E_Player");
     data.insert(data.end(), playerData.begin(), playerData.end());

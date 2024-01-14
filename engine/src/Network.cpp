@@ -5,7 +5,7 @@
 ** Network.cpp
 */
 
-#include "../include/Network.hpp"
+#include "EngineNetwork.hpp"
 
 std::vector<char> AConnection::serializeConnection() {
     std::vector<char> data;

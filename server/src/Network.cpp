@@ -6,6 +6,7 @@
 */
 
 #include "Network.hpp"
+#include <stdio.h>
 
 server::Network::Network(int port, int maxClients): _port(port != 0 ? port : 9001), _maxClients(maxClients != 0 ? maxClients : 4)
 {
@@ -16,6 +17,11 @@ server::Network::Network(int port, int maxClients): _port(port != 0 ? port : 900
 
 server::Network::~Network()
 {
+    #ifdef __linux__
+    #endif
+    #ifdef _WIN64
+        closesocket(_fd);
+    #endif
 }
 
 int server::Network::fillSocket()
@@ -23,7 +29,7 @@ int server::Network::fillSocket()
     int opt = 1;
 
     _fd = _maxClients;
-    #ifdef linux
+    #ifdef __linux__
         _fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (_fd == -1) {
             std::cerr << "Error: socket creation failed" << std::endl;
@@ -36,23 +42,28 @@ int server::Network::fillSocket()
     #endif
 
     #ifdef _WIN64
-        WSADATA wsaData;
-        int iResult;
+        int iResult = 0;
 
-        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-        if (_fd == -1) {
-            std::cerr << "Error: socket creation failed" << std::endl;
-            return(84);
-        }
-        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) == -1) {
-            std::cerr << "Error: socket options failed" << std::endl;
-            return(84);
-        }
-        if (iResult != 0) {
+        iResult = WSAStartup(MAKEWORD(2, 2), &_wsaData);
+        if (iResult != NO_ERROR) {
             std::cerr << "Error: WSAStartup failed" << std::endl;
             return(84);
         }
+        _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if (_fd == INVALID_SOCKET) {
+            std::cerr << "Error: socket creation failed" << std::endl;
+            printf("%d\n", WSAGetLastError());
+            closesocket(_fd);
+            WSACleanup();
+            return(84);
+        }
+        if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(int)) == -1) {
+            std::cerr << "Error: socket options failed" << WSAGetLastError() << std::endl;
+            return(84);
+        }
+
+        unsigned read_timeout_ms = 10;
+        setsockopt(_fd, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&read_timeout_ms), sizeof(read_timeout_ms));
     #endif
     return 0;
 }
@@ -64,9 +75,9 @@ int server::Network::fillAddr()
     _addr.sin_family = AF_INET;
     _addr.sin_port = htons(_port);
     _addr.sin_addr.s_addr = INADDR_ANY;
+    _clientAddrLen = sizeof(_clientAddr);
     std::cout << "Server IP: " << inet_ntoa(_addr.sin_addr) << std::endl;
     std::cout << "Server port: " << ntohs(_addr.sin_port) << std::endl;
-    std::cout << "Server port: " << _addr.sin_port << std::endl;
     return 0;
 }
 
@@ -75,7 +86,7 @@ void server::Network::run()
 {
     int client;
     //char buffer[1024];
-    int id;
+    int id = 0;
     Connection connect;
     Interaction interaction;
     std::string message;
@@ -86,7 +97,13 @@ void server::Network::run()
 
     while(_isRunning) {
         client = 0;
-        client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+
+        #ifdef __linux__
+            client = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_clientAddr, &_clientAddrLen);
+        #endif
+        #ifdef _WIN64
+            client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
+        #endif
         for (int i = 0; i < games.size(); ++i) {
             // printf("game id = %d\n", games[i]->getGameId());
             updateClients(&games[i]);
@@ -241,6 +258,8 @@ void server::Network::updateClients(std::unique_ptr<Game> *game)
     }
     (*game)->setLastTickSend(frame.getTick());
     std::vector<char> data = frame.serializeFrame();
+
+    int res = 0;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         // printf("client game id = %d, game id = %d, with id %d\n", client->getGameId(), (*game)->getGameId(), client->getId());
         if (client->getGameId() == (*game)->getGameId()) {
@@ -268,11 +287,20 @@ std::string server::Network::handleClientMessage(std::string message, int client
 
 int server::Network::bindSocket()
 {
-    if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
-        std::cerr << "Error: socket binding failed" << std::endl;
-        return(84);
-    }
-    return 0;
+    #ifdef __linux__
+        if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
+    #ifdef _WIN64
+        if (bind(_fd, (SOCKADDR *)&_addr, sizeof(_addr)) == -1) {
+            std::cerr << "Error: socket binding failed" << std::endl;
+            return(84);
+        }
+        return 0;
+    #endif
 }
 
 std::tuple<int, server::Connection> server::Network::handleNewConnection(Connection connect)

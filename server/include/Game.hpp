@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/Network.hpp"
+#include "Engine.hpp"
+#include "EngineNetwork.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -41,8 +41,8 @@ namespace server
             void deserializeInteraction(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
+            std::vector<char> serializeInteraction() {return {};};
         private:
-            //etc... rajouter les variables communes au dessus de se commentaire
             int _connect = -1;
             int _client_id = -1;
             int _game_id = -1;
@@ -53,6 +53,15 @@ namespace server
             Frame() = default;
             ~Frame() = default;
             std::vector<char> serializeFrame();
+            int getTick() const {return _tick;};
+            int getIDServer() const {return _gameId;};
+            void clearEntities() {_entities.clearEntities();};
+            bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
+                const std::string endMarker = "END";
+                return std::distance(it, data.end()) >= endMarker.size() &&
+                std::equal(endMarker.begin(), endMarker.end(), it);
+            }
+            void deserializeFrame(const std::vector<char>& serializedData);
     };
 
     class Game
