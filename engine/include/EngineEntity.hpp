@@ -475,12 +475,4 @@ namespace Engine {
         T* component = dynamic_cast<T*>(tmp);
         return component;
     }
-    //template<typename T>
-    //const T* getComponentRef(const IEntity& entity) {
-    //    T* component = dynamic_cast<const T*>(entity.getComponentOfType(typeid(T)));
-    //    if (component) {
-    //        return (component);
-    //    }
-    //    return (nullptr);
-    //}
 }

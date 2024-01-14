@@ -64,7 +64,7 @@ namespace client {
                         auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
                         PlaySound(effect->second);
                     }
-                    infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
+                    infoInteraction(mov, shoot, quit, 0);
                 }
                 _mutex_frames.lock();
                 if (_frames.size() != 0) {
@@ -127,7 +127,6 @@ namespace client {
     {
         Interaction inter;
 
-        // printf("Info with mov: %d, shoot: %d, quit: %d\n", mov, shoot, quit);
         _mutex_frames.lock();
         _mutex_interactions.lock();
         if (_frames.size() != 0 && _interactions.size() == 0) {
@@ -215,16 +214,13 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
 
     std::memcpy(&uwu, serializedData.data() + offset, sizeof(uwu));
     offset += sizeof(uwu);
-    //printf("uwu = %d\n", uwu);
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         std::memcpy(&_tick, &(*it), sizeof(_tick));
-        //printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
     if (std::distance(it, serializedData.end()) >= sizeof(_gameId)) {
         _gameId = *reinterpret_cast<const int*>(&(*it));
-        // printf("serverId = %d\n", _serverId);
         it += sizeof(_gameId);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
@@ -252,7 +248,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             int id = _entities.add(playerShared, id_client);
             id_client += 1;
         } else if (entityType == "E_Enemy") {
-            // printf("deserialize enemy\n");
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
             it += sizeof(size_enemy);

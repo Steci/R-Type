@@ -26,7 +26,6 @@ std::vector<char> E_Bullet::serializeToVector()
     std::vector<char> data;
 
     C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(this);
-    // printf("Transform serialize X:%f Y:%f\n", transformComponent->_position.x, transformComponent->_position.y);
     if (transformComponent) {
         auto transformData = transformComponent->serializeToVector();
         data.insert(data.end(), transformData.begin(), transformData.end());
@@ -94,9 +93,6 @@ std::vector<char> E_Player::serializeToVector()
 
 E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y, int type)
 {
-    // 65.25, 132
-    // 33.25, 36
-    // 65.2, 66
     std::map<int, std::pair<float, float>> enemySize = {
         {1, {65.25, 132}},
         {2, {33.25, 36}},

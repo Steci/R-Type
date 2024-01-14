@@ -9,10 +9,6 @@
 
 int server::Server::run()
 {
-    // Game game;
-    // std::thread gameThread = std::thread(&Game::run, &game);
-
-    // _network.run(&game);
     _network.run();
     return 0;
 }

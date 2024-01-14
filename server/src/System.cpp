@@ -80,7 +80,6 @@ void S_Collision::update()
             }
         }
         if (typeid(*entity1) == typeid(E_Player)) {
-            // check if player is leaving screenWidth or screenHeight
             C_Transform* transform1 = Engine::getComponentRef<C_Transform>(entity1.get());
             C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(entity1.get());
 
@@ -96,26 +95,21 @@ void S_Collision::update()
                 transform1->_position.y = screenHeight - hitbox1->_size.y;
         }
         if (typeid(*entity1) == typeid(E_Enemy)) {
-            // Destroy enemy if it leaves the screen on the left
             C_Transform* transform = Engine::getComponentRef<C_Transform>(entity1.get());
 
             if (transform == nullptr)
                 continue;
             if (transform->_position.x <= -100.0) {
                 int id = entity1->getId();
-                printf("Enemy %d destroyed (POS X:%f Y:%f)\n", id, transform->_position.x, transform->_position.y);
                 toRemove.push_back(id);
             }
         }
         else if (typeid(*entity1) == typeid(E_Bullet)) {
-            // Destroy bullet if it leaves the screen
             C_Transform* transform = Engine::getComponentRef<C_Transform>(entity1.get());
 
             if (transform == nullptr)
                 continue;
             if (transform->_position.x >= screenWidth + 10 || transform->_position.y >= screenHeight + 10 || transform->_position.y <= -10.0 || transform->_position.x <= -10.0) {
-                // printf("Bullet %d destroyed\n", entity1->getId());
-                printf("Bullet %d destroyed\n", entity1->getId());
                 toRemove.push_back(entity1->getId());
             }
         }
@@ -140,16 +134,13 @@ void S_EnemyAI::update()
             if (transform == nullptr || enemyInfo == nullptr)
                 return;
             if (enemyInfo->_type == 1) {
-                // straight line
                 transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
             }
             if (enemyInfo->_type == 2) {
-                // the enemy will move in a sinusoid pattern
                 transform->_position.x -= (11 * TICK_SPEED) / DESIRED_SPEED;
                 transform->_position.y = 10 * sin(transform->_position.x / (20 * TICK_SPEED / DESIRED_SPEED)) + transform->_position.y;
             }
             if (enemyInfo->_type == 3) {
-                // the enemy will move in a sinusoid pattern but bigger and faster
                 transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 transform->_position.y = 20 * sin(transform->_position.x / (30 * TICK_SPEED / DESIRED_SPEED)) + transform->_position.y;
             }
@@ -174,14 +165,11 @@ void S_Spawner::update()
         std::shared_ptr<E_Enemy> enemy = std::make_shared<E_Enemy>(800, random3, 65, 66, random5);
         int id = _sparseEntities.add(enemy);
         enemy->setId(id);
-        printf("Creating Enemy ID: %d with type %d\n", id, random2);
     }
     if (random == 100) {
-        // spawn a small group of random type enemies
         int randomType = rand() % 3 + 1;
         int randomY = rand() % (randomType != 1 ? 400 : 600);
         int randomAmount = rand() % 4 + 1;
-        printf("Creating %d enemies of type %d\n", randomAmount, randomType);
         for (int i = 0; i < randomAmount; i++) {
             std::shared_ptr<E_Enemy> enemy = std::make_shared<E_Enemy>(800 + (i * 50), randomY, 65, 66, randomType);
             int id = _sparseEntities.add(enemy);
@@ -216,10 +204,8 @@ void S_Weapon::shootPlayer(int idCreator)
     C_Transform* transform = Engine::getComponentRef<C_Transform>(&entity);
     if (transform == nullptr)
         return;
-    // create bullet with player position info
     int xpos = transform->_position.x + transform->_size.x;
     int ypos = transform->_position.y + transform->_size.y / 2;
-    // printf("Player position : %d %d\n", xpos, ypos);
     float velocity_x = 20;
     float velocity_y = 0;
     std::shared_ptr<E_Bullet> bullet = std::make_shared<E_Bullet>(0, xpos, ypos, 10, 10, velocity_x, velocity_y, idCreator);
@@ -230,8 +216,6 @@ void S_Weapon::shootPlayer(int idCreator)
 
 void S_Weapon::update()
 {
-    // Update all bullets
-
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Player)) {
             C_Score* score = Engine::getComponentRef<C_Score>(entity.get());
@@ -251,7 +235,6 @@ void S_Weapon::update()
                 continue;
             transform->_position.x = static_cast<float>(transform->_position.x + ((transform->_velocity.x * TICK_SPEED) / DESIRED_SPEED));
             transform->_position.y = static_cast<float>(transform->_position.y + ((transform->_velocity.y * TICK_SPEED) / DESIRED_SPEED));
-            // printf("Bullet %d position : %f %f\n", denseIndex[i], transform->_position.x, transform->_position.y);
         }
     }
 }
