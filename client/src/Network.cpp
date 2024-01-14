@@ -96,7 +96,20 @@ void client::Network::run(Game *game)
     client::Serialize convert;
     std::vector<Game> games;
 
-    while (_isRunning) {
+    while((*game).getMenu()->getStatusMenu() && (*game).getStatusGame() != true) {
+        if ((*game).getMenu()->getCreateGame() && connectCommand(game, 1) == 0) {
+            (*game).getMenu()->setStatusMenu(false);
+        } else if ((*game).getMenu()->getCreateGame()) {
+            (*game).getMenu()->setError("Error: Connection failed");
+            (*game).getMenu()->setCreateGame(false);
+        } else if ((*game).getMenu()->getJoinGame() && connectCommand(game, 0, 1, (*game).getMenu()->getIdServerJoin()) == 0) {
+            (*game).getMenu()->setStatusMenu(false);
+        } else if ((*game).getMenu()->getJoinGame()) {
+            (*game).getMenu()->setError("Error: Connection failed");
+            (*game).getMenu()->setJoinGame(false);
+        }
+    }
+    while (_isRunning && (*game).getStatusGame() != true) {
         #ifdef __linux__
             server = recvfrom(_fd, buffer.data(), buffer.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
@@ -126,17 +139,25 @@ int client::Network::bindSocket()
     #endif
 }
 
-int client::Network::connectCommand()
+int client::Network::connectCommand(Game *game, int createGame, int joinGame, int gameId)
 {
     int server;
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
     client::Connection connect;
     client::Connection receiveConnection;
+    connect.setCreateGame(createGame);
+    connect.setJoinGame(joinGame);
+    connect.setGameId(gameId);
     std::vector<char> data = connect.serializeConnection();
-    std::vector<char> receiveData(sizeof(client::Connection));
+    std::vector<char> receiveData(1024);
     int res = 0;
 
+    // while (std::chrono::high_resolution_clock::now() - startTime < duration) {
+    //     server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+    // }
+    // startTime = std::chrono::high_resolution_clock::now();
+    // duration = std::chrono::seconds(5);
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         if (res == -1) {
@@ -159,12 +180,15 @@ int client::Network::connectCommand()
             }
         #endif
         if (server != -1) {
-            std::cout << "Info received" << std::endl;
-
             receiveConnection.deserializeConnection(receiveData);
-            if (receiveConnection.getConnected() == 1) {
+            // printf("receive connected = %d, join game = %d\n", receiveConnection.getConnected(), receiveConnection.getJoinGame());
+            if (receiveConnection.getConnected() == 1 && receiveConnection.getJoinGame() == -1) {
                 std::cout << "Successfully connected with the server." << std::endl;
                 return 0;
+            } else if (receiveConnection.getJoinGame() == 2) {
+                printf("get info\n");
+                (*game).getMenu()->setIdGames(receiveConnection.getGameIds());
+                return 1;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

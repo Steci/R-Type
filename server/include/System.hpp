@@ -39,13 +39,16 @@ class S_Collision : public System {
 };
 
 class S_Weapon : public System {
-   public:
-       S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick);
-       ~S_Weapon() = default;
-       void update();
-       void shootPlayer(int idCreator);
+    public:
+        S_Weapon(SparseArray<IEntity> &sparseEntities, int &tick);
+        ~S_Weapon() = default;
+        void update();
+        void shootPlayer(int idCreator);
+        int getFiringSpeed() const { return _firingSpeed; };
+        void setFiringSpeed(int firingSpeed) { _firingSpeed = firingSpeed; };
 
-   private:
-       SparseArray<IEntity> &_sparseEntities;
-       int &_tick;
+    private:
+        int _firingSpeed = 40;
+        SparseArray<IEntity> &_sparseEntities;
+        int &_tick;
 };

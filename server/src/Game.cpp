@@ -26,6 +26,7 @@ bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerI
 void server::Game::run()
 {
     printf("Game started\n");
+    srand(time(NULL));
 
     SystemManager manager;
     SparseArray<IEntity> entities;
@@ -37,6 +38,8 @@ void server::Game::run()
     manager.addSystem<S_Weapon>(entities, _tick);
 
     int numClientID = 0;
+    bool startGame = false;
+    int firingSpeed = manager.getSystem<S_Weapon>()->getFiringSpeed();
 
     while (true) {
         _mutex.lock();
@@ -47,37 +50,51 @@ void server::Game::run()
         _mutex.unlock();
         if (interaction_client.size() > 0) {
             for (auto interaction : interaction_client) {
-                // Here, interaction reactions
+                for (auto entity : entities.getAll()) {
+                    if (entity->getType() == "E_Player" && interaction.getClientID() == entity->getIdServer()) {
+                        interaction.setClientID(entity->getId());
+                        break;
+                    }
+                }
                 if (interaction.getConnect() == 1) {
                     printf("New Player with ID : %d\n", interaction.getClientID());
                     std::shared_ptr<E_Player> player = std::make_shared<E_Player>(50, 50, 33.2, 17.2);
-                    entities.add(player, interaction.getClientID());
-                    player->setId(interaction.getClientID());
+                    player->setId(getAvailaibleId());
+                    player->setIdServer(interaction.getClientID());
+                    entities.add(player, player.get()->getId());
+                    setAvailaibleId(player->getId() + 1);
+                    startGame = true;
+                    interaction.setMovement(0);
                 }
-                if (interaction.getShoot() == 1){
+                // if (interaction.getQuit() == 1) {
+                //     printf("Player with ID : %d quit\n", interaction.getClientID());
+                //     entities.remove(interaction.getClientID());
+                //     interaction.setMovement(0);
+                // }
+                if (interaction.getShoot() == 1 && startGame == true){
                     // shoot
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
                     manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
-                if (interaction.getMovement() == 1){
+                if (interaction.getMovement() == 1 && startGame == true){
                     // go up
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.y -= 8;
+                    transform->_position.y -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
-                if (interaction.getMovement() == 2){
+                if (interaction.getMovement() == 2 && startGame == true){
                     // go right
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x += 8;
+                    transform->_position.x += (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
-                if (interaction.getMovement() == 3){
+                if (interaction.getMovement() == 3 && startGame == true){
                     // go down
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.y += 8;
+                    transform->_position.y += (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
-                if (interaction.getMovement() == 4){
+                if (interaction.getMovement() == 4 && startGame == true){
                     // go left
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
-                    transform->_position.x -= 8;
+                    transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
             }
         }

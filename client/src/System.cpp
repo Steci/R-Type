@@ -46,29 +46,24 @@ void S_Renderer::render()
             std::string type = entity->getType();
             if (type == "E_Player") {
                 C_Score *score = Engine::getComponentRef<C_Score>(*entity);
-                score_total += score->_score;
+                score_total += score->score;
             }
             id++;
         }
         std::string scoreText = "Patoune: " + std::to_string(score_total);
         DrawText(scoreText.c_str(), 300, 20, 30, WHITE);
         std::string idServerText = std::to_string(_idServer);
-        DrawText(idServerText.c_str(), 300, 500, 30, WHITE);
+        DrawText(idServerText.c_str(), 20, 550, 30, WHITE);
         _parallax.update();
     EndDrawing();
 }
 
 void S_Renderer::update()
 {
-    if (IsKeyPressed(KEY_ESCAPE))
-        closeWindow();
+    if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose())
+        setStatusGame(true);
     if (!WindowShouldClose())
         render();
-}
-
-void S_Renderer::closeWindow()
-{
-    CloseWindow();
 }
 
 int S_EventManager::EventKeyPressed(std::list<int> keys)

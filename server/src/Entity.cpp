@@ -94,9 +94,17 @@ std::vector<char> E_Player::serializeToVector()
 
 E_Enemy::E_Enemy(int position_x, int position_y, float size_x, float size_y, int type)
 {
+    // 65.25, 132
+    // 33.25, 36
+    // 65.2, 66
+    std::map<int, std::pair<float, float>> enemySize = {
+        {1, {65.25, 132}},
+        {2, {33.25, 36}},
+        {3, {65.2, 66}}
+    };
     addComponent(std::make_shared<C_Transform>(position_x, position_y, size_x, size_y, 0, 0));
     addComponent(std::make_shared<C_Health>(20));
-    addComponent(std::make_shared<C_Hitbox>(65, 66));
+    addComponent(std::make_shared<C_Hitbox>(enemySize[type].first, enemySize[type].second));
     addComponent(std::make_shared<C_EnemyInfo>(type));
 }
 

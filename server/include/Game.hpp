@@ -16,7 +16,9 @@
 #include "Entity.hpp"
 #include "System.hpp"
 
-#define TICK_SPEED 66
+#define TICK_SPEED 30
+#define DESIRED_SPEED 60
+
 
 namespace server
 {
@@ -33,6 +35,9 @@ namespace server
             int getConnect() const {return _connect;};
             void setClientID(int clientID) {_client_id = clientID;};
             void setConnect(int connect) {_connect = connect;};
+            void setMovement(int newMov) {_movement = newMov;};
+            void setGameId(int gameId) {_game_id = gameId;};
+            int getGameId() const {return _game_id;};
             void deserializeInteraction(const std::vector<char>& serializedData) {
                 *this = *reinterpret_cast<const Interaction*>(serializedData.data());
             }
@@ -40,6 +45,7 @@ namespace server
         private:
             int _connect = -1;
             int _client_id = -1;
+            int _game_id = -1;
     };
 
     class Frame : public AFrame{
@@ -73,6 +79,15 @@ namespace server
             std::vector<Frame> getFrames() {_mutex_frame.lock();std::vector<Frame> frame = _frames;_mutex_frame.unlock();return frame;};
             void setGameId(int gameId) {_gameId = gameId;};
             int getGameId() const {return _gameId;};
+            void setLastTickSend(int tick) {_mutex_tick_send.lock();_last_tick_send = tick;_mutex_tick_send.unlock();};
+            int getLastTickSend() const {return _last_tick_send;};
+            void setAvailaibleId(int id) {
+                if (id > 4)
+                    _avalaible_id = -1;
+                else
+                    _avalaible_id = id;
+            };
+            int getAvailaibleId() const {return _avalaible_id;};
             // écrire les fonctions pour vérifier si on a le droit de faire ses commandes
             Game& operator=(const Game& other)
             {
@@ -101,7 +116,9 @@ namespace server
         private:
             int _tickSpeed = TICK_SPEED;
             int _tick;
-            int _gameId = 0;
+            std::mutex _mutex_tick_send;
+            int _last_tick_send = 0;
+            int _gameId;
             std::mutex _mutex;
             std::vector<Interaction> _interaction_client;
             typedef void (*Key)(int button);
@@ -112,5 +129,6 @@ namespace server
             std::mutex _mutex_frame;
             std::vector<Frame> _frames; // ici mettre les frames à display
             void fillFrame(SparseArray<IEntity> entities);
+            int _avalaible_id = 1;
     };
 }

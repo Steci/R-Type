@@ -81,7 +81,8 @@ int server::Network::fillAddr()
     return 0;
 }
 
-void server::Network::run(Game *game)
+// void server::Network::run(Game *game)
+void server::Network::run()
 {
     int client;
     //char buffer[1024];
@@ -89,8 +90,8 @@ void server::Network::run(Game *game)
     Connection connect;
     Interaction interaction;
     std::string message;
-    std::vector<char> buffer(4096);
-    std::vector<Game> games;
+    std::vector<char> buffer(1024);
+    std::vector<std::unique_ptr<Game>> games;
     std::vector<int> idNotUsableGame;
     std::map<int, std::thread> threads;
 
@@ -103,34 +104,102 @@ void server::Network::run(Game *game)
         #ifdef _WIN64
             client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
         #endif
-        updateClients(game);
+        for (int i = 0; i < games.size(); ++i) {
+            // printf("game id = %d\n", games[i]->getGameId());
+            updateClients(&games[i]);
+        }
+        // updateClients(game);
         if (client < 0) {
             continue;
         }
         // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
-        if (id != 0 && id != -1) {
-            // if (interaction.getCreateGame() == 1) {
-            //     for (auto client = _clients.begin(); client != _clients.end(); client++) {
-            //         if (client->getId() == connect.getId() && client->getGameId() == -1) {
-            //             Game gameTmp;
-            //             gameTmp.setGameId(CreateGame(idNotUsableGame));
-            //             idNotUsableGame.push_back(gameTmp.getGameId());
-            //             games.push_back(gameTmp);
-            //             threads[gameTmp.getGameId()] = std::thread(&Game::run, &games.back());
-            //             interaction.setConnect(1);
-            //             games.back().addInteraction(interaction);
-            //             client->setGameId(gameTmp.getGameId());
-            //             break;
-            //         }
-            //     }
-            // }
-            manageClient(buffer, id, game);
-        } else if (id == 0) {
-            interaction.setClientID(connect.getId());
-            interaction.setConnect(1);
-            (*game).addInteraction(interaction);
+        if (id != -1) {
+            for (auto game = games.begin(); game != games.end(); game++) {
+                interaction = manageClient(buffer, id, game->get());
+            }
+            if (interaction.getQuit() == 1) {
+                for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                    if (client->getId() == id) {
+                        _clients.erase(client);
+                        break;
+                    }
+                }
+            }
+            if (connect.getCreateGame() == 1) {
+                for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                    if (client->getId() == connect.getId() && client->getGameId() == -1) {
+                        printf("create game\n");
+                        auto gameTmp = std::make_unique<Game>();
+                        gameTmp->setGameId(CreateGame(idNotUsableGame));
+                        idNotUsableGame.push_back(gameTmp->getGameId());
+                        threads[gameTmp->getGameId()] = std::thread(&Game::run, gameTmp.get());
+                        gameTmp->addInteraction(interaction);
+                        client->setGameId(gameTmp->getGameId());
+                        connect.setConnected(1);
+                        auto data = connect.serializeConnection();
+                        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
+                        connect.setJoinGame(gameTmp->getGameId());
+                        games.push_back(std::move(gameTmp));
+                        break;
+                    }
+                }
+            } else if (connect.getJoinGame() == 1 && connect.getGameId() != -1) {
+                for (auto client = _clients.begin(); client != _clients.end(); client++) {
+                    if (client->getId() == id && client->getGameId() == -1) {
+                        for (auto game = games.begin(); game != games.end(); game++) {
+                            if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() != -1) {
+                                printf("add client to game %d\n", connect.getGameId());
+                                client->setGameId(connect.getGameId());
+                                interaction.setClientID(id);
+                                interaction.setConnect(1);
+                                game->get()->addInteraction(interaction);
+                                connect.setJoinGame(-1);
+                                connect.setConnected(1);
+                                auto data = connect.serializeConnection();
+                                printf("send join game info\n");
+                                sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
+                                break;
+                            } else if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() == -1) {
+                                connect.setJoinGame(-1);
+                                auto data = connect.serializeConnection();
+                                sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
+                                break;
+                            }
+                        }
+                        break;
+                    } else if (client->getId() == id && client->getGameId() != -1) {
+                        connect.setJoinGame(-1);
+                        auto data = connect.serializeConnection();
+                        sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
+                    }
+                }
+            } else if (connect.getJoinGame() == 1 && connect.getGameId() == -1) {
+                std::vector<int> idServers;
+                for (auto game = games.begin(); game != games.end(); game++) {
+                    idServers.push_back(game->get()->getGameId());
+                }
+                connect.setGameIds(idServers);
+                connect.setConnected(0);
+                connect.setJoinGame(2);
+                id = 0;
+                auto data = connect.serializeConnection();
+                printf("send info ids\n");
+                sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
+            }
+            if (id == 0) {
+                interaction.setClientID(connect.getId());
+                interaction.setConnect(1);
+                for(auto game = games.begin(); game != games.end(); game++) {
+                    if (game->get()->getGameId() == connect.getJoinGame()) {
+                        game->get()->addInteraction(interaction);
+                    }
+                }
+            }
         }
+        // } else if (id == 0) {
+        //     // (*game).addInteraction(interaction);
+        // }
     }
 }
 
@@ -147,73 +216,58 @@ int server::Network::CreateGame(std::vector<int> idNotUsableGame)
     return id;
 }
 
-void server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)
+server::Interaction server::Network::manageClient(std::vector<char> buffer, int client_id, Game *game)
 {
     Interaction interaction;
+    bool right_game = false;
 
-    interaction.deserializeInteraction(buffer);
-    interaction.setClientID(client_id);
-    if (interaction.getMovement() != -1) {
-        //printf("Interaction : %i\n", interaction.getMovement());
-        (*game).addInteraction(interaction);
-    }
-}
-
-void server::Network::updateClients(Game *game)
-{
-    std::vector<std::string> functions_clients;
-    std::vector<Frame> frames = (*game).getFrames();
-    Frame frame;
-    bool frame_found = false;
-
-    if (frames.size() == 0 || frames.size() <= _last_tick_send + 1)
-        return;
-    if (frames[_last_tick_send].getTick() == _last_tick_send) {
-        frame_found = true;
-        frame = frames[_last_tick_send + 1];
-    } else {
-        for (auto frame_tmp : frames) {
-            if (frame_tmp.getTick() == _last_tick_send + 1 || frame_tmp.getTick() > _last_tick_send + 1) {
-                frame = frame_tmp;
-                frame_found = true;
-                break;
-            }
+    for (auto client = _clients.begin(); client != _clients.end(); client++) {
+        if (client->getId() == client_id && client->getGameId() == (*game).getGameId()) {
+            right_game = true;
+            break;
         }
     }
-    if (!frame_found)
+    interaction.deserializeInteraction(buffer);
+    interaction.setClientID(client_id);
+    // std::cout << "Interaction: " << interaction.getMovement() << std::endl;
+    if (interaction.getMovement() != -1 && interaction.getCreateGame() != 1 && right_game)
+        (*game).addInteraction(interaction);
+    return interaction;
+}
+
+void server::Network::updateClients(std::unique_ptr<Game> *game)
+{
+    std::vector<std::string> functions_clients;
+    std::vector<Frame> frames = (*game)->getFrames();
+    Frame frame;
+    bool frame_found = false;
+    int last_tick_send = (*game)->getLastTickSend();
+
+    if (frames.size() == 0 || frames.size() <= last_tick_send + 1) {
         return;
-    _last_tick_send = frame.getTick();
+    }
+    for (auto frame_tmp : frames) {
+        if (frame_tmp.getTick() == last_tick_send + 1 || frame_tmp.getTick() > last_tick_send + 1) {
+            frame = frame_tmp;
+            frame_found = true;
+            break;
+        }
+    }
+    if (!frame_found) {
+        return;
+    }
+    (*game)->setLastTickSend(frame.getTick());
     std::vector<char> data = frame.serializeFrame();
 
     int res = 0;
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
-        // if (client->getGameId() == (*game).getGameId()) {
-        //     struct sockaddr_in cli = client->getAddr();
-        //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-        // }
-        struct sockaddr_in cli = client->getAddr();
-        #ifdef __linux__
-            res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-            if (res == -1) {
-                perror("sendto");
-                std::cerr << "Send failure..." << std::endl;
-            }
-        #endif
-        #ifdef _WIN64
-            res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-            if (res == -1) {
-                std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
-            }
-        #endif
+        // printf("client game id = %d, game id = %d, with id %d\n", client->getGameId(), (*game)->getGameId(), client->getId());
+        if (client->getGameId() == (*game)->getGameId()) {
+            // printf("send frame from game %d to client %d\n", (*game)->getGameId(), client->getId());
+            struct sockaddr_in cli = client->getAddr();
+            sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
+        }
     }
-}
-
-void server::Network::manageMessage(std::string message, int client_id, Game *game)
-{
-    std::string messageParse = handleClientMessage(message, client_id);
-    // if (std::strcmp(message.c_str(), messageParse.c_str()) != 0)
-    //     (*game).addFunction(messageParse);
-    std::cout << "Client message: " << message << " end " << std::endl;
 }
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
@@ -263,12 +317,8 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     sockaddr_in cli = _clients.back().getAddr();
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    int res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    #ifdef _WIN64
-        if (res == -1) {
-            std::cerr << "Send failure..." << WSAGetLastError() << std::endl;
-        }
-    #endif
+    // if (connect.getJoinGame() == -1)
+    //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
     // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
     // if (bytesSent == -1)
     //     return 84;

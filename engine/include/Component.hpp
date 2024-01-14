@@ -163,16 +163,16 @@ struct C_Hitbox : public Component {
  * @brief The C_Score struct represents the score of player during the game.
  */
 struct C_Score : public Component {
-    int _score; /**< The amount of score. */
+    int score; /**< The amount of score. */
     C_Score() {
-        _score = 0;
+        score = 0;
     }
     ~C_Score() = default;
     std::vector<char> serializeToVector() const {
-        return std::vector<char>(reinterpret_cast<const char*>(&_score), reinterpret_cast<const char*>(&_score) + sizeof(_score));
+        return std::vector<char>(reinterpret_cast<const char*>(&score), reinterpret_cast<const char*>(&score) + sizeof(score));
     }
     void deserializeFromVector(const std::vector<char>& data) {
-        std::memcpy(&_score, data.data(), sizeof(_score));
+        std::memcpy(&score, data.data(), sizeof(score));
     }
 };
 

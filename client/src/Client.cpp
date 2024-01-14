@@ -11,12 +11,8 @@ int client::Client::run()
 {
     Game game;
 
-    if (_network.connectCommand() == 0) {
-        std::thread gameThread = std::thread(&Game::run, &game);
-        _network.run(&game);
-    } else {
-        return 84;
-    }
+    std::thread gameThread = std::thread(&Game::run, &game);
+    _network.run(&game);
     return 0;
 }
 
