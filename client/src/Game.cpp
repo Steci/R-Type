@@ -115,7 +115,7 @@ namespace client {
             }
         }
         CloseWindow();
-        //_statusGame = true;
+        _statusGame = true;
     }
 
     Game::~Game() {
