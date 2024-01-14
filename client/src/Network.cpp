@@ -98,17 +98,13 @@ void client::Network::run(Game *game, std::thread *gameThread)
 
     while((*game).getMenu()->getStatusMenu() && (*game).getStatusGame() != true) {
         if ((*game).getMenu()->getCreateGame() && connectCommand(game, 1) == 0) {
-            std::cerr << "1" << std::endl;
             (*game).getMenu()->setStatusMenu(false);
         } else if ((*game).getMenu()->getCreateGame()) {
-            std::cerr << "2" << std::endl;
             (*game).getMenu()->setError("Error: Connection failed");
             (*game).getMenu()->setCreateGame(false);
         } else if ((*game).getMenu()->getJoinGame() && connectCommand(game, 0, 1, (*game).getMenu()->getIdServerJoin()) == 0) {
-            std::cerr << "3" << std::endl;
             (*game).getMenu()->setStatusMenu(false);
         } else if ((*game).getMenu()->getJoinGame()) {
-            std::cerr << "4" << std::endl;
             (*game).getMenu()->setError("Error: Connection failed");
             (*game).getMenu()->setJoinGame(false);
         }
@@ -166,7 +162,6 @@ int client::Network::connectCommand(Game *game, int createGame, int joinGame, in
             server = recvfrom(_fd, receiveData.data(), receiveData.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
         #endif
     }
-    std::cout << "Create game stat: " << createGame << " Join game stat: " << joinGame << " Game ID stat: " << gameId << std::endl;
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         if (res == -1) {
@@ -190,12 +185,10 @@ int client::Network::connectCommand(Game *game, int createGame, int joinGame, in
         #endif
         if (server != -1) {
             receiveConnection.deserializeConnection(receiveData);
-            printf("receive connected = %d, join game = %d\n", receiveConnection.getConnected(), receiveConnection.getJoinGame());
             if (receiveConnection.getConnected() == 1 && receiveConnection.getJoinGame() == -1) {
                 std::cout << "Successfully connected with the server." << std::endl;
                 return 0;
             } else if (receiveConnection.getJoinGame() == 2) {
-                printf("get info\n");
                 (*game).getMenu()->setIdGames(receiveConnection.getGameIds());
                 return 1;
             }

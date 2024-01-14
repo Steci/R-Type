@@ -91,6 +91,8 @@ namespace client {
 
                         } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
                             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
+                            if (ennemyInfo == nullptr)
+                                continue;
                             auto it = _ennemy_sprites.find(ennemyInfo->_type);
                             auto infos = it->second;
                             tmpEntity.addComponent(std::make_shared<C_Sprite>());
@@ -170,7 +172,6 @@ namespace client {
             DrawRectangleRec(btnSearch, violet);
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 setJoinGame(true);
-                printf("search\n");
             }
         } else {
             DrawRectangleRec(btnSearch, LIGHTGRAY);
@@ -243,6 +244,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
             C_Score *score = Engine::getComponentRef<C_Score>(player);
 
+            if (transform == nullptr || health == nullptr || hitbox == nullptr || score == nullptr)
+                continue;
             auto playerShared = std::make_shared<E_Player>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y);
             playerShared->setId(id_client);
             Engine::setScore(*playerShared, score->score);
@@ -259,6 +262,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
             C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
 
+            if (transform == nullptr || health == nullptr || hitbox == nullptr || ennemyInfo == nullptr)
+                continue;
             auto enemyShared = std::make_shared<E_Enemy>(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, ennemyInfo->_type);
             int id = _entities.add(enemyShared);
             enemyShared->setId(id);
@@ -273,6 +278,8 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             C_Damage *damage = Engine::getComponentRef<C_Damage>(bullet);
             C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(bullet);
 
+            if (transform == nullptr || damage == nullptr || hitbox == nullptr)
+                continue;
             auto bulletShared = std::make_shared<E_Bullet>(damage->_damage, transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, transform->_velocity.x, transform->_velocity.y, 0);
             int id = _entities.add(bulletShared);
             bulletShared->setId(id);
