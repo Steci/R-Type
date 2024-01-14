@@ -64,7 +64,7 @@ namespace client {
         public:
             Network(std::string serverIP, int serverPort);
             ~Network();
-            void run(Game *game);
+            void run(Game *game, std::thread *gameThread);
             int connectCommand(Game *game, int createGame = -1, int joinGame = -1, int gameId = -1);
         private:
             std::string _serverIP;
