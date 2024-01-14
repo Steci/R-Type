@@ -450,7 +450,11 @@ namespace Engine {
      */
     T* getComponentRef(IEntity& entity)
     {
-        T* component = dynamic_cast<T*>(entity.getComponentOfType(typeid(T)));
+        auto tmp = entity.getComponentOfType(typeid(T));
+        if (tmp == nullptr)
+            return nullptr;
+
+        T* component = dynamic_cast<T*>(tmp);
         if (component) {
             return (component);
         }

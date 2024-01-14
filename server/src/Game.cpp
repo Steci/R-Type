@@ -66,34 +66,44 @@ void server::Game::run()
                     startGame = true;
                     interaction.setMovement(0);
                 }
-                // if (interaction.getQuit() == 1) {
-                //     printf("Player with ID : %d quit\n", interaction.getClientID());
-                //     entities.remove(interaction.getClientID());
-                //     interaction.setMovement(0);
-                // }
+                if (interaction.getQuit() == 1) {
+                    printf("Player with ID : %d quit\n", interaction.getClientID());
+                    entities.remove(interaction.getClientID());
+                    interaction.setMovement(0);
+                }
                 if (interaction.getShoot() == 1 && startGame == true){
                     // shoot
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    if (transform == nullptr)
+                        continue;
                     manager.getSystem<S_Weapon>()->shootPlayer(interaction.getClientID());
                 }
                 if (interaction.getMovement() == 1 && startGame == true){
                     // go up
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    if (transform == nullptr)
+                        continue;
                     transform->_position.y -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
                 if (interaction.getMovement() == 2 && startGame == true){
                     // go right
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    if (transform == nullptr)
+                        continue;
                     transform->_position.x += (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
                 if (interaction.getMovement() == 3 && startGame == true){
                     // go down
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    if (transform == nullptr)
+                        continue;
                     transform->_position.y += (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
                 if (interaction.getMovement() == 4 && startGame == true){
                     // go left
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));
+                    if (transform == nullptr)
+                        continue;
                     transform->_position.x -= (8 * TICK_SPEED) / DESIRED_SPEED;
                 }
             }

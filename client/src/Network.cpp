@@ -142,7 +142,7 @@ int client::Network::bindSocket()
 
 int client::Network::connectCommand(Game *game, int createGame, int joinGame, int gameId)
 {
-    int server;
+    int server = 0;
     auto startTime = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::seconds(5);
     client::Connection connect;
@@ -154,11 +154,14 @@ int client::Network::connectCommand(Game *game, int createGame, int joinGame, in
     std::vector<char> receiveData(1024);
     int res = 0;
 
-    // while (std::chrono::high_resolution_clock::now() - startTime < duration) {
-    //     server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
-    // }
-    // startTime = std::chrono::high_resolution_clock::now();
-    // duration = std::chrono::seconds(5);
+    while (server != -1) {
+        #ifdef __linux__
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), MSG_DONTWAIT, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
+        #ifdef _WIN64
+            server = recvfrom(_fd, receiveData.data(), receiveData.size(), 0, (struct sockaddr *)&_serverAddr, &_serverAddrLen);
+        #endif
+    }
     while (std::chrono::high_resolution_clock::now() - startTime < duration) {
         res = sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr));
         if (res == -1) {
@@ -182,17 +185,15 @@ int client::Network::connectCommand(Game *game, int createGame, int joinGame, in
         #endif
         if (server != -1) {
             receiveConnection.deserializeConnection(receiveData);
-            // printf("receive connected = %d, join game = %d\n", receiveConnection.getConnected(), receiveConnection.getJoinGame());
             if (receiveConnection.getConnected() == 1 && receiveConnection.getJoinGame() == -1) {
                 std::cout << "Successfully connected with the server." << std::endl;
                 return 0;
             } else if (receiveConnection.getJoinGame() == 2) {
-                printf("get info\n");
                 (*game).getMenu()->setIdGames(receiveConnection.getGameIds());
                 return 1;
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     std::cerr << "Error: Connection timeout" << std::endl;
     return 84;
@@ -248,7 +249,6 @@ void client::Network::checkInteraction(Game *game)
         if (interactions[0].getQuit() == 1) {
             _isRunning = false;
         }
-            //exit(0);
         game->deleteInteraction(1);
     }
 }
