@@ -57,6 +57,7 @@ void server::Game::run()
                     }
                 }
                 if (interaction.getConnect() == 1) {
+                    _mutex.lock();
                     printf("New Player with ID : %d\n", interaction.getClientID());
                     std::shared_ptr<E_Player> player = std::make_shared<E_Player>(50, 50, 33.2, 17.2);
                     player->setId(getAvailaibleId());
@@ -65,6 +66,7 @@ void server::Game::run()
                     setAvailaibleId(player->getId() + 1);
                     startGame = true;
                     interaction.setMovement(0);
+                    _mutex.unlock();
                 }
                 if (interaction.getQuit() == 1) {
                     printf("Player with ID : %d quit\n", interaction.getClientID());
