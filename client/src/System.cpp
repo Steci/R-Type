@@ -58,15 +58,10 @@ void S_Renderer::render()
 
 void S_Renderer::update()
 {
-    if (IsKeyPressed(KEY_ESCAPE))
-        closeWindow();
+    if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose())
+        setStatusGame(true);
     if (!WindowShouldClose())
         render();
-}
-
-void S_Renderer::closeWindow()
-{
-    CloseWindow();
 }
 
 int S_EventManager::EventKeyPressed(std::list<int> keys)

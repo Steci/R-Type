@@ -34,7 +34,7 @@ void server::Game::run()
 
     manager.addSystem<S_Collision>(entities);
     manager.addSystem<S_EnemyAI>(entities);
-    // manager.addSystem<S_Spawner>(entities);
+    manager.addSystem<S_Spawner>(entities);
     manager.addSystem<S_Weapon>(entities, _tick);
 
     int numClientID = 0;
@@ -66,6 +66,11 @@ void server::Game::run()
                     startGame = true;
                     interaction.setMovement(0);
                 }
+                // if (interaction.getQuit() == 1) {
+                //     printf("Player with ID : %d quit\n", interaction.getClientID());
+                //     entities.remove(interaction.getClientID());
+                //     interaction.setMovement(0);
+                // }
                 if (interaction.getShoot() == 1 && startGame == true){
                     // shoot
                     C_Transform *transform = Engine::getComponentRef<C_Transform>(entities.get(interaction.getClientID()));

@@ -32,6 +32,7 @@ namespace client {
         int withSizeY = 600;
         int fps = 60;
         bool statusMenu = _menu.getStatusMenu();
+        bool statusOpen = false;
 
         manager.addSystem<S_Renderer>(withSizeX, withSizeY, fps, "R-TYPE", "./assets/Purple/T_PurpleBackground_Version1_Layer");
         manager.addSystem<S_EventManager>();
@@ -39,10 +40,13 @@ namespace client {
         createTextures();
         // auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
         // PlayMusicStream(backgroundMusic->second);
-        while (1) {
+        while (manager.getSystem<S_Renderer>()->getStatusGame() != true) {
             if (statusMenu == true) {
                _menu.render(withSizeX);
                statusMenu = _menu.getStatusMenu();
+                if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose()) {
+                    manager.getSystem<S_Renderer>()->setStatusGame(true);
+                }
             } else {
                 manager.getSystem<S_Renderer>()->clearEntities();
                 mov = manager.getSystem<S_EventManager>()->getMovement();
@@ -100,21 +104,11 @@ namespace client {
                 manager.update();
             }
         }
+        CloseWindow();
+        _statusGame = true;
     }
 
     Game::~Game() {
-        for (auto it = _ennemy_sprites.begin(); it != _ennemy_sprites.end(); ++it) {
-            UnloadTexture(it->second._texture);
-            UnloadImage(it->second._image);
-        }
-        for (auto it = _player_sprites.begin(); it != _player_sprites.end(); ++it) {
-            UnloadTexture(it->second._texture);
-            UnloadImage(it->second._image);
-        }
-        for (auto it = _utils_sprites.begin(); it != _utils_sprites.end(); ++it) {
-            UnloadTexture(it->second._texture);
-            UnloadImage(it->second._image);
-        }
     }
 
     void Game::infoInteraction(int mov, int shoot, int quit, int createGame)
@@ -135,85 +129,67 @@ namespace client {
     void Menu::render(int screenWidth)
     {
         Rectangle btnCreate = { screenWidth/2 - 100, 100, 200, 50 };
-        Rectangle btnJoin = { screenWidth/2 - 100, 200, 200, 50 };
-        Rectangle btnSearch = { screenWidth/2 - 100, 300, 200, 50 };
+        Rectangle btnSearch = { screenWidth/2 - 100, 200, 200, 50 };
 
         std::string errorMessage = "";
 
         std::vector<int> nbrPlayer;
 
-        int selectedParty = -1;
         int hoveredParty = -1;
 
         Color violet = { 128, 0, 128, 255 };
 
-        while (1) {
-            nbrPlayer = getIdGames();
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-            if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
-                DrawRectangleRec(btnCreate, violet);
-                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    setCreateGame(true);
-                    if(errorMessage.empty()) {
-                        setStatusMenu(false);
-                        return;
-                    }
+        nbrPlayer = getIdGames();
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        if (CheckCollisionPointRec(GetMousePosition(), btnCreate)) {
+            DrawRectangleRec(btnCreate, violet);
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                setCreateGame(true);
+                if(errorMessage.empty()) {
+                    setStatusMenu(false);
+                    return;
                 }
-            } else {
-                DrawRectangleRec(btnCreate, LIGHTGRAY);
             }
-            DrawText("Create new part", btnCreate.x + 10, btnCreate.y + 10, 20, BLACK);
-
-            if (CheckCollisionPointRec(GetMousePosition(), btnJoin)) {
-                DrawRectangleRec(btnJoin, GRAY);
-                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedParty != -1) {
-                    if(errorMessage.empty()) {
-                        setIdServerJoin(selectedParty);
-                        setStatusMenu(false);
-                        return;
-                    }
-                }
-            } else {
-                DrawRectangleRec(btnJoin, LIGHTGRAY);
-            }
-            DrawText("Join part", btnJoin.x + 10, btnJoin.y + 10, 20, BLACK);
-
-            if (CheckCollisionPointRec(GetMousePosition(), btnSearch)) {
-                DrawRectangleRec(btnSearch, violet);
-                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    setJoinGame(true);
-                    printf("search\n");
-                }
-            } else {
-                DrawRectangleRec(btnSearch, LIGHTGRAY);
-            }
-            DrawText("Search part", btnSearch.x + 10, btnSearch.y + 10, 20, BLACK);
-
-            if (!errorMessage.empty()) {
-                DrawText(errorMessage.c_str(), 10, 10, 20, RED);
-            }
-
-            for (int i = 0; i < nbrPlayer.size(); i++) {
-                Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
-                if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
-                    hoveredParty = i;
-                    DrawRectangleRec(partyRect, LIGHTGRAY);
-                    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                        selectedParty = i;
-                        setIdServerJoin(nbrPlayer[i]);
-                        setJoinGame(true);
-                    }
-                } else {
-                    DrawRectangleRec(partyRect, WHITE);
-                }
-                if (selectedParty == i) {
-                    DrawRectangleLinesEx(partyRect, 2, RED);
-                }
-                DrawText(std::to_string(nbrPlayer[i]).c_str(), partyRect.x + 10, partyRect.y + 10, 20, BLACK);
-            }
-            EndDrawing();
+        } else {
+            DrawRectangleRec(btnCreate, LIGHTGRAY);
         }
+        DrawText("Create new part", btnCreate.x + 10, btnCreate.y + 10, 20, BLACK);
+
+        if (CheckCollisionPointRec(GetMousePosition(), btnSearch)) {
+            DrawRectangleRec(btnSearch, violet);
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                setJoinGame(true);
+                printf("search\n");
+            }
+        } else {
+            DrawRectangleRec(btnSearch, LIGHTGRAY);
+        }
+        DrawText("Search part", btnSearch.x + 10, btnSearch.y + 10, 20, BLACK);
+
+        if (!errorMessage.empty()) {
+            DrawText(errorMessage.c_str(), 10, 10, 20, RED);
+        }
+
+        for (int i = 0; i < nbrPlayer.size(); i++) {
+            Rectangle partyRect = { screenWidth/2 - 100, 300 + 60 * i, 200, 50 };
+            if (CheckCollisionPointRec(GetMousePosition(), partyRect)) {
+                hoveredParty = i;
+                DrawRectangleRec(partyRect, LIGHTGRAY);
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    setSelectedParty(i);
+                    setIdServerJoin(getSelectedParty());
+                    setJoinGame(true);
+                }
+            } else {
+                DrawRectangleRec(partyRect, WHITE);
+            }
+            if (getSelectedParty() == i) {
+                DrawRectangleLinesEx(partyRect, 2, RED);
+            }
+            DrawText(std::to_string(nbrPlayer[i]).c_str(), partyRect.x + 10, partyRect.y + 10, 20, BLACK);
+        }
+        EndDrawing();
     }
 }
 
