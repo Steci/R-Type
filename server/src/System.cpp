@@ -64,11 +64,11 @@ void S_Collision::update()
 
                         toRemove.push_back(entity1->getId());
                         toRemove.push_back(entity2->getId());
-                        if (enemyInfo->_type == 1) {
+                        if (enemyInfo && enemyInfo->_type == 1 && score) {
                             score->score += 10;
-                        } else if (enemyInfo->_type == 2) {
+                        } else if (enemyInfo && enemyInfo->_type == 2 && score) {
                             score->score += 20;
-                        } else {
+                        } else if (score) {
                             score->score += 30;
                         }
                         Engine::setScore(_sparseEntities.get(idCreator), score->score);
