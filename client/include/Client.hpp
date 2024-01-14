@@ -48,6 +48,5 @@ namespace client {
             int run();
         private:
             Network _network;
-            // Game _game;
     };
 }

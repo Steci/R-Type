@@ -52,7 +52,6 @@ int server::Network::fillSocket()
         _fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (_fd == INVALID_SOCKET) {
             std::cerr << "Error: socket creation failed" << std::endl;
-            printf("%d\n", WSAGetLastError());
             closesocket(_fd);
             WSACleanup();
             return(84);
@@ -81,11 +80,9 @@ int server::Network::fillAddr()
     return 0;
 }
 
-// void server::Network::run(Game *game)
 void server::Network::run()
 {
     int client;
-    //char buffer[1024];
     int id = 0;
     Connection connect;
     Interaction interaction;
@@ -105,14 +102,11 @@ void server::Network::run()
             client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
         #endif
         for (int i = 0; i < games.size(); ++i) {
-            // printf("game id = %d\n", games[i]->getGameId());
             updateClients(&games[i]);
         }
-        // updateClients(game);
         if (client < 0) {
             continue;
         }
-        // std::string resData = convert.deserialize(buffer);
         auto[id, connect] = handleClient(buffer);
         if (id != -1) {
             for (auto game = games.begin(); game != games.end(); game++) {
@@ -129,7 +123,6 @@ void server::Network::run()
             if (connect.getCreateGame() == 1) {
                 for (auto client = _clients.begin(); client != _clients.end(); client++) {
                     if (client->getId() == connect.getId() && client->getGameId() == -1) {
-                        printf("create game\n");
                         auto gameTmp = std::make_unique<Game>();
                         gameTmp->setGameId(CreateGame(idNotUsableGame));
                         idNotUsableGame.push_back(gameTmp->getGameId());
@@ -149,8 +142,6 @@ void server::Network::run()
                     if (client->getId() == id && client->getGameId() == -1) {
                         for (auto game = games.begin(); game != games.end(); game++) {
                             if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() != -1) {
-                                printf("add client to game %d\n", connect.getGameId());
-                                std::cout << "NEW CLIENT ID " << id << std::endl;
                                 client->setGameId(connect.getGameId());
                                 interaction.setClientID(id);
                                 interaction.setConnect(1);
@@ -158,7 +149,6 @@ void server::Network::run()
                                 connect.setJoinGame(-1);
                                 connect.setConnected(1);
                                 auto data = connect.serializeConnection();
-                                printf("send join game info\n");
                                 sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
                                 break;
                             } else if (game->get()->getGameId() == connect.getGameId() && game->get()->getAvailaibleId() == -1) {
@@ -185,7 +175,6 @@ void server::Network::run()
                 connect.setJoinGame(2);
                 id = 0;
                 auto data = connect.serializeConnection();
-                printf("send info ids\n");
                 sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&_clientAddr, sizeof(_clientAddr));
             }
             if (id == 0) {
@@ -198,9 +187,6 @@ void server::Network::run()
                 }
             }
         }
-        // } else if (id == 0) {
-        //     // (*game).addInteraction(interaction);
-        // }
     }
 }
 
@@ -230,7 +216,6 @@ server::Interaction server::Network::manageClient(std::vector<char> buffer, int 
     }
     interaction.deserializeInteraction(buffer);
     interaction.setClientID(client_id);
-    // std::cout << "Interaction: " << interaction.getMovement() << std::endl;
     if (interaction.getMovement() != -1 && interaction.getCreateGame() != 1 && right_game)
         (*game).addInteraction(interaction);
     return interaction;
@@ -261,9 +246,7 @@ void server::Network::updateClients(std::unique_ptr<Game> *game)
     std::vector<char> data = frame.serializeFrame();
 
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
-        // printf("client game id = %d, game id = %d, with id %d\n", client->getGameId(), (*game)->getGameId(), client->getId());
         if (client->getGameId() == (*game)->getGameId()) {
-            // printf("send frame from game %d to client %d\n", (*game)->getGameId(), client->getId());
             struct sockaddr_in cli = client->getAddr();
             sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
         }
@@ -307,23 +290,16 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
 {
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
-            // std::cout << "Client already connected" << std::endl;
             connect.setId(client->getId());
             return std::make_tuple(client->getId(), connect);
         }
     }
     connect.setId(_clients.size() + 1);
-    printf("Id Client = %ld\n", _clients.size() + 1);
     _clients.push_back(Client(_clientAddr, _clients.size() + 1, "Player " + std::to_string(_clients.size() + 1)));
     sockaddr_in cli = _clients.back().getAddr();
     cli = cli;
     connect.setConnected(1);
     std::vector<char> data = connect.serializeConnection();
-    // if (connect.getJoinGame() == -1)
-    //     sendto(_fd, data.data(), data.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-    // ssize_t bytesSent = sendto(_fd, "Welcome to the server", 22, 0, (struct sockaddr *)&cli, sizeof(cli));
-    // if (bytesSent == -1)
-    //     return 84;
     std::cout << "New client connected" << std::endl;
     return std::make_tuple(0, connect);
 }
@@ -335,13 +311,8 @@ std::tuple<int, server::Connection> server::Network::handleClient(std::vector<ch
         std::cerr << "Error: ip or port recuperation failed" << std::endl;
         return std::make_tuple(-1, connect);
     }
-    // std::cout << "Client IP: " << inet_ntoa(_clientAddr.sin_addr) << std::endl;
-    // std::cout << "Client port: " << ntohs(_clientAddr.sin_port) << std::endl;
     connect.deserializeConnection(buffer);
     return handleNewConnection(connect);
-    // std::vector<Client> disconnectedClients;
-
-    // return handleNewConnection();
 }
 
 int server::Network::commandKill(std::string data)
@@ -352,7 +323,6 @@ int server::Network::commandKill(std::string data)
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         struct sockaddr_in cli = client->getAddr();
         sendto(_fd, dataTest.data(), dataTest.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
-        // TODO: Error handling if it didn't send
     }
     _clients.clear();
     return 0;
@@ -399,10 +369,8 @@ int server::Network::commandPing(std::string data, int client_id) const
             struct sockaddr_in cli = client->getAddr();
             sendto(_fd, pingRes.c_str(), pingRes.size(), 0, (struct sockaddr *)&cli, sizeof(cli));
            return 0;
-            // Return success
         }
     }
-    // TODO: Error handling if it didn't send
     return 0;
 }
 

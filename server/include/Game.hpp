@@ -300,24 +300,18 @@ namespace server
              */
             Game& operator=(const Game& other)
             {
-                // Self-assignment detection
                 if (this == &other)
                     return *this;
 
-                // Copy simple fields
                 _tickSpeed = other._tickSpeed;
                 _tick = other._tick;
                 _gameId = other._gameId;
 
-                // For vectors and maps, you can typically use the default copy assignment
                 _interaction_client = other._interaction_client;
                 _functions = other._functions;
                 _functions_client = other._functions_client;
                 _fonctions_map = other._fonctions_map;
                 _frames = other._frames;
-
-                // Note: mutexes and other synchronization primitives should not be copied.
-                // You may need to think about how to handle them in the context of your program.
 
                 return *this;
             }
@@ -336,7 +330,7 @@ namespace server
             std::mutex _mutex_client;
             std::map<std::string, functionsExecution> _fonctions_map;
             std::mutex _mutex_frame;
-            std::vector<Frame> _frames; // ici mettre les frames à display
+            std::vector<Frame> _frames;
 
             /**
              * @brief Fill the frame with the entities

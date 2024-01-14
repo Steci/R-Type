@@ -308,7 +308,6 @@ namespace server {
              * @return std::string is the message handled
              */
             std::string handleClientMessage(std::string message, int client_id);
-            // void updateClients(Game *game);
 
             /**
              * @brief Update the clients

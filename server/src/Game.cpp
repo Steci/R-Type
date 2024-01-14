@@ -25,7 +25,7 @@ bool findPlayerID(std::vector<std::pair<IEntity *, int>> playerList, int playerI
 
 void server::Game::run()
 {
-    printf("Game started\n");
+    std::cout << "Game started" << std::endl;
     srand(time(NULL));
 
     SystemManager manager;
@@ -50,14 +50,9 @@ void server::Game::run()
         _mutex.unlock();
         if (interaction_client.size() > 0) {
             for (auto interaction : interaction_client) {
-                for (auto entity : entities.getAll()) {
-                    if (entity->getType() == "E_Player" && interaction.getClientID() == entity->getIdServer()) {
-                        interaction.setClientID(entity->getId());
-                        break;
-                    }
-                }
                 if (interaction.getConnect() == 1) {
-                    printf("New Player with ID : %d\n", interaction.getClientID());
+                    _mutex.lock();
+                    std::cout << "New Player with ID: " << interaction.getClientID() << std::endl;
                     std::shared_ptr<E_Player> player = std::make_shared<E_Player>(50, 50, 33.2, 17.2);
                     player->setId(getAvailaibleId());
                     player->setIdServer(interaction.getClientID());
@@ -65,9 +60,17 @@ void server::Game::run()
                     setAvailaibleId(player->getId() + 1);
                     startGame = true;
                     interaction.setMovement(0);
+                    _mutex.unlock();
+                    continue;
+                }
+                for (auto entity : entities.getAll()) {
+                    if (entity->getType() == "E_Player" && interaction.getClientID() == entity->getIdServer()) {
+                        interaction.setClientID(entity->getId());
+                        break;
+                    }
                 }
                 if (interaction.getQuit() == 1) {
-                    printf("Player with ID : %d quit\n", interaction.getClientID());
+                    std::cout << "Player with ID : " << interaction.getClientID() << " quit" << std::endl;
                     entities.remove(interaction.getClientID());
                     interaction.setMovement(0);
                 }
@@ -155,8 +158,6 @@ std::vector<char> server::Frame::serializeFrame()
 
     auto bulletData = _entities.serializeToVector("E_Bullet");
     data.insert(data.end(), bulletData.begin(), bulletData.end());
-    // if (data.size() > 4)
-    //     printf("\n");
 
     std::string endMarker = "END";
     data.insert(data.end(), endMarker.begin(), endMarker.end());

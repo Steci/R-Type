@@ -44,8 +44,14 @@ namespace client {
         manager.addSystem<S_EventManager>();
         manager.addSystem<S_AudioManager>();
         createTextures();
-        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
-        PlayMusicStream(backgroundMusic->second);
+        auto& audioManager = *manager.getSystem<S_AudioManager>();
+        auto& backgroundMusicMap = audioManager.getBackgroundMusic();
+        auto themeIterator = backgroundMusicMap.find("THEME");
+
+        if (themeIterator != backgroundMusicMap.end()) {
+            auto& themeMusic = themeIterator->second;
+            PlayMusicStream(themeMusic);
+        }
         while (manager.getSystem<S_Renderer>()->getStatusGame() != true) {
             if (statusMenu == true) {
                _menu.render(withSizeX);
@@ -61,10 +67,15 @@ namespace client {
                 quit = manager.getSystem<S_EventManager>()->getQuit();
                 if (mov != 0 || shoot != 0 || quit != 0) {
                     if (shoot != 0) {
-                        auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-                        PlaySound(effect->second);
+                      auto& audioManager = *manager.getSystem<S_AudioManager>();
+                        auto& soundEffectMap = audioManager.getSoundEffect();
+                        auto shootIterator = soundEffectMap.find("SHOOT");
+                        if (shootIterator != soundEffectMap.end()) {
+                            auto& shootSound = shootIterator->second;
+                            PlaySound(shootSound);
+                        }
                     }
-                    infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
+                    infoInteraction(mov, shoot, quit, 0);
                 }
                 _mutex_frames.lock();
                 if (_frames.size() != 0) {
@@ -73,7 +84,8 @@ namespace client {
                     _frames.pop_back();
                 }
                 _mutex_frames.unlock();
-                UpdateMusicStream(backgroundMusic->second);
+                auto& themeMusic = themeIterator->second;
+                UpdateMusicStream(themeMusic);
                 auto &entities = current_frame.getEntities();
                 const auto& sparseIds = entities.getSparse();
 
@@ -127,7 +139,6 @@ namespace client {
     {
         Interaction inter;
 
-        // printf("Info with mov: %d, shoot: %d, quit: %d\n", mov, shoot, quit);
         _mutex_frames.lock();
         _mutex_interactions.lock();
         if (_frames.size() != 0 && _interactions.size() == 0) {
@@ -215,16 +226,13 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
 
     std::memcpy(&uwu, serializedData.data() + offset, sizeof(uwu));
     offset += sizeof(uwu);
-    //printf("uwu = %d\n", uwu);
 
     if (std::distance(it, serializedData.end()) >= sizeof(_tick)) {
         std::memcpy(&_tick, &(*it), sizeof(_tick));
-        //printf("tick = %d\n", _tick);
         it += sizeof(_tick);
     }
     if (std::distance(it, serializedData.end()) >= sizeof(_gameId)) {
         _gameId = *reinterpret_cast<const int*>(&(*it));
-        // printf("serverId = %d\n", _serverId);
         it += sizeof(_gameId);
     }
     while (it < serializedData.end() && !isEndMarker(it, serializedData)) {
@@ -252,7 +260,6 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             int id = _entities.add(playerShared, id_client);
             id_client += 1;
         } else if (entityType == "E_Enemy") {
-            // printf("deserialize enemy\n");
             size_t size_enemy = sizeof(C_Transform) + sizeof(C_Health) + sizeof(C_Hitbox) + sizeof(C_EnemyInfo);
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
             it += sizeof(size_enemy);

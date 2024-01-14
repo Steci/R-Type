@@ -238,23 +238,6 @@ void E_Enemy::render()
             int maxYframe = animationInfo->_maxYframe;
 
             Rectangle frameRec = { 0.0f, 0.0f, (float)xSize, (float)ySize };
-
-            // animationInfo->_framesCounter++;
-            // printf("Speed = %d\n", animationInfo->_speed);
-            // printf("60/speed = %d\n", (60 / animationInfo->_speed));
-            // printf("animationInfo->_framesCounter = %d\n", animationInfo->_framesCounter);
-            // if (animationInfo->_framesCounter >= (60 / animationInfo->_speed)) {
-            //     printf("animationInfo->_framesCounter = %d\n", animationInfo->_framesCounter);
-            //     animationInfo->_framesCounter = 0;
-            //     animationInfo->_currentFrame++;
-
-            //     printf("animationInfo->_currentFrame = %d\n", animationInfo->_currentFrame);
-            //     if (animationInfo->_currentFrame > maxXframe) {
-            //         animationInfo->_currentFrame = 0;
-            //     }
-            //     frameRec.x = (float)animationInfo->_currentFrame * (float)xSize;
-            //     printf("frameRec.x = %f\n", frameRec.x);
-            // }
             DrawTextureRec(sprite, frameRec, {(float)xPos, (float)yPos }, WHITE);
         }
     }

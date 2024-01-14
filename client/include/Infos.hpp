@@ -48,15 +48,5 @@ struct Infos {
      * @brief Destroy the Infos object
      * 
      */
-    ~Infos() {
-        //printf("Merde\n");
-        //if (_image.data != nullptr) {
-        //    printf("Merde1\n");
-        //    UnloadImage(_image);
-        //}
-        //if (_texture.id != 0) {
-        //    printf("Merde2\n");
-        //    UnloadTexture(_texture);
-        //}
-    }
+    ~Infos() = default;
 };

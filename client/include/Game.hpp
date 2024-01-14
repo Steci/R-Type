@@ -384,11 +384,6 @@ namespace client {
              * @return std::vector<Frame> is the frames
              */
             bool getStatusGame() {return _statusGame;};
-            // à faire pour rajouter les frame à display
-            // void addFrame(Frame frame) {_mutex_frame.lock();_frames.push_back(frame);_mutex_frame.unlock();};
-
-            // il faut refaire toutes ses fonctions pour juste qu'elles récupère l'interraction et qu'elle l'envoi au serv via la class en dessous
-            // pour remplir _interaction il faut lock _mutex puis l'unlock !!!!! si tu oublie l'un des 2 c'est la merde
 
         private:
             bool _statusGame = false;
@@ -399,9 +394,8 @@ namespace client {
             std::map<int, Infos> _ennemy_sprites;
             std::map<int, Infos> _player_sprites;
             std::map<int, Infos> _utils_sprites;
-            // à faire pour récup les frame du jeu à display
             std::mutex _mutex_frames;
-            std::vector<Frame> _frames; // ici mettre les frames à display
+            std::vector<Frame> _frames;
 
             /**
              * @brief Get the Frames object

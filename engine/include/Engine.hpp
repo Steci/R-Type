@@ -59,7 +59,6 @@ class SparseArray {
                 sparse[id] = dense.size();
                 dense.push_back(std::move(element));
             } else {
-                // Replace if already exists
                 dense[sparse[id]] = std::move(element);
             }
             return id;
@@ -75,7 +74,6 @@ class SparseArray {
          */
         void remove(int id) {
             assert(id < sparse.size() && "Invalid ID");
-            // Remove all traces of the element in dense, sparse, and indices!
             int index = sparse[id];
             std::vector<std::shared_ptr<T>> temp;
             for (auto &element : dense)
@@ -152,6 +150,6 @@ class SparseArray {
         }
 
     private:
-        std::vector<std::shared_ptr<T>> dense; // Stores actual elements
-        std::vector<int> sparse; // Maps IDs to indices in 'dense'
+        std::vector<std::shared_ptr<T>> dense;
+        std::vector<int> sparse;
 };
