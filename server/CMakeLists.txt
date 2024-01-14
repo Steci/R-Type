@@ -21,5 +21,5 @@ target_link_libraries(server_build PRIVATE EngineLib)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
 
 add_custom_command(TARGET server_build POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server> ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:server_build> ${CMAKE_SOURCE_DIR}
 )
