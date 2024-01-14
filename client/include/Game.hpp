@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/Network.hpp"
+#include "Engine.hpp"
+#include "EngineNetwork.hpp"
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -23,57 +23,34 @@
 
 namespace client {
 
-    /**
-     * @brief The Interaction sends information to the server.
-    */
     class Interaction : public AInteraction{
         public:
-
-            /**
-             * @brief the constructor of the class Interaction in default params.
-             *
-            */
             Interaction() {
                 _movement = 0;
                 _shoot = 0;
                 _quit = 0;
                 _createGame = 0;
             };
-
-            /**
-             * @brief the destructor of the class Interaction by default.
-             *
-            */
             ~Interaction() {};
-
-            /**
-             * @brief allows you to serialize data in the form of std::vector<char>.
-             *
-             * @return std::vector<char> which will be sent to the server.
-            */
             std::vector<char> serializeInteraction() {
                 const char* data = reinterpret_cast<const char*>(this);
                 return std::vector<char>(data, data + sizeof(Interaction));
             }
+            int getClientID() const {return 0;};
+            int getConnect() const {return 0;};
+            void setClientID(int clientID) {};
+            void setConnect(int connect) {};
+            void deserializeInteraction(const std::vector<char>& serializedData) {};
+        private:
+            int _connect = -1;
+            int _client_id = -1;
     };
 
-    /**
-     * @brief The Frame receives information to the server.
-    */
     class Frame : public AFrame {
         public:
-            /**
-             * @brief the constructor of the class Frame in default.
-             *
-            */
-            Frame() {};
-
-            /**
-             * @brief the destructor of the class Frame by default.
-             *
-            */
-            ~Frame() {};
-
+            Frame() = default;
+            ~Frame() = default;
+            std::vector<char> serializeFrame();
             int getTick() const {return _tick;};
             int getIDServer() const {return _gameId;};
             void clearEntities() {_entities.clearEntities();};
@@ -129,13 +106,21 @@ namespace client {
         typedef void (Game::*functionsExecution)(int, SystemManager, SparseArray<IEntity>&);
 
         public:
-            Game() {
-                _tick = 0;
+            Game(): _tickSpeed(TICK_SPEED), _tick(0) {
             };
             ~Game();
             void run();
             std::vector<Interaction> getInteractions() {_mutex_interactions.lock();std::vector<Interaction> tmp = _interactions;_mutex_interactions.unlock();return tmp;};
-            void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
+            void deleteInteraction(int nbr_interaction) {
+                _mutex_interactions.lock();
+                if (!_interactions.empty() && nbr_interaction < _interactions.size()) {
+                    _interactions.erase(_interactions.begin() + nbr_interaction);
+                } else {
+                    _interactions.clear();
+                }
+                _mutex_interactions.unlock();
+            };
+            //void deleteInteraction(int nbr_interaction) {_mutex_interactions.lock();_interactions.erase(_interactions.begin() + nbr_interaction);_mutex_interactions.unlock();};
             void addFrame(Frame frame) {_mutex_frames.lock();_frames.push_back(frame);_mutex_frames.unlock();};
             void createTextures();
             Menu *getMenu() {return &_menu;};

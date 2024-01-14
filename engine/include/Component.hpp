@@ -15,7 +15,7 @@
 #include <list>
 #include <cstring>
 
-#include "Utils.hpp"
+#include "EngineUtils.hpp"
 
 /**
  * @brief The base class for all components in the engine.
@@ -38,7 +38,7 @@ struct C_Transform : public Component {
     Vec2 _size; /**< The size of the entity. */
     Vec2 _velocity; /**< The velocity of the entity. */
     int _animation; /**< The animation of the entity. */
-    C_Transform(int position_x, int position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
+    C_Transform(float position_x, float position_y, float size_x, float size_y, float velocity_x, float velocity_y) {
         _position = {position_x, position_y};
         _size = {size_x, size_y};
         _velocity.x = velocity_x;
@@ -138,7 +138,7 @@ struct C_Hitbox : public Component {
     Vec2 _size; /**< The size of the collision box of this entity. */
     int _time; /**< The entity key state duration. */
     int _status; /**< The status of the entity's collision box. */
-    C_Hitbox(int x, int y) {
+    C_Hitbox(float x, float y) {
         _size = {x, y};
         _time = 10;
         _status = 0;
@@ -198,7 +198,7 @@ struct C_AnimationInfo : public Component {
     int _currentFrame = 0;
     int _speed;
     C_AnimationInfo(int x, int y, int maxXframe, int maxYframe, int speed) {
-        _size = {x, y};
+        _size = {static_cast<float>(x), static_cast<float>(y)};
         _maxXframe = maxXframe;
         _maxYframe = maxYframe;
         _speed = speed;

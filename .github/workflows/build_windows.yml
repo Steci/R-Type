@@ -1,0 +1,21 @@
+name: Build on Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Configure with CMake
+      run: cmake .
+
+    - name: Build with CMake
+      run: cmake --build .

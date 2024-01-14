@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../engine/include/Engine.hpp"
-#include "../../engine/include/System.hpp"
+#include "Engine.hpp"
+#include "EngineSystem.hpp"
 
 /**
  * @brief The E_Bullet class is the bullet entity.

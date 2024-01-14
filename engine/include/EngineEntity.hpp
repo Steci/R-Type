@@ -156,7 +156,7 @@ class Entity : public IEntity {
          *
          * @return The serialized entity as a vector of characters.
          */
-        std::vector<char> serializeToVector() override {};
+        std::vector<char> serializeToVector() override {return std::vector<char>();};
 
         /**
          * @brief Returns the type of the entity.

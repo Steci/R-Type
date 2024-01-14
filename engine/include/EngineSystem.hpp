@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "Entity.hpp"
+#include "EngineEntity.hpp"
 #include "Engine.hpp"
 #include <map>
 

@@ -58,7 +58,7 @@ int main(void)
     const int screenHeight = 450;
 
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - image loading");
-    
+
     SparseArray<IEntity> arraysE;
     std::string tmp = "../assets/placeholder.png";
 

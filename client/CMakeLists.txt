@@ -1,41 +1,27 @@
-cmake_minimum_required(VERSION 3.10)
-project(client_build)
+project(client)
 
-set(CMAKE_C_COMPILER "gcc")
-set(CMAKE_CXX_COMPILER "g++")
+file(GLOB CLIENT_SOURCES
+    "src/Client.cpp"
+    "src/Entity.cpp"
+    "src/ErrorHandling.cpp"
+    "src/Game.cpp"
+    "src/Interaction.cpp"
+    "src/Network.cpp"
+    "src/System.cpp"
+    "main.cpp"
+)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  add_compile_options(-Wall -Wextra -g3)
-endif(CMAKE_COMPILER_IS_GNUCXX)
+add_executable(client_build ${CLIENT_SOURCES})
 
-if (WIN32)
-    add_compile_options(-Wall)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "./build/")
-    #set_target_properties (indie_studio.exe PROPERTIES PREFIX "./build/")
-endif(WIN32)
+list(APPEND CLIENT_EXTRA_INCLUDES "include")
+target_include_directories(client_build PUBLIC ${CLIENT_EXTRA_INCLUDES})
 
-# ADD_LIBRARY(MyStaticLib STATIC)
+target_link_libraries(client_build PRIVATE raylib)
+target_link_libraries(client_build PRIVATE EngineLib)
 
-set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT} CACHE STRING "Vcpkg toolchain file")
-
-set(CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "CMake generator")
-
-# find_package(sys REQUIRED)
-
-# find_package(netinet REQUIRED)
-
-file(GLOB SOURCES "main.cpp" "src/*.cpp" "${CMAKE_SOURCE_DIR}/engine/src/*.cpp")
-add_executable(client_build ${SOURCES})
-
-list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/include")
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-target_include_directories(client_build PUBLIC ${EXTRA_INCLUDES})
-target_link_libraries(client_build pthread)
-target_link_libraries(client_build raylib)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
 
 add_custom_command(TARGET client_build POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
 )
+

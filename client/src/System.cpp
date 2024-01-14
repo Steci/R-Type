@@ -35,8 +35,10 @@ void S_Renderer::render()
 
         // Parallax Draw
         for (int i = 0; i < _parallax.getBackgrounds().size(); i++) {
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
-            DrawTextureEx(_parallax.getBackgrounds()[i], (Vector2){ (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0 }, 0.0f, _parallax.getScale(), WHITE);
+            Vector2 temp = { _parallax.getScrolling()[i], 0.0f };
+            Vector2 pemt = { (_parallax.getBackgrounds()[i].width * _parallax.getScale()) + _parallax.getScrolling()[i], 0.0f };
+            DrawTextureEx(_parallax.getBackgrounds()[i], temp, 0.0f, _parallax.getScale(), WHITE);
+            DrawTextureEx(_parallax.getBackgrounds()[i], pemt, 0.0f, _parallax.getScale(), WHITE);
         }
         int id = 0;
         for (auto& entity : _entities) {
