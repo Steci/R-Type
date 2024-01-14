@@ -44,8 +44,8 @@ namespace client {
         manager.addSystem<S_EventManager>();
         manager.addSystem<S_AudioManager>();
         createTextures();
-        // auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
-        // PlayMusicStream(backgroundMusic->second);
+        auto backgroundMusic = manager.getSystem<S_AudioManager>()->getBackgroundMusic().find("THEME");
+        PlayMusicStream(backgroundMusic->second);
         while (manager.getSystem<S_Renderer>()->getStatusGame() != true) {
             if (statusMenu == true) {
                _menu.render(withSizeX);
@@ -61,8 +61,8 @@ namespace client {
                 quit = manager.getSystem<S_EventManager>()->getQuit();
                 if (mov != 0 || shoot != 0 || quit != 0) {
                     if (shoot != 0) {
-                        // auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
-                        // PlaySound(effect->second);
+                        auto effect = manager.getSystem<S_AudioManager>()->getSoundEffect().find("SHOOT");
+                        PlaySound(effect->second);
                     }
                     infoInteraction(mov, shoot, quit, 0); // à changer plus tard le 0 par l'info create Game
                 }
@@ -73,7 +73,7 @@ namespace client {
                     _frames.pop_back();
                 }
                 _mutex_frames.unlock();
-                // UpdateMusicStream(backgroundMusic->second);
+                UpdateMusicStream(backgroundMusic->second);
                 auto &entities = current_frame.getEntities();
                 const auto& sparseIds = entities.getSparse();
 
@@ -90,7 +90,7 @@ namespace client {
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
 
                         } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
-                            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
+                            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(&tmpEntity);
                             if (ennemyInfo == nullptr)
                                 continue;
                             auto it = _ennemy_sprites.find(ennemyInfo->_type);
@@ -239,10 +239,10 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             player.deserializeFromVector(std::vector<char>(it, it + size_player));
             it += sizeof(size_player);
 
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(player);
-            C_Health *health = Engine::getComponentRef<C_Health>(player);
-            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
-            C_Score *score = Engine::getComponentRef<C_Score>(player);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(&player);
+            C_Health *health = Engine::getComponentRef<C_Health>(&player);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(&player);
+            C_Score *score = Engine::getComponentRef<C_Score>(&player);
 
             if (transform == nullptr || health == nullptr || hitbox == nullptr || score == nullptr)
                 continue;
@@ -257,10 +257,10 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
             it += sizeof(size_enemy);
 
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
-            C_Health *health = Engine::getComponentRef<C_Health>(enemy);
-            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
-            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(&enemy);
+            C_Health *health = Engine::getComponentRef<C_Health>(&enemy);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(&enemy);
+            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(&enemy);
 
             if (transform == nullptr || health == nullptr || hitbox == nullptr || ennemyInfo == nullptr)
                 continue;
@@ -273,9 +273,9 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             bullet.deserializeFromVector(std::vector<char>(it, it + size_bullet));
             it += sizeof(size_bullet);
 
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(bullet);
-            C_Damage *damage = Engine::getComponentRef<C_Damage>(bullet);
-            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(bullet);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(&bullet);
+            C_Damage *damage = Engine::getComponentRef<C_Damage>(&bullet);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(&bullet);
 
             auto bulletShared = std::make_shared<E_Bullet>(damage->_damage, transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, transform->_velocity.x, transform->_velocity.y, 0);
             int id = _entities.add(bulletShared);

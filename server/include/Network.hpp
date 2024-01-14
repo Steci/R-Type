@@ -98,7 +98,7 @@ namespace server {
                  * @param id is the id of the client
                  * @param name is the name of the client
                  */
-                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name), _gameId(-1) {};
                 struct sockaddr_in getAddr() const {return _addr;};
             #endif
             #ifdef _WIN64
@@ -109,7 +109,7 @@ namespace server {
                  * @param id is the id of the client
                  * @param name is the name of the client
                  */
-                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name), _gameId(-1) {};
                 struct sockaddr_in getAddr() const {return _addr;};
             #endif
 

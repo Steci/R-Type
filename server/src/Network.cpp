@@ -308,6 +308,7 @@ std::tuple<int, server::Connection> server::Network::handleNewConnection(Connect
     for (auto client = _clients.begin(); client != _clients.end(); client++) {
         if (inet_ntoa(client->getAddr().sin_addr) == inet_ntoa(_clientAddr.sin_addr) && client->getAddr().sin_port == _clientAddr.sin_port) {
             // std::cout << "Client already connected" << std::endl;
+            connect.setId(client->getId());
             return std::make_tuple(client->getId(), connect);
         }
     }
