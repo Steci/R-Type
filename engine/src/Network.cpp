@@ -9,7 +9,6 @@
 
 std::vector<char> AConnection::serializeConnection() {
     std::vector<char> data;
-    data.insert(data.end(), reinterpret_cast<char*>(&_connect), reinterpret_cast<char*>(&_connect) + sizeof(_connect));
     data.insert(data.end(), reinterpret_cast<char*>(&_connected), reinterpret_cast<char*>(&_connected) + sizeof(_connected));
     data.insert(data.end(), reinterpret_cast<char*>(&_createGame), reinterpret_cast<char*>(&_createGame) + sizeof(_createGame));
     data.insert(data.end(), reinterpret_cast<char*>(&_JoinGame), reinterpret_cast<char*>(&_JoinGame) + sizeof(_JoinGame));
@@ -24,8 +23,6 @@ std::vector<char> AConnection::serializeConnection() {
 
 void AConnection::deserializeConnection(std::vector<char> data) {
     int size = 0;
-    std::memcpy(&_connect, data.data() + size, sizeof(_connect));
-    size += sizeof(_connect);
     std::memcpy(&_connected, data.data() + size, sizeof(_connected));
     size += sizeof(_connected);
     std::memcpy(&_createGame, data.data() + size, sizeof(_createGame));

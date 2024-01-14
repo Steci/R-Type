@@ -106,7 +106,6 @@ class AProtocole : public IProtocole{
 
 class IConnection {
     public:
-        virtual int getConnect() const = 0;
         virtual int getConnected() const = 0;
         virtual int getCreateGame() const = 0;
         virtual void setCreateGame(int createGame) = 0;
@@ -127,7 +126,6 @@ class AConnection : public IConnection {
     public:
         AConnection() = default;
         ~AConnection() = default;
-        int getConnect() const override {return _connect;};
         int getConnected() const override {return _connected;};
         int getCreateGame() const override {return _createGame;};
         void setCreateGame(int createGame) override {_createGame = createGame;};
@@ -144,7 +142,6 @@ class AConnection : public IConnection {
         void deserializeConnection(std::vector<char> data) override;
     protected:
         int _createGame;
-        int _connect;
         int _connected;
         int _JoinGame;
         int _id;
