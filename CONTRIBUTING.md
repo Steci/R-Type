@@ -2,7 +2,6 @@
 
 Thank you for your interest in contributing to the RType project! We welcome contributions from the community to help improve and grow the project. Before you start contributing, please take a moment to read and follow these guidelines.
 
-
 ## Getting Started
 
 1. Fork the RType repository.
@@ -50,4 +49,4 @@ All contributions will be reviewed by the project maintainers. Constructive feed
 
 Please adhere to the project's [Code of Conduct](CODE_OF_CONDUCT.md). Be respectful and considerate of others when contributing.
 
-Thank you for contributing to RType!
+* [ ] Thank you for contributing to RType!

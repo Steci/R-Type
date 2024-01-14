@@ -39,12 +39,12 @@ After these steps, you will have generated three executable files: the server (`
 1. To run the server, use the following command:
 
    ```bash
-   ./server
+   ./server_build
    ```
 2. Next, launch the client in another terminal.
 
    ```bash
-   ./client
+   ./client_build
    ```
 
 ### Using Docker

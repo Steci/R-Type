@@ -11,17 +11,17 @@ file(GLOB CLIENT_SOURCES
     "main.cpp"
 )
 
-add_executable(client ${CLIENT_SOURCES})
+add_executable(client_build ${CLIENT_SOURCES})
 
 list(APPEND CLIENT_EXTRA_INCLUDES "include")
-target_include_directories(client PUBLIC ${CLIENT_EXTRA_INCLUDES})
+target_include_directories(client_build PUBLIC ${CLIENT_EXTRA_INCLUDES})
 
-target_link_libraries(client PRIVATE raylib)
-target_link_libraries(client PRIVATE EngineLib)
+target_link_libraries(client_build PRIVATE raylib)
+target_link_libraries(client_build PRIVATE EngineLib)
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/engine)
 
-add_custom_command(TARGET client POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client> ${CMAKE_SOURCE_DIR}
+add_custom_command(TARGET client_build POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:client_build> ${CMAKE_SOURCE_DIR}
 )
 
