@@ -40,17 +40,17 @@ void S_Collision::update()
     for (auto& entity1 : _sparseEntities.getAll()) {
         for (auto& entity2 : _sparseEntities.getAll()) {
             if (entity1 != entity2) {
-                C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
-                C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(*entity2);
-                C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-                C_Transform* transform2 = Engine::getComponentRef<C_Transform>(*entity2);
+                C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(entity1.get());
+                C_Hitbox* hitbox2 = Engine::getComponentRef<C_Hitbox>(entity2.get());
+                C_Transform* transform1 = Engine::getComponentRef<C_Transform>(entity1.get());
+                C_Transform* transform2 = Engine::getComponentRef<C_Transform>(entity2.get());
 
                 if (hitbox1 == nullptr || hitbox2 == nullptr || transform1 == nullptr || transform2 == nullptr)
                     continue;
                 if (typeid(*entity1) == typeid(E_Player) && typeid(*entity2) == typeid(E_Enemy)) {
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
-                        C_Health* health1 = Engine::getComponentRef<C_Health>(*entity1);
-                        C_Health* health2 = Engine::getComponentRef<C_Health>(*entity2);
+                        C_Health* health1 = Engine::getComponentRef<C_Health>(entity1.get());
+                        C_Health* health2 = Engine::getComponentRef<C_Health>(entity2.get());
 
                         if (health1 == nullptr || health2 == nullptr)
                             continue;
@@ -60,11 +60,11 @@ void S_Collision::update()
                 }
                 else if (typeid(*entity1) == typeid(E_Bullet) && typeid(*entity2) == typeid(E_Enemy)) {
                     if (checkCollision(transform1, transform2, hitbox1, hitbox2)) {
-                        C_Damage* damage1 = Engine::getComponentRef<C_Damage>(*entity1);
-                        C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity2);
+                        C_Damage* damage1 = Engine::getComponentRef<C_Damage>(entity1.get());
+                        C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(entity1.get());
 
                         int idCreator = dynamic_cast<E_Bullet*>(entity1.get())->getIdCreator();
-                        C_Score* score = Engine::getComponentRef<C_Score>(_sparseEntities.get(idCreator));
+                        C_Score* score = Engine::getComponentRef<C_Score>(&_sparseEntities.get(idCreator));
                         if (damage1 == nullptr || enemyInfo == nullptr || score == nullptr)
                             continue;
                         toRemove.push_back(entity1->getId());
@@ -83,8 +83,8 @@ void S_Collision::update()
         }
         if (typeid(*entity1) == typeid(E_Player)) {
             // check if player is leaving screenWidth or screenHeight
-            C_Transform* transform1 = Engine::getComponentRef<C_Transform>(*entity1);
-            C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(*entity1);
+            C_Transform* transform1 = Engine::getComponentRef<C_Transform>(entity1.get());
+            C_Hitbox* hitbox1 = Engine::getComponentRef<C_Hitbox>(entity1.get());
 
             if (transform1 == nullptr || hitbox1 == nullptr)
                 continue;
@@ -99,7 +99,7 @@ void S_Collision::update()
         }
         if (typeid(*entity1) == typeid(E_Enemy)) {
             // Destroy enemy if it leaves the screen on the left
-            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(entity1.get());
 
             if (transform == nullptr)
                 continue;
@@ -111,7 +111,7 @@ void S_Collision::update()
         }
         else if (typeid(*entity1) == typeid(E_Bullet)) {
             // Destroy bullet if it leaves the screen
-            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity1);
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(entity1.get());
 
             if (transform == nullptr)
                 continue;
@@ -136,8 +136,8 @@ void S_EnemyAI::update()
 {
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Enemy)) {
-            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
-            C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(*entity);
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(entity.get());
+            C_EnemyInfo* enemyInfo = Engine::getComponentRef<C_EnemyInfo>(entity.get());
 
             if (transform == nullptr || enemyInfo == nullptr)
                 return;
@@ -215,7 +215,7 @@ void S_Weapon::shootPlayer(int idCreator)
     if (&entity == nullptr) {
         return;
     }
-    C_Transform* transform = Engine::getComponentRef<C_Transform>(entity);
+    C_Transform* transform = Engine::getComponentRef<C_Transform>(&entity);
     if (transform == nullptr)
         return;
     // create bullet with player position info
@@ -236,7 +236,7 @@ void S_Weapon::update()
 
     for (auto& entity : _sparseEntities.getAll()) {
         if (typeid(*entity) == typeid(E_Player)) {
-            C_Score* score = Engine::getComponentRef<C_Score>(*entity);
+            C_Score* score = Engine::getComponentRef<C_Score>(entity.get());
             if (score == nullptr)
                 continue;
             if (score->score >= 1000) {
@@ -247,7 +247,7 @@ void S_Weapon::update()
             }
         }
         if (typeid(*entity) == typeid(E_Bullet)) {
-            C_Transform* transform = Engine::getComponentRef<C_Transform>(*entity);
+            C_Transform* transform = Engine::getComponentRef<C_Transform>(entity.get());
 
             if (transform == nullptr)
                 continue;

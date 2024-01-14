@@ -114,6 +114,8 @@ class IEntity {
          * @return The server ID of the entity.
          */
         virtual int getIdServer() const = 0;
+
+        virtual bool operator==(const IEntity& other) const = 0;
 };
 
 /**
@@ -278,6 +280,22 @@ class Entity : public IEntity {
          */
         int getIdServer() const {
             return _idServer;
+        }
+
+        bool operator==(const IEntity& other) const override {
+            const Entity* otherEntity = dynamic_cast<const Entity*>(&other);
+            if (!otherEntity) {
+                return false;
+            }
+            if (_id != otherEntity->_id || _idServer != otherEntity->_idServer) {
+                return false;
+            }
+            for (size_t i = 0; i < components.size(); ++i) {
+                if (typeid(*components[i]) != typeid(*otherEntity->components[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
 
     private:
@@ -448,17 +466,14 @@ namespace Engine {
      * @param entity The entity allows you to know on which entity to look for the component in question.
      * @return A pointer to the component if found, nullptr otherwise.
      */
-    T* getComponentRef(IEntity& entity)
-    {
-        auto tmp = entity.getComponentOfType(typeid(T));
-        if (tmp == nullptr)
+    T* getComponentRef(IEntity* entity) {
+        auto tmp = entity->getComponentOfType(typeid(T));
+        if (tmp == nullptr) {
             return nullptr;
+        }
 
         T* component = dynamic_cast<T*>(tmp);
-        if (component) {
-            return (component);
-        }
-        return (nullptr);
+        return component;
     }
     //template<typename T>
     //const T* getComponentRef(const IEntity& entity) {

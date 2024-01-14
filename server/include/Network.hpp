@@ -61,11 +61,11 @@ namespace server {
     class Client {
         public:
             #ifdef __linux__
-                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name), _gameId(-1) {};
                 struct sockaddr_in getAddr() const {return _addr;};
             #endif
             #ifdef _WIN64
-                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name) {};
+                Client(struct sockaddr_in addr, int id, std::string name): _addr(addr), _id(id), _name(name), _gameId(-1) {};
                 struct sockaddr_in getAddr() const {return _addr;};
             #endif
             ~Client() {};

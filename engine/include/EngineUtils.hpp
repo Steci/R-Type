@@ -26,4 +26,7 @@ class Vec2 {
             std::memcpy(&x, data.data(), sizeof(x));
             std::memcpy(&y, data.data() + sizeof(x), sizeof(y));
         }
+        bool operator==(const Vec2& other) const {
+            return x == other.x && y == other.y;
+        }
 };

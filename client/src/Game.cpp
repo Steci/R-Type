@@ -90,7 +90,7 @@ namespace client {
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
 
                         } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
-                            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(tmpEntity);
+                            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(&tmpEntity);
                             if (ennemyInfo == nullptr)
                                 continue;
                             auto it = _ennemy_sprites.find(ennemyInfo->_type);
@@ -239,10 +239,10 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             player.deserializeFromVector(std::vector<char>(it, it + size_player));
             it += sizeof(size_player);
 
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(player);
-            C_Health *health = Engine::getComponentRef<C_Health>(player);
-            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(player);
-            C_Score *score = Engine::getComponentRef<C_Score>(player);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(&player);
+            C_Health *health = Engine::getComponentRef<C_Health>(&player);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(&player);
+            C_Score *score = Engine::getComponentRef<C_Score>(&player);
 
             if (transform == nullptr || health == nullptr || hitbox == nullptr || score == nullptr)
                 continue;
@@ -257,10 +257,10 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             enemy.deserializeFromVector(std::vector<char>(it, it + size_enemy));
             it += sizeof(size_enemy);
 
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(enemy);
-            C_Health *health = Engine::getComponentRef<C_Health>(enemy);
-            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(enemy);
-            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(enemy);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(&enemy);
+            C_Health *health = Engine::getComponentRef<C_Health>(&enemy);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(&enemy);
+            C_EnemyInfo *ennemyInfo = Engine::getComponentRef<C_EnemyInfo>(&enemy);
 
             if (transform == nullptr || health == nullptr || hitbox == nullptr || ennemyInfo == nullptr)
                 continue;
@@ -274,9 +274,9 @@ void client::Frame::deserializeFrame(const std::vector<char>& serializedData) {
             bullet.deserializeFromVector(std::vector<char>(it, it + size_bullet));
             it += sizeof(size_bullet);
 
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(bullet);
-            C_Damage *damage = Engine::getComponentRef<C_Damage>(bullet);
-            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(bullet);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(&bullet);
+            C_Damage *damage = Engine::getComponentRef<C_Damage>(&bullet);
+            C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(&bullet);
 
             if (transform == nullptr || damage == nullptr || hitbox == nullptr)
                 continue;

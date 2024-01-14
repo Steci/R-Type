@@ -25,8 +25,8 @@ void E_Bullet::render()
 {
     if (IsWindowReady() == true) {
         if (this->getComponents().size() > 2) {
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             Rectangle sourceRec = { 127.0f, 0.0f, 20, 20};
             DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
         }
@@ -36,7 +36,7 @@ void E_Bullet::render()
 void E_Bullet::deserializeFromVector(std::vector<char> data) {
     auto it = data.begin();
 
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(this);
     if (transformComponent) {
         size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity);
         std::vector<char> transformData(it, it + transformSize);
@@ -44,14 +44,14 @@ void E_Bullet::deserializeFromVector(std::vector<char> data) {
         it += transformSize;
     }
 
-    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(*this);
+    C_Damage* damageComponent = Engine::getComponentRef<C_Damage>(this);
     if (damageComponent) {
         size_t damageSize = sizeof(damageComponent->_damage);
         std::vector<char> damageData(it, it + damageSize);
         damageComponent->deserializeFromVector(damageData);
         it += damageSize;
     }
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(this);
     if (hitboxComponent) {
         size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
         std::vector<char> hitboxData(it, it + hitboxSize);
@@ -78,16 +78,16 @@ void E_Player::update()
 void E_Player::render()
 {
     if (IsWindowReady() == true) {
-        C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
+        C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(this);
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
-                C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+                C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
                 int xPos = transform->_position.x;
                 int yPos = transform->_position.y;
                 int xSize = transform->_size.x;
                 int ySize = transform->_size.y;
                 int animation = transform->_animation;
-                Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+                Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
@@ -101,12 +101,12 @@ void E_Player::render()
                 hitbox->_status = 0;
             }
         } else if (hitbox->_status == 2) {
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             if (transform->_animation <= 7) {
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
@@ -115,13 +115,13 @@ void E_Player::render()
                 transform->_animation += 1;
             }
         } else {
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
             int animation = transform->_animation;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
@@ -137,7 +137,7 @@ std::string E_Player::getType() const {
 void E_Player::deserializeFromVector(std::vector<char> data) {
         auto it = data.begin();
 
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(this);
     if (transformComponent) {
         size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity )+ sizeof(transformComponent->_animation);
         std::vector<char> transformData(it, it + transformSize);
@@ -145,7 +145,7 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
         it += transformSize;
     }
 
-    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
+    C_Health* healthComponent = Engine::getComponentRef<C_Health>(this);
     if (healthComponent) {
         size_t healthSize = sizeof(healthComponent->_health);
         std::vector<char> healthData(it, it + healthSize);
@@ -153,7 +153,7 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
         it += healthSize;
     }
 
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(this);
     if (hitboxComponent) {
         size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_status) + sizeof(hitboxComponent->_time);
         std::vector<char> hitboxData(it, it + hitboxSize);
@@ -161,7 +161,7 @@ void E_Player::deserializeFromVector(std::vector<char> data) {
         it += hitboxSize;
     }
 
-    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(*this);
+    C_Score* scoreComponent = Engine::getComponentRef<C_Score>(this);
     if (scoreComponent) {
         size_t scoreSize = sizeof(scoreComponent->score);
         std::vector<char> scoreData(it, it + scoreSize);
@@ -188,16 +188,16 @@ void E_Enemy::update()
 void E_Enemy::render()
 {
     if (IsWindowReady() == true) {
-        C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(*this);
+        C_Hitbox *hitbox = Engine::getComponentRef<C_Hitbox>(this);
         if (hitbox->_status == 1) {
             if ((hitbox->_time % 2) != 0) {
-                C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+                C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
                 int xPos = transform->_position.x;
                 int yPos = transform->_position.y;
                 int xSize = transform->_size.x;
                 int ySize = transform->_size.y;
                 int animation = transform->_animation;
-                Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+                Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
@@ -211,12 +211,12 @@ void E_Enemy::render()
                 hitbox->_status = 0;
             }
         } else if (hitbox->_status == 2) {
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             if (transform->_animation <= 7) {
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
@@ -225,9 +225,9 @@ void E_Enemy::render()
                 transform->_animation += 1;
             }
         } else {
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(*this);
-            C_AnimationInfo *animationInfo = Engine::getComponentRef<C_AnimationInfo>(*this);
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(*this)->_texture;
+            C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
+            C_AnimationInfo *animationInfo = Engine::getComponentRef<C_AnimationInfo>(this);
+            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
 
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
@@ -267,7 +267,7 @@ std::string E_Enemy::getType() const {
 void E_Enemy::deserializeFromVector(std::vector<char> data) {
     auto it = data.begin();
 
-    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(*this);
+    C_Transform* transformComponent = Engine::getComponentRef<C_Transform>(this);
     if (transformComponent) {
         size_t transformSize = sizeof(transformComponent->_position) + sizeof(transformComponent->_size) + sizeof(transformComponent->_velocity) + sizeof(transformComponent->_animation);
         std::vector<char> transformData(it, it + transformSize);
@@ -275,7 +275,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         it += transformSize;
     }
 
-    C_Health* healthComponent = Engine::getComponentRef<C_Health>(*this);
+    C_Health* healthComponent = Engine::getComponentRef<C_Health>(this);
     if (healthComponent) {
         size_t healthSize = sizeof(healthComponent->_health);
         std::vector<char> healthData(it, it + healthSize);
@@ -283,7 +283,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         it += healthSize;
     }
 
-    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(*this);
+    C_Hitbox* hitboxComponent = Engine::getComponentRef<C_Hitbox>(this);
     if (hitboxComponent) {
         size_t hitboxSize = sizeof(hitboxComponent->_size) + sizeof(hitboxComponent->_time) + sizeof(hitboxComponent->_status);
         std::vector<char> hitboxData(it, it + hitboxSize);
@@ -291,7 +291,7 @@ void E_Enemy::deserializeFromVector(std::vector<char> data) {
         it += hitboxSize;
     }
 
-    C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(*this);
+    C_EnemyInfo* enemyInfoComponent = Engine::getComponentRef<C_EnemyInfo>(this);
     if (enemyInfoComponent) {
         size_t enemyInfoSize = sizeof(enemyInfoComponent->_type);
         std::vector<char> enemyInfoData(it, it + enemyInfoSize);
