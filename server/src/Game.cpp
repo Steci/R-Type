@@ -37,9 +37,7 @@ void server::Game::run()
     manager.addSystem<S_Spawner>(entities);
     manager.addSystem<S_Weapon>(entities, _tick);
 
-    int numClientID = 0;
     bool startGame = false;
-    int firingSpeed = manager.getSystem<S_Weapon>()->getFiringSpeed();
 
     while (true) {
         _mutex.lock();

@@ -32,8 +32,8 @@ class AFrame : public IFrame {
         void setGameId(int gameId) override {_gameId = gameId;};
         bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) override {
             const std::string endMarker = "END";
-            return std::distance(it, data.end()) >= endMarker.size() &&
-            std::equal(endMarker.begin(), endMarker.end(), it);
+            return static_cast<size_t>(std::distance(it, data.end())) >= endMarker.size() &&
+                   std::equal(endMarker.begin(), endMarker.end(), it);
         }
         bool operator==(const IFrame& other) const override {return *this == other;};
         bool operator!=(const IFrame& other) const override {return !(*this == other);};

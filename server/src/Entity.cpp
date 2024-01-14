@@ -59,6 +59,8 @@ void E_Player::update()
 {
     auto& transform = getComponents()[0];
     auto& health = getComponents()[1];
+    transform=transform;
+    health=health;
 }
 
 std::string E_Player::getType() const {
@@ -112,6 +114,8 @@ void E_Enemy::update()
 {
     auto& transform = getComponents()[0];
     auto& health = getComponents()[1];
+    transform = transform;
+    health = health;
 }
 
 std::string E_Enemy::getType() const {

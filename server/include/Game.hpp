@@ -58,8 +58,8 @@ namespace server
             void clearEntities() {_entities.clearEntities();};
             bool isEndMarker(const std::vector<char>::const_iterator& it, const std::vector<char>& data) {
                 const std::string endMarker = "END";
-                return std::distance(it, data.end()) >= endMarker.size() &&
-                std::equal(endMarker.begin(), endMarker.end(), it);
+                return static_cast<std::string::size_type>(std::distance(it, data.end())) >= endMarker.size() &&
+                       std::equal(endMarker.begin(), endMarker.end(), it);
             }
             void deserializeFrame(const std::vector<char>& serializedData);
     };

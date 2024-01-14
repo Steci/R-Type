@@ -38,7 +38,7 @@ class SparseArray {
          */
         int add(std::shared_ptr<T> element, int id = -1) {
             if (id == -1) {
-                for (int i = 5; i < sparse.size(); i++) {
+                for (std::vector<int>::size_type i = 5; i < sparse.size(); i++) {
                     if (sparse[i] == -1) {
                         id = i;
                         break;
@@ -52,8 +52,8 @@ class SparseArray {
                     }
                 }
             }
-            if (id >= sparse.size()) {
-                sparse.resize(id + 1, -1);
+            if (static_cast<std::vector<int>::size_type>(id) >= sparse.size()) {
+                sparse.resize(static_cast<std::vector<int>::size_type>(id) + 1, -1);
             }
             if (sparse[id] == -1) {
                 sparse[id] = dense.size();
@@ -76,7 +76,6 @@ class SparseArray {
         void remove(int id) {
             assert(id < sparse.size() && "Invalid ID");
             // Remove all traces of the element in dense, sparse, and indices!
-            int index = sparse[id];
             std::vector<std::shared_ptr<T>> temp;
             for (auto &element : dense)
                 if (element.get()->getId() != id)

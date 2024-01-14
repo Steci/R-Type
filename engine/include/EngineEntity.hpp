@@ -176,7 +176,7 @@ class Entity : public IEntity {
          *
          * @param data The vector of characters containing the serialized entity.
          */
-        void deserializeFromVector(std::vector<char> data) override {};
+        void deserializeFromVector(std::vector<char>) override {};
 
         /**
          * @brief Adds a component to the entity.

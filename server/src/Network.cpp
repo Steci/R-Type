@@ -86,7 +86,6 @@ void server::Network::run()
 {
     int client;
     //char buffer[1024];
-    int id = 0;
     Connection connect;
     Interaction interaction;
     std::string message;
@@ -104,7 +103,8 @@ void server::Network::run()
         #ifdef _WIN64
             client = recvfrom(_fd, buffer.data(), buffer.size(), 0, (SOCKADDR *)&_clientAddr, &_clientAddrLen);
         #endif
-        for (int i = 0; i < games.size(); ++i) {
+        for (std::vector<std::unique_ptr<server::Game>>::size_type i = 0; i < games.size(); ++i) {
+        //for (int i = 0; i < games.size(); ++i) {
             // printf("game id = %d\n", games[i]->getGameId());
             updateClients(&games[i]);
         }
@@ -208,7 +208,7 @@ int server::Network::CreateGame(std::vector<int> idNotUsableGame)
 {
     int id = 0;
 
-    for (int i = 0; i < _maxClients; i++) {
+    for (unsigned int i = 0; i < _maxClients; i++) {
         if (std::find(idNotUsableGame.begin(), idNotUsableGame.end(), i) == idNotUsableGame.end()) {
             id = i;
             break;
@@ -236,7 +236,7 @@ server::Interaction server::Network::manageClient(std::vector<char> buffer, int 
     return interaction;
 }
 
-void server::Network::updateClients(std::unique_ptr<Game> *game)
+void server::Network::updateClients(std::unique_ptr<Game>* game)
 {
     std::vector<std::string> functions_clients;
     std::vector<Frame> frames = (*game)->getFrames();
@@ -244,7 +244,7 @@ void server::Network::updateClients(std::unique_ptr<Game> *game)
     bool frame_found = false;
     int last_tick_send = (*game)->getLastTickSend();
 
-    if (frames.size() == 0 || frames.size() <= last_tick_send + 1) {
+    if (frames.size() == 0 || frames.size() <= static_cast<std::vector<Frame>::size_type>(last_tick_send + 1)) {
         return;
     }
     for (auto frame_tmp : frames) {
@@ -269,6 +269,7 @@ void server::Network::updateClients(std::unique_ptr<Game> *game)
         }
     }
 }
+
 
 std::string server::Network::handleClientMessage(std::string message, int client_id)
 {
