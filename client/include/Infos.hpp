@@ -13,10 +13,21 @@
 
 #include "EngineUtils.hpp"
 
+/**
+ * @brief The Infos class is the class that contains the information of the entity.
+*/
 struct Infos {
     Vec2 _size;
     Texture2D _texture;
     Image _image;
+
+    /**
+     * @brief Construct a new Infos object
+     * 
+     * @param size_x is the size on the x axis
+     * @param size_y is the size on the y axis
+     * @param name is the name of the image
+     */
     Infos(float size_x, float size_y, std::string name) {
         _size = {size_x, size_y};
         Image _image = LoadImage(name.c_str());
@@ -26,7 +37,17 @@ struct Infos {
             _texture = LoadTextureFromImage(_image);
         }
     }
+
+    /**
+     * @brief Construct a new Infos object
+     * 
+     */
     Infos() = default;
+
+    /**
+     * @brief Destroy the Infos object
+     * 
+     */
     ~Infos() {
         //printf("Merde\n");
         //if (_image.data != nullptr) {
