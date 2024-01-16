@@ -24,12 +24,11 @@ std::string E_Bullet::getType() const {
 void E_Bullet::render()
 {
     if (IsWindowReady() == true) {
-        if (this->getComponents().size() > 2) {
-            C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
-            Rectangle sourceRec = { 127.0f, 0.0f, 20, 20};
-            DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
-        }
+        C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
+        // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+        Rectangle sourceRec = { 127.0f, 0.0f, 20, 20};
+        DrawRectangle(transform->_position.x, transform->_position.y, transform->_size.x, transform->_size.y, BLUE);
+        // DrawTexturePro(sprite, sourceRec, { transform->_position.x, transform->_position.y, transform->_size.x * 2, transform->_size.y * 2 }, { 0.0f, 0.0f }, 0.0f, WHITE);
     }
 }
 
@@ -87,11 +86,11 @@ void E_Player::render()
                 int xSize = transform->_size.x;
                 int ySize = transform->_size.y;
                 int animation = transform->_animation;
-                Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+                // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
-                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
                 hitbox->_time -= 1;
             } else {
                 hitbox->_time -= 1;
@@ -106,12 +105,12 @@ void E_Player::render()
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+            // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             if (transform->_animation <= 7) {
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
-                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
                 transform->_animation += 1;
             }
         } else {
@@ -121,11 +120,12 @@ void E_Player::render()
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
             int animation = transform->_animation;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+            // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
             Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
             Vector2 origin = { 0.0f, 0.0f };
-            DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+            DrawRectangle(xPos, yPos, xSize, ySize, GREEN);
+            // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
         }
     }
 }
@@ -197,11 +197,11 @@ void E_Enemy::render()
                 int xSize = transform->_size.x;
                 int ySize = transform->_size.y;
                 int animation = transform->_animation;
-                Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+                // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
                 Rectangle sourceRec = { (float)(xSize * animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
-                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
                 hitbox->_time -= 1;
             } else {
                 hitbox->_time -= 1;
@@ -216,29 +216,30 @@ void E_Enemy::render()
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+            // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
             if (transform->_animation <= 7) {
                 Rectangle sourceRec = { (float)(xSize * transform->_animation), 0, (float)xSize, (float)ySize };
                 Rectangle destRec = { (float)xPos, (float)yPos, (float)xSize * 2, (float)ySize * 2 };
                 Vector2 origin = { 0.0f, 0.0f };
-                DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
+                // DrawTexturePro(sprite, sourceRec, destRec, origin, 0.0f, WHITE);
                 transform->_animation += 1;
             }
         } else {
             C_Transform *transform = Engine::getComponentRef<C_Transform>(this);
-            C_AnimationInfo *animationInfo = Engine::getComponentRef<C_AnimationInfo>(this);
-            Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
+            // C_AnimationInfo *animationInfo = Engine::getComponentRef<C_AnimationInfo>(this);
+            // Texture2D sprite = Engine::getComponentRef<C_Sprite>(this)->_texture;
 
             int xPos = transform->_position.x;
             int yPos = transform->_position.y;
             int xSize = transform->_size.x;
             int ySize = transform->_size.y;
 
-            int maxXframe = animationInfo->_maxXframe;
-            int maxYframe = animationInfo->_maxYframe;
+            // int maxXframe = animationInfo->_maxXframe;
+            // int maxYframe = animationInfo->_maxYframe;
 
             Rectangle frameRec = { 0.0f, 0.0f, (float)xSize, (float)ySize };
-            DrawTextureRec(sprite, frameRec, {(float)xPos, (float)yPos }, WHITE);
+            DrawRectangle(xPos, yPos, xSize, ySize, RED);
+            // DrawTextureRec(sprite, frameRec, {(float)xPos, (float)yPos }, WHITE);
         }
     }
 }

@@ -96,9 +96,9 @@ namespace client {
                         if (typeid(tmpEntity) == typeid(E_Player)) {
                             auto it = _player_sprites.find(sparseIds[id]);
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_shared<C_Sprite>());
-                            C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
-                            sprite->setupByTexture(infos._texture);
+                            // tmpEntity.addComponent(std::make_shared<C_Sprite>());
+                            // C_Sprite *sprite = dynamic_cast<C_Sprite*>(tmpEntity.getComponentOfType(typeid(C_Sprite)));
+                            // sprite->setupByTexture(infos._texture);
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
 
                         } else if (typeid(tmpEntity) == typeid(E_Enemy)) {
@@ -107,16 +107,16 @@ namespace client {
                                 continue;
                             auto it = _ennemy_sprites.find(ennemyInfo->_type);
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_shared<C_Sprite>());
+                            // tmpEntity.addComponent(std::make_shared<C_Sprite>());
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                            Engine::setSpriteTexture(tmpEntity, infos._texture);
+                            // Engine::setSpriteTexture(tmpEntity, infos._texture);
 
                         } else if (typeid(tmpEntity) == typeid(E_Bullet)) {
                             auto it = _utils_sprites.find(1);
                             auto infos = it->second;
-                            tmpEntity.addComponent(std::make_shared<C_Sprite>());
+                            // tmpEntity.addComponent(std::make_shared<C_Sprite>());
                             Engine::setTransformSize(tmpEntity, {infos._size.x, infos._size.y});
-                            Engine::setSpriteTexture(tmpEntity, infos._texture);
+                            // Engine::setSpriteTexture(tmpEntity, infos._texture);
                         }
                         manager.getSystem<S_Renderer>()->addEntity(&tmpEntity);
                         manager.getSystem<S_Renderer>()->setIDServer(current_frame.getIDServer());
